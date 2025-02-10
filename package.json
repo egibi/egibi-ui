@@ -9,6 +9,8 @@
   },
   "private": true,
   "dependencies": {
+    "@ag-grid-community/client-side-row-model": "^32.3.3",
+    "@ag-grid-community/core": "^32.3.3",    
     "@angular/animations": "^19.1.0",
     "@angular/common": "^19.1.0",
     "@angular/compiler": "^19.1.0",
@@ -17,6 +19,11 @@
     "@angular/platform-browser": "^19.1.0",
     "@angular/platform-browser-dynamic": "^19.1.0",
     "@angular/router": "^19.1.0",
+    "@ng-bootstrap/ng-bootstrap": "^18.0.0",
+    "@popperjs/core": "^2.11.8",
+    "ag-grid-angular": "^33.0.4",
+    "ag-grid-community": "^33.0.4",
+    "bootstrap": "^5.3.3",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0",
     "zone.js": "~0.15.0"
@@ -25,6 +32,7 @@
     "@angular-devkit/build-angular": "^19.1.5",
     "@angular/cli": "^19.1.5",
     "@angular/compiler-cli": "^19.1.0",
+    "@angular/localize": "^19.1.0",
     "typescript": "~5.7.2"
   }
 }
