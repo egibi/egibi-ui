@@ -1,12 +1,23 @@
 import { Routes } from '@angular/router';
-import { HomeComponent } from './main-components/home/home.component';
 import { ConnectionsComponent } from './connections/connections.component';
+import { HomeComponent } from './home/home.component';
+import { BacktesterComponent } from './backtester/backtester.component';
 
 export const routes: Routes = [
     {
-        path: '', component: HomeComponent,        
+        path: '',
+        component: HomeComponent
     },
     {
-        path: 'connections', component: ConnectionsComponent
+        path: 'home',
+        component: HomeComponent
+    },
+    {
+        path: 'connections',
+        component: ConnectionsComponent
+    },
+    {
+        path: 'backtester',
+        component:BacktesterComponent
     }
 ];
