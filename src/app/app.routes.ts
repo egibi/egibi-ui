@@ -2,6 +2,7 @@ import { Routes } from '@angular/router';
 import { ConnectionsComponent } from './connections/connections.component';
 import { HomeComponent } from './home/home.component';
 import { BacktesterComponent } from './backtester/backtester.component';
+import { ApiTesterComponent } from './api-tester/api-tester.component';
 
 export const routes: Routes = [
     {
@@ -19,5 +20,9 @@ export const routes: Routes = [
     {
         path: 'backtester',
         component:BacktesterComponent
+    },
+    {
+        path: 'api-tester',
+        component: ApiTesterComponent
     }
 ];

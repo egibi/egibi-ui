@@ -2,13 +2,15 @@ import { Injectable, signal } from "@angular/core";
 import { HttpClient } from "@angular/common/http";
 import { Observable } from "rxjs";
 import { RequestResponse } from "../request-response";
-import { Connection } from "../models/connection.model";
+import { Connection } from "./connections.models";
 
 @Injectable({
   providedIn: "root",
 })
 export class ConnectionsService {
   private apiBaseUrl: string = "https://localhost:7182/Connections";
+  // private apiBaseUrl: string = `${environment.apiBaseUrl}/Connections`;
+
   public selectedConnectionComponent = signal<Connection>(new Connection());
 
   constructor(private http: HttpClient) {}
@@ -26,6 +28,9 @@ export class ConnectionsService {
   //______________________________________________________________________________________________________________
 
   public getConnections(): Observable<RequestResponse> {
+    console.log("get connections____________");
+    //console.log(this.apiBaseUrl);
+
     return this.http.get<RequestResponse>(`${this.apiBaseUrl}/get-connections`);
   }
 

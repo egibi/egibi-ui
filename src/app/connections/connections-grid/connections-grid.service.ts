@@ -1,5 +1,5 @@
 import { Injectable, signal } from "@angular/core";
-import { Connection } from "../../models/connection.model";
+import { Connection } from "../connections.models";
 @Injectable({
   providedIn: "root",
 })

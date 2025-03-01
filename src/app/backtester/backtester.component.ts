@@ -7,5 +7,5 @@ import { Component } from '@angular/core';
   styleUrl: './backtester.component.scss'
 })
 export class BacktesterComponent {
-
+  private apiBaseUrl: string = "";
 }
