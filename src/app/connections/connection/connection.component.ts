@@ -1,5 +1,6 @@
 import { Component, Input, OnInit, AfterViewInit } from "@angular/core";
-import { Connection, ConnectionType } from "../connections.models";
+import { Connection } from "../../_models/connection.model";
+import { ConnectionType } from "../../_models/connection-type.model";
 import { ConnectionsService } from "../connections.service";
 import { FormBuilder, FormGroup, FormControl, ReactiveFormsModule, FormsModule } from "@angular/forms";
 import { CommonModule } from "@angular/common";
@@ -24,6 +25,7 @@ export class ConnectionComponent implements OnInit, AfterViewInit {
       baseUrl: [""],
       apiKey: [""],
       apiSecretKey: [""],
+      isDataSource: [""]
     });
   }
 

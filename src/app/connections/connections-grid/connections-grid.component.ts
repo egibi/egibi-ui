@@ -1,5 +1,6 @@
 import { Component, Input, Output, OnInit, EventEmitter, signal } from "@angular/core";
-import { Connection, ConnectionType } from "../connections.models";
+import { Connection } from "../../_models/connection.model";
+import { ConnectionType } from "../../_models/connection-type.model";
 import { AgGridModule } from "ag-grid-angular";
 import {
   ColDef,
@@ -79,6 +80,12 @@ export class ConnectionsGridComponent implements OnInit {
     {
       headerName: "API Secret Key",
       field: "apiSecretKey",
+    },
+    {
+      headerName: "Data Source",
+      field: "isDataSource",
+      cellDataType: "text",
+      valueFormatter: params => params.value ? "Yes" : "No"
     },
     {
       headerName: "Actions",

@@ -1,4 +1,4 @@
-import { Connection } from "../connections.models";
+import { Connection } from "../../_models/connection.model";
 
 export class ConnectionsGridAction {
     name: string;

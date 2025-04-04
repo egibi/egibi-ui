@@ -14,4 +14,8 @@ export class ApiTesterService {
   public testConnection(): Observable<RequestResponse> {
     return this.http.get<RequestResponse>(`${this.apiBaseUrl}/test-connection`);
   }
+
+  public getServerTime(): Observable<RequestResponse>{
+    return this.http.get<RequestResponse>(`${this.apiBaseUrl}/get-server-time`);
+  }
 }

@@ -2,7 +2,7 @@ import { Injectable, signal } from "@angular/core";
 import { HttpClient } from "@angular/common/http";
 import { Observable } from "rxjs";
 import { RequestResponse } from "../request-response";
-import { Connection } from "./connections.models";
+import { Connection } from "../_models/connection.model";
 
 @Injectable({
   providedIn: "root",

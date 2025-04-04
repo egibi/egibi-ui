@@ -22,13 +22,14 @@ export class ApiTesterComponent implements OnInit {
   }
 
   public testConnection(): void {
-
-    console.log('api-tester.component => testConnection()');
-
     this.apiTesterService.testConnection().subscribe((res) => {
-      console.log("connection test result....");
-      console.log(res);
-      this.apiTesterForm.get('result')?.setValue(res.responseData);
+      this.apiTesterForm.get("result")?.setValue(res.responseData);
     });
+  }
+
+  public getServerTime():void{
+    this.apiTesterService.getServerTime().subscribe((res) => {
+      this.apiTesterForm.get("result")?.setValue(res.responseData);
+    })
   }
 }
