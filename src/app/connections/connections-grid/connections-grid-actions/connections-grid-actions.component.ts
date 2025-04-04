@@ -9,7 +9,7 @@ import { ICellRendererParams } from "ag-grid-community";
   templateUrl: "./connections-grid-actions.component.html",
   styleUrl: "./connections-grid-actions.component.scss",
 })
-export class GridActionsComponent {
+export class ConnectionsGridActionsComponent {
   @Input() actions: any[] = [];
 
   cellValue: any;

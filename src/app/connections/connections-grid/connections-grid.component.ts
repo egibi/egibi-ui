@@ -18,7 +18,7 @@ import {
   ModuleRegistry,
   CellClickedEvent,
 } from "ag-grid-community";
-import { GridActionsComponent } from "./connections-grid-actions/connections-grid-actions.component";
+import { ConnectionsGridActionsComponent } from "./connections-grid-actions/connections-grid-actions.component";
 import { ConnectionsGridService } from "./connections-grid.service";
 import { ConnectionsGridAction } from "./connections-grid.models";
 
@@ -44,8 +44,11 @@ export class ConnectionsGridComponent implements OnInit {
   public gridTheme = themeQuartz.withPart(colorSchemeDark); //TODO: globalize theme related stuff
 
   components = {
-    gridActionsComponent: GridActionsComponent,
+    gridActionsComponent: ConnectionsGridActionsComponent,
   };
+
+
+  public rowData: Connection[] = [];
 
   constructor(private gridService: ConnectionsGridService) {}
 
@@ -90,13 +93,15 @@ export class ConnectionsGridComponent implements OnInit {
     {
       headerName: "Actions",
       field: "actions",
-      cellRenderer: GridActionsComponent,
+      cellRenderer: ConnectionsGridActionsComponent,
       onCellClicked: (event: CellClickedEvent) => {
         this.gridAction(event.data);
       }
     },
   ];
-  public rowData: Connection[] = [];
+
+
+
 
   public defaultColDef = {
     sortable: true,
@@ -106,9 +111,6 @@ export class ConnectionsGridComponent implements OnInit {
 
   public ngOnInit(): void {
     this.rowData = this.connections;
-
-
-
   }
 
   public onGridReady(grid: GridReadyEvent<Connection>) {

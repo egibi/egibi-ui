@@ -1,1 +1,14 @@
-<p>strategies works!</p>
+<div class="container-fluid">
+    <div class="row">
+      <button type="button" class="btn btn-outline-warning" (click)="onActionSelect()">Add New</button>
+    </div>
+  
+    <div class="row">
+      <div class="col-sm-12 col-lg-12">
+        <div class="grid-container">
+            <strategies-grid [strategies]="strategies" (actionSelect)="onActionSelect()"  ></strategies-grid>
+        </div>
+      </div>
+    </div>
+  </div>
+
