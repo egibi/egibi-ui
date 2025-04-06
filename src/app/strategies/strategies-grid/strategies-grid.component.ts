@@ -27,7 +27,7 @@ import { StrategiesGridAction } from "./strategies-grid.models";
 
 @Component({
   selector: "strategies-grid",
-  imports: [],
+  imports: [AgGridModule],
   templateUrl: "./strategies-grid.component.html",
   styleUrl: "./strategies-grid.component.scss",
 })
@@ -58,9 +58,25 @@ export class StrategiesGridComponent implements OnInit {
   public columnDefs: ColDef[] = [
     {
       headerName: "Name",
-      field:"name"
-    }
-  ]
+      field: "name",
+    },
+    {
+      headerName: "Description",
+      field: "description",
+    },
+    {
+      headerName: "Instance Name",
+      field: "instanceName",
+    },
+    {
+      headerName: "Actions",
+      field: "actions",
+      cellRenderer: StrategiesGridActionsComponent,
+      onCellClicked: (event: CellClickedEvent) => {
+        this.gridAction(event.data);
+      },
+    },
+  ];
 
   public defaultColDef = {
     sortable: true,
@@ -72,22 +88,21 @@ export class StrategiesGridComponent implements OnInit {
     this.rowData = this.strategies;
   }
 
-    public onGridReady(grid: GridReadyEvent<Strategy>) {
-      this.gridApi = grid.api;
+  public onGridReady(grid: GridReadyEvent<Strategy>) {
+    this.gridApi = grid.api;
+  }
+
+  public onSelectionChanged(event: SelectionChangedEvent) {
+    this.selectedRows = this.gridApi.getSelectedRows();
+
+    if (this.selectedRows && this.selectedRows.length > 0) {
+      this.selectedRow = this.selectedRows[0];
     }
+  }
 
-    public onSelectionChanged(event: SelectionChangedEvent) {
-      this.selectedRows = this.gridApi.getSelectedRows();
-  
-      if (this.selectedRows && this.selectedRows.length > 0) {
-        this.selectedRow = this.selectedRows[0];
-      }
-    }    
-
-      public gridAction(rowData: Strategy):void{
-        let action = this.gridService.getCurrentAction();   
-        let selectedAction: StrategiesGridAction = {name: action, strategy: rowData};
-        this.actionSelect.emit(selectedAction);
-      }
-
+  public gridAction(rowData: Strategy): void {
+    let action = this.gridService.getCurrentAction();
+    let selectedAction: StrategiesGridAction = { name: action, strategy: rowData };
+    this.actionSelect.emit(selectedAction);
+  }
 }

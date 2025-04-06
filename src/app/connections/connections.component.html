@@ -6,7 +6,7 @@
     <div class="row">
       <div class="col-sm-12 col-lg-12">
         <div class="grid-container">
-          <connections-grid [connections]="connections" (actionSelect)="onActionSelect($event, createModal, editModal, deleteModal)"></connections-grid>
+          <connections-grid [connections]="rowData" (actionSelect)="onActionSelect($event, createModal, editModal, deleteModal)"></connections-grid>
         </div>
       </div>
     </div>

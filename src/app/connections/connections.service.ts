@@ -15,12 +15,12 @@ export class ConnectionsService {
 
   constructor(private http: HttpClient) {}
 
-  setSelectedConnection(connection: Connection): void {
-    this.selectedConnectionComponent.update(() => connection);
-  }
-
   getSelectedConnection(): Connection {
     return this.selectedConnectionComponent();
+  }
+
+  setSelectedConnection(connection: Connection): void {
+    this.selectedConnectionComponent.update(() => connection);
   }
 
   //--------------------------------------------------------------------------------------------------------------

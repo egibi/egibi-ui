@@ -1,9 +1,40 @@
-import { Injectable } from '@angular/core';
+import { Injectable, signal } from "@angular/core";
+import { HttpClient } from "@angular/common/http";
+import { Observable } from "rxjs";
+import { RequestResponse } from "../request-response";
+import { Strategy } from "../_models/strategy.model";
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: "root",
 })
 export class StrategiesService {
+  private apiBaseUrl: string = "https://localhost:7182/Strategies";
 
-  constructor() { }
+  public selectedStrategyComponent = signal<Strategy>(new Strategy());
+  constructor(private http: HttpClient) {}
+
+  getSelectedStrategy(): Strategy {
+    return this.selectedStrategyComponent();
+  }
+
+  setSelectedStrategy(strategy: Strategy): void {
+    this.selectedStrategyComponent.update(() => strategy);
+  }
+
+  public getStrategies(): Observable<RequestResponse> {
+    return this.http.get<RequestResponse>(`${this.apiBaseUrl}/get-strategies`);
+  }
+
+  public getStrategy(id: number): Observable<RequestResponse> {
+    return this.http.get<RequestResponse>(`${this.apiBaseUrl}/get-strategy` + "?id=" + id);
+  }
+
+  public saveStrategy(strategy:Strategy):Observable<RequestResponse>{
+    console.log('save strategy() ==== ', strategy);
+    return this.http.post<RequestResponse>(`${this.apiBaseUrl}/save-strategy`, strategy);
+  }
+
+  public deleteStrategy(strategy:Strategy):Observable<RequestResponse>{
+    return this.http.delete<RequestResponse>(`${this.apiBaseUrl}/delete-strategy` + "?id=" + strategy.strategyID);
+  }
 }

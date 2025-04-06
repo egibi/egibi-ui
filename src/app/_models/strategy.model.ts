@@ -1,3 +1,7 @@
 export class Strategy{
-    strategyID: string
+    strategyID: string;
+    name: string;
+    description: string;
+    instanceName: string;
+
 }

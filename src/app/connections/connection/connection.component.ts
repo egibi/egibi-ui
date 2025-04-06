@@ -1,8 +1,7 @@
-import { Component, Input, OnInit, AfterViewInit } from "@angular/core";
-import { Connection } from "../../_models/connection.model";
+import { Component, Input, OnInit } from "@angular/core";
 import { ConnectionType } from "../../_models/connection-type.model";
 import { ConnectionsService } from "../connections.service";
-import { FormBuilder, FormGroup, FormControl, ReactiveFormsModule, FormsModule } from "@angular/forms";
+import { FormBuilder, FormGroup, ReactiveFormsModule, FormsModule } from "@angular/forms";
 import { CommonModule } from "@angular/common";
 
 @Component({
@@ -12,7 +11,7 @@ import { CommonModule } from "@angular/common";
   templateUrl: "./connection.component.html",
   styleUrl: "./connection.component.scss",
 })
-export class ConnectionComponent implements OnInit, AfterViewInit {
+export class ConnectionComponent implements OnInit {
   @Input() connectionTypes: ConnectionType[] = [];
   public connectionDetailsForm: FormGroup;
 
@@ -30,15 +29,8 @@ export class ConnectionComponent implements OnInit, AfterViewInit {
   }
 
   ngOnInit(): void {
-    console.log("connection.component onInit():::");
-    console.log(this.connectionsService.getSelectedConnection());
-
     this.connectionDetailsForm.patchValue(this.connectionsService.getSelectedConnection());
-    console.log('connection types:::');
-    console.log(this.connectionTypes);
   }
-
-  ngAfterViewInit(): void {}
 
   onConnectionTypeChange(event: any): void {
 

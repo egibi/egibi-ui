@@ -27,7 +27,6 @@ export class ConnectionsComponent implements OnInit {
 
   public modalService = inject(NgbModal);
   closeResult: WritableSignal<string> = signal("");
-  public connections: Connection[] = [];
   public rowData: Connection[] = [];
 
   constructor(private egibiService: EgibiSharedService, private connectionsService: ConnectionsService, private connectionsGridService: ConnectionsGridService) {}
@@ -101,9 +100,6 @@ export class ConnectionsComponent implements OnInit {
 
   private saveConnection(): void {
     let details = this.connectionComponent.connectionDetailsForm.value;
-
-    console.log('save connection...........');
-    console.log(details);
 
     if (details.connectionID == "") details.connectionID = 0;
     if (details.connectionTypeID == "") details.connectionTypeID = 0;
