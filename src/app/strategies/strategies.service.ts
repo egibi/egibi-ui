@@ -11,13 +11,14 @@ export class StrategiesService {
   private apiBaseUrl: string = "https://localhost:7182/Strategies";
 
   public selectedStrategyComponent = signal<Strategy>(new Strategy());
+  
   constructor(private http: HttpClient) {}
 
-  getSelectedStrategy(): Strategy {
+  public getSelectedStrategy(): Strategy {
     return this.selectedStrategyComponent();
   }
 
-  setSelectedStrategy(strategy: Strategy): void {
+  public setSelectedStrategy(strategy: Strategy): void {
     this.selectedStrategyComponent.update(() => strategy);
   }
 

@@ -44,7 +44,7 @@ export class ConnectionsGridComponent implements OnInit {
   public gridTheme = themeQuartz.withPart(colorSchemeDark); //TODO: globalize theme related stuff
 
   components = {
-    gridActionsComponent: ConnectionsGridActionsComponent,
+    gridActionsComponent: ConnectionsGridActionsComponent
   };
 
 

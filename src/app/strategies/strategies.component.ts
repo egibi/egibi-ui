@@ -16,8 +16,7 @@ import { StrategyComponent } from "./strategy/strategy.component";
   styleUrl: "./strategies.component.scss",
 })
 export class StrategiesComponent implements OnInit {
-  @ViewChild(StrategiesGridComponent)
-  strategiesGrid: StrategiesGridComponent;
+  @ViewChild(StrategiesGridComponent) strategiesGrid: StrategiesGridComponent;
   @ViewChild(StrategyComponent) strategyComponent: StrategyComponent;
 
   public selectedStrategy: Strategy;
