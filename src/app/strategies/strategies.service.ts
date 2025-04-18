@@ -30,8 +30,7 @@ export class StrategiesService {
     return this.http.get<RequestResponse>(`${this.apiBaseUrl}/get-strategy` + "?id=" + id);
   }
 
-  public saveStrategy(strategy:Strategy):Observable<RequestResponse>{
-    console.log('save strategy() ==== ', strategy);
+  public saveStrategy(strategy:Strategy):Observable<RequestResponse>{    
     return this.http.post<RequestResponse>(`${this.apiBaseUrl}/save-strategy`, strategy);
   }
 

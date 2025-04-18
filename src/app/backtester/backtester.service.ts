@@ -18,11 +18,23 @@ export class BacktesterService {
     return this.http.get<RequestResponse>(`${this.apiBaseUrl}/get-data-sources`);
   }
 
+  public getBacktests():Observable<RequestResponse>{
+    return this.http.get<RequestResponse>(`${this.apiBaseUrl}/get-backtests`);
+  } 
+
   public getSelectedBacktest(): Backtest {
     return this.selectedBacktestComponent();
   }
 
   public setSelectedBacktest(backtest: Backtest): void {
     this.selectedBacktestComponent.update(() => backtest);
+  }
+
+  public saveBacktest(backtest:Backtest):Observable<RequestResponse>{
+    return this.http.post<RequestResponse>(`${this.apiBaseUrl}/save-backtest`, backtest)
+  }
+
+  public deleteBacktest(backtest:Backtest):Observable<RequestResponse>{
+    return this.http.delete<RequestResponse>(`${this.apiBaseUrl}/delete-backtest` + "?id=" + backtest.backtestID);
   }
 }

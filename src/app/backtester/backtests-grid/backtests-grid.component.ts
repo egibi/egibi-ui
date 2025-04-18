@@ -18,9 +18,6 @@ import {
   ModuleRegistry,
   CellClickedEvent,
 } from "ag-grid-community";
-// import { ConnectionsGridActionsComponent } from "./connections-grid-actions/connections-grid-actions.component";
-// import { ConnectionsGridService } from "./connections-grid.service";
-// import { ConnectionsGridAction } from "./connections-grid.models";
 
 import { BacktestsGridActionsComponent } from "./backtests-grid-actions/backtests-grid-actions.component";
 import { BacktestsGridService } from "./backtests-grid.service";
@@ -49,7 +46,7 @@ export class BacktestsGridComponent implements OnInit {
 
   constructor(private gridService: BacktestsGridService) {}
 
-  public getRowId: GetRowIdFunc = (row: GetRowIdParams<Backtest>) => row.data.connectionID.toString();
+  public getRowId: GetRowIdFunc = (row: GetRowIdParams<Backtest>) => row.data.backtestID.toString();
 
   public rowSelection: RowSelectionOptions | "single" | "multiple" = {
     mode: "multiRow",
@@ -59,7 +56,36 @@ export class BacktestsGridComponent implements OnInit {
     {
       headerName: "Name",
       field: "name"
-    }
+    },
+    {
+      headerName: "Description",
+      field:"description",    
+    },
+    {
+      headerName: "Start",
+      field: "start"
+    },
+    {
+      headerName: "End",
+      field: "end"
+    },
+    {
+      headerName: "Synced",
+      field: "synced"
+    },    
+    {
+      headerName: "Status",
+      field: "status"
+    },
+    {
+      headerName: "Actions",
+      field: "actions",
+      cellRenderer: BacktestsGridActionsComponent,
+      onCellClicked: (event:CellClickedEvent) => {
+        this.gridAction(event.data);
+      }
+    },
+    
   ];
 
   public defaultColDef = {

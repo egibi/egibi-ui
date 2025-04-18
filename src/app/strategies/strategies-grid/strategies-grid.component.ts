@@ -74,7 +74,7 @@ export class StrategiesGridComponent implements OnInit {
       cellRenderer: StrategiesGridActionsComponent,
       onCellClicked: (event: CellClickedEvent) => {
         this.gridAction(event.data);
-      },
+      }
     },
   ];
 

@@ -16,7 +16,7 @@ export class BacktestsGridService {
     return this.currentAction();
   }
 
-  setCurrentGridRows(connections: Backtest[]) {}
+  setCurrentGridRows(backtests: Backtest[]) {}
 
   getCurrentGridRows(): Backtest[] {
     return [];

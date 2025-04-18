@@ -1,13 +1,13 @@
 <div class="container-fluid">
   <div class="row">
-    <!-- <button type="button" class="btn btn-outline-warning" (click)="onActionSelect({ name: 'create' }, createModal, editModal, deleteModal)">Add New</button> -->
-    <button type="button" class="btn btn-outline-warning" (click)="onActionSelect($event)">Add New</button>
+    <button type="button" class="btn btn-outline-warning" (click)="onActionSelect({ name: 'create' }, createModal, editModal, deleteModal)">Add New</button>
+    <!-- <button type="button" class="btn btn-outline-warning" (click)="onActionSelect($event)">Add New</button> -->
   </div>
 
   <div class="row">
     <div class="col-sm-12 col-lg-12">
       <div class="grid-container">
-        <backtests-grid [backtests]="rowData" (actionSelect)="onActionSelect($event)"></backtests-grid>
+        <backtests-grid [backtests]="rowData" (actionSelect)="onActionSelect($event, createModal, editModal, deleteModal)"></backtests-grid>
       </div>
     </div>
   </div>
@@ -30,4 +30,42 @@
   </div>
 </ng-template>
 <pre>{{ closeResult() }}</pre>
+<!-- ************************************************************************************************************************-->
+
+<!---------------------------------------------------------------------------------------------------------------------------->
+<!-- EDIT STRATEGY MODAL -->
+<!--________________________________________________________________________________________________________________________-->
+<ng-template #editModal let-modal>
+  <div class="modal-header">
+    <h4 class="modal-title" id="modal-basic-title">Backtest Details</h4>
+    <button type="button" class="btn-close" (click)="modal.dismiss('edit-cancel')"></button>
+  </div>
+  <div class="modal-body">
+    <backtest #backtestComponent></backtest>
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-outline-secondary" (click)="modal.close('edit-save')">Save</button>
+  </div>
+</ng-template>
+<!-- <pre>{{ closeResult() }}</pre> -->
+<!-- ************************************************************************************************************************-->
+
+<!---------------------------------------------------------------------------------------------------------------------------->
+<!-- DELETE STRATEGY MODAL -->
+<!--________________________________________________________________________________________________________________________-->
+
+<ng-template #deleteModal let-modal>
+  <div class="modal-header">
+    <h4 class="modal-title" id="modal-basic-title">Confirm Delete</h4>
+    <button type="button" class="btn-close" (click)="modal.dismiss('delete-cancel')"></button>
+  </div>
+  <div class="modal-body">
+    <p>DELETE</p>
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-outline-secondary" (click)="modal.close('delete-confirm')">Confirm</button>
+  </div>
+</ng-template>
+
+<!-- <pre>{{ closeResult() }}</pre> -->
 <!-- ************************************************************************************************************************-->
