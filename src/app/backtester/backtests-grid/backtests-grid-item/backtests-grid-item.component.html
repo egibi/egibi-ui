@@ -1,0 +1,16 @@
+<form [formGroup]="backtestsGridItemForm">
+    <label for="name">Name</label>
+    <input class="form-control" type="text" id="name" formControlName="name">
+
+    <label for="description">Description</label>
+    <input class="form-control" type="text" id="description" formControlName="description" />
+
+    <label for="start">Start</label>
+    <input class="form-control" type="datetime" id="start" formControlName="start" [readonly]="true">
+
+    <label for="end">End</label>
+    <input class="form-control" type="datetime" id="end" formControlName="end" [readonly]="true">
+
+    <label for="status">Status</label>
+    <input class="form-control" type="text" id="status" formControlName="status" [readonly]="true">
+</form>

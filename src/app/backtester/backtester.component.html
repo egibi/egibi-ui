@@ -14,7 +14,7 @@
 </div>
 
 <!---------------------------------------------------------------------------------------------------------------------------->
-<!-- CREATE STRATEGY MODAL -->
+<!-- CREATE BACKTEST MODAL -->
 <!--________________________________________________________________________________________________________________________-->
 <ng-template #createModal let-modal>
   <div class="modal-header">
@@ -22,8 +22,7 @@
     <button type="button" class="btn-close" (click)="modal.dismiss('create-cancel')"></button>
   </div>
   <div class="modal-body">
-    <!-- <connection #connectionComponent [connectionTypes]="connectionTypes"></connection> -->
-    <backtest #backtestComponent></backtest>
+    <backtests-grid-item #backtestsGridItem></backtests-grid-item>
   </div>
   <div class="modal-footer">
     <button type="button" class="btn btn-outline-secondary" (click)="modal.close('create-save')">Save</button>
@@ -33,7 +32,7 @@
 <!-- ************************************************************************************************************************-->
 
 <!---------------------------------------------------------------------------------------------------------------------------->
-<!-- EDIT STRATEGY MODAL -->
+<!-- EDIT BACKTEST MODAL -->
 <!--________________________________________________________________________________________________________________________-->
 <ng-template #editModal let-modal>
   <div class="modal-header">
@@ -41,7 +40,7 @@
     <button type="button" class="btn-close" (click)="modal.dismiss('edit-cancel')"></button>
   </div>
   <div class="modal-body">
-    <backtest #backtestComponent></backtest>
+    <backtests-grid-item #backtestsGridItem></backtests-grid-item>    
   </div>
   <div class="modal-footer">
     <button type="button" class="btn btn-outline-secondary" (click)="modal.close('edit-save')">Save</button>
@@ -51,7 +50,7 @@
 <!-- ************************************************************************************************************************-->
 
 <!---------------------------------------------------------------------------------------------------------------------------->
-<!-- DELETE STRATEGY MODAL -->
+<!-- DELETE BACKTEST MODAL -->
 <!--________________________________________________________________________________________________________________________-->
 
 <ng-template #deleteModal let-modal>

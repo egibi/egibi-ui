@@ -4,7 +4,7 @@ import { StrategiesComponent } from "./strategies/strategies.component";
 import { HomeComponent } from "./home/home.component";
 import { BacktesterComponent } from "./backtester/backtester.component";
 import { ApiTesterComponent } from "./api-tester/api-tester.component";
-import { BacktestViewComponent } from "./backtester/backtest-view/backtest-view.component";
+import { BacktestComponent } from "./backtester/backtest/backtest.component";
 
 export const routes: Routes = [
   {
@@ -29,7 +29,7 @@ export const routes: Routes = [
   },
   {
     path: "backtester/backtest/:id",
-    component: BacktestViewComponent
+    component: BacktestComponent
   },
   {
     path: "api-tester",

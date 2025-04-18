@@ -1,26 +1,25 @@
 import { Component, OnInit } from "@angular/core";
 import { BacktesterService } from "../backtester.service";
-import { FormBuilder, FormGroup, FormControl, ReactiveFormsModule, FormsModule } from "@angular/forms";
-import { CommonModule } from "@angular/common";
+import { ActivatedRoute } from "@angular/router";
+import { NgbNavModule } from "@ng-bootstrap/ng-bootstrap";
 
 @Component({
   selector: "backtest",
-  imports: [ReactiveFormsModule, FormsModule, CommonModule],
+  imports: [NgbNavModule],
   templateUrl: "./backtest.component.html",
   styleUrl: "./backtest.component.scss",
 })
 export class BacktestComponent implements OnInit {
-  public backtestDetailsForm: FormGroup;
 
-  constructor(private fb: FormBuilder, private backtesterService: BacktesterService) {
-    this.backtestDetailsForm = this.fb.group({
-      backtestID: [""],
-      name: [""],
-      description: [""],
-    });
-  }
+  public backtestID: any;
+  public active = 1;
+
+  constructor(private route: ActivatedRoute, private backtesterService: BacktesterService) {}
 
   ngOnInit(): void {
-    this.backtestDetailsForm.patchValue(this.backtesterService.getSelectedBacktest());
+    this.backtestID = this.route.snapshot.paramMap.get('id');  
   }
+
+  
+
 }

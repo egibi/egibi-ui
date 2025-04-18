@@ -1,9 +1,10 @@
 import { Component, Input } from "@angular/core";
-import { BacktestsGridService } from "../backtests-grid.service";
+import { BacktesterService } from "../../backtester.service";
 import { ICellRendererParams } from "ag-grid-community";
 
 @Component({
   selector: "backtests-grid-actions",
+  standalone: true,
   imports: [],
   templateUrl: "./backtests-grid-actions.component.html",
   styleUrl: "./backtests-grid-actions.component.scss",
@@ -21,9 +22,9 @@ export class BacktestsGridActionsComponent {
     this.cellValue = params.value;
   }
 
-  constructor(private backtestsGridService: BacktestsGridService) {}
+  constructor(private backtesterService: BacktesterService) {}
 
   public actionButtonClicked(action:string){
-    this.backtestsGridService.setCurrentAction(action);
+    this.backtesterService.setCurrentBacktestsGridAction(action);
   }
 }

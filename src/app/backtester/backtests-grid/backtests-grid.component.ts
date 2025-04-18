@@ -20,10 +20,11 @@ import {
 } from "ag-grid-community";
 
 import { BacktestsGridActionsComponent } from "./backtests-grid-actions/backtests-grid-actions.component";
-import { BacktestsGridService } from "./backtests-grid.service";
-
+import { BacktesterService } from "../backtester.service";
+import { BacktestsGridItemComponent } from "./backtests-grid-item/backtests-grid-item.component";
 @Component({
   selector: "backtests-grid",
+  standalone: true,
   imports: [AgGridModule],
   templateUrl: "./backtests-grid.component.html",
   styleUrl: "./backtests-grid.component.scss",
@@ -44,7 +45,7 @@ export class BacktestsGridComponent implements OnInit {
 
   public rowData: Backtest[] = [];
 
-  constructor(private gridService: BacktestsGridService) {}
+  constructor(private backtesterService:BacktesterService) {}
 
   public getRowId: GetRowIdFunc = (row: GetRowIdParams<Backtest>) => row.data.backtestID.toString();
 
@@ -110,8 +111,8 @@ export class BacktestsGridComponent implements OnInit {
     }
   }
 
-  public gridAction(rowData: Backtest):void{
-    let action = this.gridService.getCurrentAction();   
+  public gridAction(rowData: Backtest):void{    
+    let action = this.backtesterService.getCurrentBacktestsGridAction();
     let selectedAction: BacktestsGridAction = {name: action, backtest: rowData};
     this.actionSelect.emit(selectedAction);
   }  

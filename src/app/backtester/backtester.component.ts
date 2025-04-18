@@ -4,22 +4,22 @@ import { ActivatedRoute, RouterModule, Router, ActivationEnd } from "@angular/ro
 import { AgGridModule } from "ag-grid-angular";
 import { ModalDismissReasons, NgbModal } from "@ng-bootstrap/ng-bootstrap";
 import { FormBuilder, FormGroup, FormControl, ReactiveFormsModule, FormsModule } from "@angular/forms";
-import { BacktestParamsComponent } from "./backtest-params/backtest-params.component";
 import { BacktesterService } from "./backtester.service";
 import { SelectOption } from "../_models/select-option.model";
 import { BacktestsGridComponent } from "./backtests-grid/backtests-grid.component";
 import { Backtest } from "./backtester.models";
-import { BacktestComponent } from "./backtest/backtest.component";
+import { BacktestsGridItemComponent } from "./backtests-grid/backtests-grid-item/backtests-grid-item.component";
 
 @Component({
   selector: "backtester",
-  imports: [CommonModule, RouterModule, AgGridModule, ReactiveFormsModule, FormsModule, BacktestComponent, BacktestParamsComponent, BacktestsGridComponent],
+  standalone: true,
+  imports: [CommonModule, RouterModule, AgGridModule, ReactiveFormsModule, FormsModule, BacktestsGridComponent, BacktestsGridItemComponent],
   templateUrl: "./backtester.component.html",
   styleUrl: "./backtester.component.scss",
 })
 export class BacktesterComponent implements OnInit {
   @ViewChild(BacktestsGridComponent) backtestsGrid: BacktestsGridComponent;
-  @ViewChild(BacktestComponent) backtestComponent: BacktestComponent;
+  @ViewChild(BacktestsGridItemComponent) backtestsGridItem: BacktestsGridItemComponent;
 
   public selectedBacktest: Backtest;
   public modalService = inject(NgbModal);
@@ -95,21 +95,20 @@ export class BacktesterComponent implements OnInit {
 
   private getBacktests(): void {
     this.backtesterService.getBacktests().subscribe((res) => {
-      console.log("getbacktests()...");
-      console.log(res);
-      this.backtestsGrid.rowData = res.responseData;
-      console.log("row data is set...");
+      this.backtestsGrid.rowData = res.responseData;      
     });
   }
 
   private saveBacktest(): void {
-    let details = this.backtestComponent.backtestDetailsForm.value;
+    // let details = this.backtestComponent.backtestDetailsForm.value;
 
-    if (details.backtestID == "") details.backtestID = 0;
+    // if (details.backtestID == "") details.backtestID = 0;
 
-    this.backtesterService.saveBacktest(details).subscribe((res) => {
-      this.getBacktests();
-    });
+    // this.backtesterService.saveBacktest(details).subscribe((res) => {
+    //   this.getBacktests();
+    // });
+
+    console.log('save backtest....');
   }
 
   private deleteBacktest(): void {
@@ -119,8 +118,7 @@ export class BacktesterComponent implements OnInit {
     });
   }
 
-  private navigateToChildRoute(childPath: string, backtestID: string): void {
-    console.log("should navigate to: ", childPath);
+  private navigateToChildRoute(childPath: string, backtestID: string): void {    
     this.router.navigate([`backtester/${childPath}`, backtestID]);
   }
 }
