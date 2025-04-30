@@ -5,12 +5,12 @@
     "ng": "ng",
     "start": "ng serve",
     "build": "ng build",
-    "watch": "ng build --watch --configuration development" 
+    "watch": "ng build --watch --configuration development"
   },
   "private": true,
   "dependencies": {
     "@ag-grid-community/client-side-row-model": "^32.3.3",
-    "@ag-grid-community/core": "^32.3.3",    
+    "@ag-grid-community/core": "^32.3.3",
     "@angular/animations": "^19.1.0",
     "@angular/common": "^19.1.0",
     "@angular/compiler": "^19.1.0",
@@ -24,6 +24,9 @@
     "ag-grid-angular": "^33.0.4",
     "ag-grid-community": "^33.0.4",
     "bootstrap": "^5.3.3",
+    "highcharts": "^12.2.0",
+    "highcharts-angular": "^4.0.1",
+    "ngx-file-drop": "^16.0.0",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0",
     "zone.js": "~0.15.0"

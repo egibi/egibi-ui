@@ -4,7 +4,6 @@ import { CommonModule } from "@angular/common";
 import { StrategiesGridComponent } from "./strategies-grid/strategies-grid.component";
 import { AgGridModule } from "ag-grid-angular";
 import { ModalDismissReasons, NgbModal } from "@ng-bootstrap/ng-bootstrap";
-import { EgibiSharedService } from "../services/egibi-shared.service";
 import { StrategiesGridService } from "./strategies-grid/strategies-grid.service";
 import { Strategy } from "../_models/strategy.model";
 import { StrategyComponent } from "./strategy/strategy.component";
@@ -25,7 +24,7 @@ export class StrategiesComponent implements OnInit {
   closeResult: WritableSignal<string> = signal("");
   public rowData: Strategy[] = [];
 
-  constructor(private egibiService: EgibiSharedService, private strategiesService: StrategiesService, private StrategiesGridService: StrategiesGridService) {}
+  constructor(private strategiesService: StrategiesService, private StrategiesGridService: StrategiesGridService) {}
 
   public ngOnInit(): void {
     this.getStrategies();

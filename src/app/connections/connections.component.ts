@@ -4,7 +4,6 @@ import { CommonModule } from "@angular/common";
 import { ConnectionsGridComponent } from "./connections-grid/connections-grid.component";
 import { AgGridModule } from "ag-grid-angular";
 import { ModalDismissReasons, NgbModal } from "@ng-bootstrap/ng-bootstrap";
-import { EgibiSharedService } from "../services/egibi-shared.service";
 import { ConnectionComponent } from "./connection/connection.component";
 import { ConnectionsGridService } from "./connections-grid/connections-grid.service";
 import { Connection } from "../_models/connection.model";
@@ -29,7 +28,7 @@ export class ConnectionsComponent implements OnInit {
   closeResult: WritableSignal<string> = signal("");
   public rowData: Connection[] = [];
 
-  constructor(private egibiService: EgibiSharedService, private connectionsService: ConnectionsService, private connectionsGridService: ConnectionsGridService) {}
+  constructor(private connectionsService: ConnectionsService, private connectionsGridService: ConnectionsGridService) {}
 
   public ngOnInit(): void {
     this.getConnections();

@@ -2,17 +2,13 @@
 	<li [ngbNavItem]="1">
 		<button ngbNavLink>Setup</button>
 		<ng-template ngbNavContent>
-			<p>
-                This is the main backtest setup
-			</p>
+			<backtest-setup></backtest-setup>
 		</ng-template>
 	</li>
 	<li [ngbNavItem]="2">
 		<button ngbNavLink>Review</button>
 		<ng-template ngbNavContent>
-			<p>
-                This is to replay strategy and review results
-			</p>
+			<backtest-review></backtest-review>
 		</ng-template>
 	</li>
 	<li [ngbNavItem]="3">
@@ -35,4 +31,4 @@
 
 <div [ngbNavOutlet]="nav" class="mt-2"></div>
 
-<pre>Active: {{ active }}</pre>
+<!-- <pre>Active: {{ active }}</pre> -->

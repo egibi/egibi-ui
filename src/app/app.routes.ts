@@ -5,6 +5,7 @@ import { HomeComponent } from "./home/home.component";
 import { BacktesterComponent } from "./backtester/backtester.component";
 import { ApiTesterComponent } from "./api-tester/api-tester.component";
 import { BacktestComponent } from "./backtester/backtest/backtest.component";
+import { DataManagerComponent } from "./data-manager/data-manager.component";
 
 export const routes: Routes = [
   {
@@ -18,6 +19,10 @@ export const routes: Routes = [
   {
     path: "connections",
     component: ConnectionsComponent
+  },
+  {
+    path: "data-manager",
+    component: DataManagerComponent
   },
   {
     path: "strategies",
