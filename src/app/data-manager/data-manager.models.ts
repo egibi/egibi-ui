@@ -1,5 +1,5 @@
 export class DataSource {
-  datasourceID: string;
+  datasourceId: string;
   name: string;
   description: string;
 }

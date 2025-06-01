@@ -1,0 +1,35 @@
+<form [formGroup]="detailsForm">
+  <label for="name">Name</label>
+  <input type="text" class="form-control" formControlName="name" />
+
+  <label for="description">Description</label>
+  <textarea class="form-control" formControlName="description"></textarea>
+
+  <label for="notes">Notes</label>
+  <textarea class="form-control" formControlName="notes"></textarea>
+
+  <label for="dataProviderType">Data Provider Type</label>
+  <select class="form-control" id="dataProviderType" formControlName="dataProviderTypeId">
+    <option *ngFor="let dpt of dataProviderTypes" [value]="dpt.id">{{ dpt.name }}</option>
+  </select>
+
+  <div class="row">
+    <div style="display: flex; gap: 20px">
+      <div id="startDateTime" class="data-provider-date">
+        <label for="start" class="form-label">Start</label>
+        <input id="start" class="form-control" formControlName="start" type="datetime-local" />
+      </div>
+
+      <div id="endDateTime" class="data-provider-date">
+        <label for="end" class="form-label">End</label>
+        <input id="end" class="form-control" formControlName="end" type="datetime-local" />
+      </div>
+    </div>
+  </div>
+
+  <label for="dataFormat">Format</label>
+  <input id="dataFormat" class="form-control">
+
+  <label for="dataFrequency">Frequency</label>
+  <input id="dataFrequency" class="form-control">
+</form>

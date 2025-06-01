@@ -14,7 +14,7 @@ export class FileDropComponent {
 
   constructor(private fileDropService: FileDropService) {}
 
-  public fileDropped(files: NgxFileDropEntry[]) {
+  public onFileDrop(files: NgxFileDropEntry[]) {
     this.files = files;
 
     for (const droppedFile of files) {

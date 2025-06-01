@@ -17,11 +17,13 @@ import {
   RowSelectionModule,
   ModuleRegistry,
   CellClickedEvent,
-  RowClickedEvent,
+  RowClickedEvent
 } from "ag-grid-community";
 import { DataProvidersGridAction } from "./data-providers-grid.models";
 import { DataProvidersGridActionsComponent } from "./data-providers-grid-actions/data-providers-grid-actions.component";
 import { DataProvidersGridService } from "./data-providers-grid.service";
+
+ModuleRegistry.registerModules([RowSelectionModule]);
 
 @Component({
   selector: "data-providers-grid",
@@ -30,9 +32,11 @@ import { DataProvidersGridService } from "./data-providers-grid.service";
   styleUrl: "./data-providers-grid.component.scss",
 })
 export class DataProvidersGridComponent {
+
   @Input() rowData: any[];
   @Input() dataProviderTypes: any[];
   @Output() actionSelect = new EventEmitter<DataProvidersGridAction>();
+  @Output() rowSelect = new EventEmitter<number>();
 
   public gridApi: GridApi<any>;
   public selectedRow: any;
@@ -46,7 +50,7 @@ export class DataProvidersGridComponent {
 
   constructor(private gridService: DataProvidersGridService) {}
 
-  public getRowId: GetRowIdFunc = (row: GetRowIdParams<any>) => row.data.connectionID?.toString();
+  public getRowId: GetRowIdFunc = (row: GetRowIdParams<any>) => row.data.connectionId?.toString();
 
   public columnDefs: ColDef[] = [
     {
@@ -78,7 +82,11 @@ export class DataProvidersGridComponent {
   }
 
   public onRowClicked(event:RowClickedEvent){
-    console.log('row clicked:::');
-    console.log(event.data);
+    console.log('on row clicked:::');
+    console.log(event);
+
+    this.rowSelect.emit(event.data.id);
+
+    //this.router.navigate([`data-manager/data-provider/${id}`]);
   }
 }

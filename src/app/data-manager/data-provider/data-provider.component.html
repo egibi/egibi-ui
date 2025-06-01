@@ -1,1 +1,25 @@
-<p>data-provider works!</p>
+<ul ngbNav #nav="ngbNav" [(activeId)]="active" class="nav-tabs">
+  <li [ngbNavItem]="1">
+    <button ngbNavLink>Details</button>
+    <ng-template ngbNavContent>
+      <data-provider-details [detailsForm]="detailsForm"></data-provider-details>
+    </ng-template>
+  </li>
+  <li [ngbNavItem]="2">
+    <button ngbNavLink>Mapping</button>
+    <ng-template ngbNavContent>
+      <h2>mapping</h2>
+    </ng-template>
+  </li>
+</ul>
+
+<div [ngbNavOutlet]="nav" class="mt-2"></div>
+
+<div class="row">
+  <div class="col-sm-12 col-md-6 col-lg-6">
+    <button class="btn btn-outline-primary" style="width:100%;" (click)="save()">Save</button>
+  </div>
+    <div class="col-sm-12 col-md-6 col-lg-6">
+    <button class="btn btn-outline-danger" style="width:100%;">Cancel</button>
+  </div>
+</div>

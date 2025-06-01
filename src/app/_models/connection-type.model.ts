@@ -1,5 +1,5 @@
 export class ConnectionType{
-    connectionTypeID: number;
+    id: number;
     name: string;
     description: string;
 }

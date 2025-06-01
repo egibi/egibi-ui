@@ -35,6 +35,6 @@ export class StrategiesService {
   }
 
   public deleteStrategy(strategy:Strategy):Observable<RequestResponse>{
-    return this.http.delete<RequestResponse>(`${this.apiBaseUrl}/delete-strategy` + "?id=" + strategy.strategyID);
+    return this.http.delete<RequestResponse>(`${this.apiBaseUrl}/delete-strategy` + "?id=" + strategy.id);
   }
 }

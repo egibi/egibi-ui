@@ -47,7 +47,7 @@ export class ConnectionsService {
   }
 
   public deleteConnection(connection: Connection): Observable<RequestResponse> {
-    return this.http.delete<RequestResponse>(`${this.apiBaseUrl}/delete-connection` + "?id=" + connection.connectionID);
+    return this.http.delete<RequestResponse>(`${this.apiBaseUrl}/delete-connection` + "?id=" + connection.id);
   }
   //********************************************************************************************************* */
 }

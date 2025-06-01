@@ -14,7 +14,7 @@ export class StrategyComponent implements OnInit {
 
   constructor(private fb: FormBuilder, private strategiesService: StrategiesService) {
     this.strategyDetailsForm = this.fb.group({
-      strategyID: [""],
+      strategyId: [""],
       name: [""],
       description: [""],
       instanceName: [""],

@@ -52,7 +52,7 @@ export class ConnectionsGridComponent implements OnInit {
 
   constructor(private gridService: ConnectionsGridService) {}
 
-  public getRowId: GetRowIdFunc = (row: GetRowIdParams<Connection>) => row.data.connectionID.toString();
+  public getRowId: GetRowIdFunc = (row: GetRowIdParams<Connection>) => row.data.id?.toString();
 
   public rowSelection: RowSelectionOptions | "single" | "multiple" = {
     mode: "multiRow",

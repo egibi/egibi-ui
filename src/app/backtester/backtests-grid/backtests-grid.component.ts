@@ -47,7 +47,7 @@ export class BacktestsGridComponent implements OnInit {
 
   constructor(private backtesterService:BacktesterService) {}
 
-  public getRowId: GetRowIdFunc = (row: GetRowIdParams<Backtest>) => row.data.backtestID.toString();
+  public getRowId: GetRowIdFunc = (row: GetRowIdParams<Backtest>) => row.data.id?.toString();
 
   public rowSelection: RowSelectionOptions | "single" | "multiple" = {
     mode: "multiRow",

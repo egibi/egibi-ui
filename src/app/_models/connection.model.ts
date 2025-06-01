@@ -1,6 +1,6 @@
 export class Connection {
-    connectionID: string
-    connectionTypeID: string
+    id: string
+    connectionTypeId: string
     name: string
     baseUrl: string
     apiKey: string

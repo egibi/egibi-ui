@@ -17,8 +17,8 @@ export class ConnectionComponent implements OnInit {
 
   constructor(private fb: FormBuilder, private connectionsService: ConnectionsService) {
     this.connectionDetailsForm = this.fb.group({
-      connectionID: [""],
-      connectionTypeID: [""],
+      connectionId: [""],
+      connectionTypeId: [""],
       name: [""],
       description: [""],
       baseUrl: [""],

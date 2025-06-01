@@ -49,7 +49,7 @@ export class StrategiesGridComponent implements OnInit {
 
   constructor(private gridService: StrategiesGridService) {}
 
-  public getRowId: GetRowIdFunc = (row: GetRowIdParams<Strategy>) => row.data.strategyID.toString();
+  public getRowId: GetRowIdFunc = (row: GetRowIdParams<Strategy>) => row.data.id?.toString();
 
   public rowSelection: RowSelectionOptions | "single" | "multiple" = {
     mode: "multiRow",

@@ -89,7 +89,7 @@ export class StrategiesComponent implements OnInit {
   private saveStrategy(): void {
     let details = this.strategyComponent.strategyDetailsForm.value;
 
-    if (details.strategyID == "") details.strategyID = 0;
+    if (details.strategyId == "") details.strategyId = 0;
 
     this.strategiesService.saveStrategy(details).subscribe((res) => {
       this.getStrategies();

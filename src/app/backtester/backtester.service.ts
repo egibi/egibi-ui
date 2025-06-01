@@ -55,6 +55,6 @@ export class BacktesterService {
   }
 
   public deleteBacktest(backtest: Backtest): Observable<RequestResponse> {
-    return this.http.delete<RequestResponse>(`${this.apiBaseUrl}/delete-backtest` + "?id=" + backtest.backtestID);
+    return this.http.delete<RequestResponse>(`${this.apiBaseUrl}/delete-backtest` + "?id=" + backtest.id);
   }
 }

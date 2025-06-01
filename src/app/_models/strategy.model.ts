@@ -1,5 +1,5 @@
 export class Strategy{
-    strategyID: string;
+    id: string;
     name: string;
     description: string;
     instanceName: string;

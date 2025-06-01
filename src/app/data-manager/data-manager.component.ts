@@ -24,10 +24,10 @@ export class DataManagerComponent {
   constructor(private router: Router, private route: ActivatedRoute) {}
 
   public addNew(): void {
-    this.router.navigate(['data-manager/setup-data-provider']);
+    this.router.navigate(["data-manager/data-provider/0"]);
   }
 
-  public rowClicked(e: any): void {
-    console.log("row clicked...", e);
+  public viewDataProvider(dataProviderId: number): void {
+    this.router.navigate([`data-manager/data-provider/${dataProviderId}`]);
   }
 }

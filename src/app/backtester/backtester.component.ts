@@ -73,7 +73,7 @@ export class BacktesterComponent implements OnInit {
 
   public onActionSelect(selectedAction: any, createModal: any, editModal: any, deleteModal: any) {
     this.backtesterService.setSelectedBacktest(selectedAction.backtest);
-    let backtestID = this.backtesterService.getSelectedBacktest().backtestID;
+    let id = this.backtesterService.getSelectedBacktest().id;
 
     switch (selectedAction.name) {
       case "create":
@@ -83,7 +83,7 @@ export class BacktesterComponent implements OnInit {
         this.openModal(selectedAction.connection, editModal);
         break;
       case "view":
-        this.navigateToChildRoute("backtest", backtestID);
+        this.navigateToChildRoute("backtest", id);
         break;
       case "delete":
         this.openModal(selectedAction.connection, deleteModal);

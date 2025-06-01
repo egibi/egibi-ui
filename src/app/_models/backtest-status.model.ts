@@ -1,5 +1,5 @@
 export class BacktestStatus{
-    backtestStatusID: string;
+    id: string;
     name: string;
     description: string;
 }

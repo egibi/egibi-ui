@@ -87,7 +87,9 @@ export class ConnectionsComponent implements OnInit {
 
   private getConnections(): void {
     this.connectionsService.getConnections().subscribe((res) => {
+      console.log('getting connections...');
       this.connectionsGrid.rowData = res.responseData;
+      console.log(res);
     });
   }
 
@@ -100,8 +102,8 @@ export class ConnectionsComponent implements OnInit {
   private saveConnection(): void {
     let details = this.connectionComponent.connectionDetailsForm.value;
 
-    if (details.connectionID == "") details.connectionID = 0;
-    if (details.connectionTypeID == "") details.connectionTypeID = 0;
+    if (details.connectionId == "") details.connectionId = 0;
+    if (details.connectionTypeId == "") details.connectionTypeId = 0;
 
     this.connectionsService.saveConnection(details).subscribe((res) => {
       this.getConnections();

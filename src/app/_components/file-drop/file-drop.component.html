@@ -1,2 +1,8 @@
-<ngx-file-drop dropZoneLabel="Drop CSV here" (onFileDrop)="fileDropped($event)">
+<ngx-file-drop dropZoneLabel="Upload File" (onFileDrop)="onFileDrop($event)">
+  <ng-template ngx-file-drop-content-tmp let-openFileSelector="openFileSelector">
+    <div class="file-drop-zone">
+      <p>Upload</p>
+      <button type="button" (click)="openFileSelector()">Browse</button>
+    </div>
+  </ng-template>
 </ngx-file-drop>

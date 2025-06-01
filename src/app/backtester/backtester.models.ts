@@ -1,10 +1,10 @@
 export class Backtest{
-    backtestID: string;
+    id: string;
     name: string;
     description: string;
     start: Date;
     end: Date;
     status: string;
-    connectionID: string;
-    strategyID: string;
+    connectionId: string;
+    strategyId: string;
 }
