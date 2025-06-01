@@ -3,8 +3,25 @@
     <div class="col-sm-12 col-md-12 col-lg-12">
       <button type="button" class="btn btn-outline-warning" (click)="addNew()">Add New</button>
       <div class="grid-container" style="height: 750px">
-        <data-providers-grid [rowData]="rowData" (rowSelect)="viewDataProvider($event)"></data-providers-grid>
+        <data-providers-grid [rowData]="rowData" (actionSelect)="onActionSelect($event, deleteModal)"></data-providers-grid>
       </div>
     </div>
   </div>
 </div>
+
+  <!---------------------------------------------------------------------------------------------------------------------------->
+  <!-- DELETE CONNECTION MODAL -->
+  <!--________________________________________________________________________________________________________________________-->
+  
+  <ng-template #deleteModal let-modal>
+    <div class="modal-header">
+      <h4 class="modal-title" id="modal-basic-title">Confirm Delete</h4>
+      <button type="button" class="btn-close" (click)="modal.dismiss('delete-cancel')"></button>
+    </div>
+    <div class="modal-body">
+      <p>DELETE</p>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-outline-secondary" (click)="modal.close('delete-confirm')">Confirm</button>
+    </div>
+  </ng-template>

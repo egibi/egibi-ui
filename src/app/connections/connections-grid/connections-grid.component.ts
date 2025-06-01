@@ -100,9 +100,6 @@ export class ConnectionsGridComponent implements OnInit {
     },
   ];
 
-
-
-
   public defaultColDef = {
     sortable: true,
     filter: true,

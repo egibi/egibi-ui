@@ -17,8 +17,7 @@ import { ConnectionType } from "../_models/connection-type.model";
   styleUrl: "./connections.component.scss",
 })
 export class ConnectionsComponent implements OnInit {
-  @ViewChild(ConnectionsGridComponent)
-  connectionsGrid: ConnectionsGridComponent;
+  @ViewChild(ConnectionsGridComponent) connectionsGrid: ConnectionsGridComponent;
   @ViewChild(ConnectionComponent) connectionComponent: ConnectionComponent;
 
   public selectedConnection: Connection;
@@ -87,7 +86,7 @@ export class ConnectionsComponent implements OnInit {
 
   private getConnections(): void {
     this.connectionsService.getConnections().subscribe((res) => {
-      console.log('getting connections...');
+      console.log("getting connections...");
       this.connectionsGrid.rowData = res.responseData;
       console.log(res);
     });

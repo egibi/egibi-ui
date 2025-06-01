@@ -1,6 +1,6 @@
-import { Component, Input, Output, OnInit, EventEmitter, signal } from "@angular/core";
-// import { Connection } from "../../_models/connection.model";
-// import { ConnectionType } from "../../_models/connection-type.model";
+import { Component, Input, Output, OnInit, EventEmitter } from "@angular/core";
+import { DataProvider } from "../../../_models/data-provider.model";
+
 import { AgGridModule } from "ag-grid-angular";
 import {
   ColDef,
@@ -17,7 +17,7 @@ import {
   RowSelectionModule,
   ModuleRegistry,
   CellClickedEvent,
-  RowClickedEvent
+  RowClickedEvent,
 } from "ag-grid-community";
 import { DataProvidersGridAction } from "./data-providers-grid.models";
 import { DataProvidersGridActionsComponent } from "./data-providers-grid-actions/data-providers-grid-actions.component";
@@ -31,9 +31,8 @@ ModuleRegistry.registerModules([RowSelectionModule]);
   templateUrl: "./data-providers-grid.component.html",
   styleUrl: "./data-providers-grid.component.scss",
 })
-export class DataProvidersGridComponent {
-
-  @Input() rowData: any[];
+export class DataProvidersGridComponent implements OnInit {
+  @Input() dataProviders: DataProvider[];
   @Input() dataProviderTypes: any[];
   @Output() actionSelect = new EventEmitter<DataProvidersGridAction>();
   @Output() rowSelect = new EventEmitter<number>();
@@ -48,9 +47,11 @@ export class DataProvidersGridComponent {
     gridActionsComponent: DataProvidersGridActionsComponent,
   };
 
+  @Input() rowData: DataProvider[] = [];
+
   constructor(private gridService: DataProvidersGridService) {}
 
-  public getRowId: GetRowIdFunc = (row: GetRowIdParams<any>) => row.data.connectionId?.toString();
+  public getRowId: GetRowIdFunc = (row: GetRowIdParams<any>) => row.data.id?.toString();
 
   public columnDefs: ColDef[] = [
     {
@@ -61,6 +62,14 @@ export class DataProvidersGridComponent {
       headerName: "Description",
       field: "description",
     },
+    {
+      headerName: "Actions",
+      field: "actions",
+      cellRenderer: DataProvidersGridActionsComponent,
+      onCellClicked: (event: CellClickedEvent) => {
+        this.gridAction(event.data);
+      },
+    },
   ];
 
   public defaultColDef = {
@@ -68,6 +77,10 @@ export class DataProvidersGridComponent {
     filter: true,
     resizable: true,
   };
+
+  public ngOnInit(): void {
+    this.rowData = this.dataProviders;
+  }
 
   public onGridReady(grid: GridReadyEvent<any>) {
     this.gridApi = grid.api;
@@ -81,12 +94,9 @@ export class DataProvidersGridComponent {
     }
   }
 
-  public onRowClicked(event:RowClickedEvent){
-    console.log('on row clicked:::');
-    console.log(event);
-
-    this.rowSelect.emit(event.data.id);
-
-    //this.router.navigate([`data-manager/data-provider/${id}`]);
+  public gridAction(rowData: DataProvider): void {
+    let action = this.gridService.getCurrentAction();
+    let selectedAction: DataProvidersGridAction = { name: action, dataProvider: rowData };
+    this.actionSelect.emit(selectedAction);
   }
 }

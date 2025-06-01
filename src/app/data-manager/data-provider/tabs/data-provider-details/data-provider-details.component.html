@@ -28,8 +28,12 @@
   </div>
 
   <label for="dataFormat">Format</label>
-  <input id="dataFormat" class="form-control">
+  <select class="form-control" id="dataFormatType" formControlName="dataFormatTypeId">
+    <option *ngFor="let dft of dataFormatTypes" [value]="dft.id">{{ dft.name }}</option>
+  </select>
 
   <label for="dataFrequency">Frequency</label>
-  <input id="dataFrequency" class="form-control">
+  <select class="form-control" id="dataFrequencyType" formControlName="dataFrequencyTypeId">
+    <option *ngFor="let dft of dataFrequencyTypes" [value]="dft.id">{{ dft.name }}</option>
+  </select>
 </form>

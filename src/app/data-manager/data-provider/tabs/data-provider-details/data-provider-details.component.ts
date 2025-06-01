@@ -1,6 +1,9 @@
 import { Component, OnInit, Input } from "@angular/core";
 import { CommonModule } from "@angular/common";
 import { FormBuilder, FormGroup, ReactiveFormsModule, FormsModule } from "@angular/forms";
+import { DataProviderType } from "../../../../_models/data-provider-type.model";
+import { DataFormatType } from "../../../../_models/data-format-type.model";
+import { DataFrequencyType } from "../../../../_models/data-frequency-type.model";
 
 @Component({
   selector: "data-provider-details",
@@ -10,33 +13,11 @@ import { FormBuilder, FormGroup, ReactiveFormsModule, FormsModule } from "@angul
 })
 export class DataProviderDetailsComponent implements OnInit {
   @Input() detailsForm: FormGroup;
+  @Input() dataProviderTypes: DataProviderType[] = [];
+  @Input() dataFormatTypes: DataFormatType[] = [];
+  @Input() dataFrequencyTypes: DataFrequencyType[] = [];
 
-  // public detailsForm: FormGroup;
-
-  // TEST VALUES ============================================================
-  dataProviderTypes: any[] = [
-    { id: 1, name: "File" },
-    { id: 2, name: "API" },
-    { id: 3, name: "Websocket" },
-    { id: 4, name: "LLM" },
-  ];
-
-
-  //=========================================================================
-
-  constructor(private fb: FormBuilder) {
-    // this.detailsForm = this.fb.group({
-    //   dataProviderId: [""],
-    //   dataProviderTypeId: [""],
-    //   dataFormatId: [""],
-    //   dataFrequencyId: [""],
-    //   name: [""],
-    //   description: [""],
-    //   notes: [""],
-    //   start: [""],
-    //   end: [""],
-    // });
-  }
+  constructor(private fb: FormBuilder) {}
 
   ngOnInit(): void {}
 }

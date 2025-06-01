@@ -2,7 +2,12 @@
   <li [ngbNavItem]="1">
     <button ngbNavLink>Details</button>
     <ng-template ngbNavContent>
-      <data-provider-details [detailsForm]="detailsForm"></data-provider-details>
+      <data-provider-details
+        [detailsForm]="detailsForm"
+        [dataProviderTypes]="dataProviderTypes"
+        [dataFormatTypes]="dataFormatTypes"
+        [dataFrequencyTypes]="dataFrequencyTypes"
+      ></data-provider-details>
     </ng-template>
   </li>
   <li [ngbNavItem]="2">
@@ -17,9 +22,9 @@
 
 <div class="row">
   <div class="col-sm-12 col-md-6 col-lg-6">
-    <button class="btn btn-outline-primary" style="width:100%;" (click)="save()">Save</button>
+    <button class="btn btn-outline-primary" style="width: 100%" (click)="save()">Save</button>
   </div>
-    <div class="col-sm-12 col-md-6 col-lg-6">
-    <button class="btn btn-outline-danger" style="width:100%;">Cancel</button>
+  <div class="col-sm-12 col-md-6 col-lg-6">
+    <button class="btn btn-outline-danger" style="width: 100%" (click)="cancel()">Cancel</button>
   </div>
 </div>
