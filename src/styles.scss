@@ -1,7 +1,7 @@
 $enable-dark-mode:"true";
 
 
-@import 'bootstrap/scss/bootstrap';
+@use 'bootstrap/scss/bootstrap';
 
 body, html {
   margin: 0;

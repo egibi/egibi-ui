@@ -1,1 +1,11 @@
-<p>data-provider-mapping works!</p>
+<div *ngIf="mapFromFile">
+  <div class="col-6">
+    <button class="btn btn-outline-warning">View QuestDB</button>
+    <button class="btn btn-outline-warning">Ingest</button>
+    <data-provider-file></data-provider-file>
+  </div>
+</div>
+
+<div *ngIf="mapFromConnection">
+  <data-provider-connection></data-provider-connection>
+</div>

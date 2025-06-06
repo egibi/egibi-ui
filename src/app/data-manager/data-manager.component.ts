@@ -1,16 +1,14 @@
 import { Component, OnInit, ViewChild, inject, signal, WritableSignal, TemplateRef } from "@angular/core";
 import { ActivatedRoute, RouterModule, Router } from "@angular/router";
-import { FileDropComponent } from "../_components/file-drop/file-drop.component";
 import { NgbNavModule } from "@ng-bootstrap/ng-bootstrap";
 import { DataProvidersGridComponent } from "./grids/data-providers-grid/data-providers-grid.component";
 import { DataManagerService } from "./data-manager.service";
 import { DataProvider } from "../_models/data-provider.model";
 import { ModalDismissReasons, NgbModal } from "@ng-bootstrap/ng-bootstrap";
 import { DataProviderComponent } from "./data-provider/data-provider.component";
-
 @Component({
   selector: "data-manager",
-  imports: [NgbNavModule, FileDropComponent, RouterModule, DataProvidersGridComponent],
+  imports: [NgbNavModule, RouterModule, DataProvidersGridComponent],
   templateUrl: "./data-manager.component.html",
   styleUrl: "./data-manager.component.scss",
 })

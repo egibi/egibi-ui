@@ -2,11 +2,10 @@ import { Component, OnInit } from "@angular/core";
 import { CommonModule } from "@angular/common";
 import { FormBuilder, FormGroup, ReactiveFormsModule, FormsModule } from "@angular/forms";
 import { HighchartsTimeSeriesComponent } from "../../../_charts/highcharts-time-series/highcharts-time-series.component";
-import { FileDropComponent } from "../../../_components/file-drop/file-drop.component";
 @Component({
   selector: "backtest-setup",
   standalone: true,
-  imports: [ReactiveFormsModule, FormsModule, CommonModule, HighchartsTimeSeriesComponent, FileDropComponent],
+  imports: [ReactiveFormsModule, FormsModule, CommonModule, HighchartsTimeSeriesComponent],
   templateUrl: "./backtest-setup.component.html",
   styleUrl: "./backtest-setup.component.scss",
 })

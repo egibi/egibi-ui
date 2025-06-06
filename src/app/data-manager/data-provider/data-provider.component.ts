@@ -10,10 +10,12 @@ import { DataFormatType } from "../../_models/data-format-type.model";
 import { DataManagerService } from "../data-manager.service";
 import { DateTimeConvert } from "../../_utilities/datetime.utilities";
 import { Convert } from "../../_utilities/convert.utilities";
+import { DataProviderConnectionComponent } from "../details-subcomponents/data-provider-connection/data-provider-connection.component";
+import { DataProviderMappingComponent } from "./tabs/data-provider-mapping/data-provider-mapping.component";
 
 @Component({
   selector: "data-provider",
-  imports: [ReactiveFormsModule, FormsModule, NgbNavModule, DataProviderDetailsComponent],
+  imports: [ReactiveFormsModule, FormsModule, NgbNavModule, DataProviderDetailsComponent, DataProviderMappingComponent],
   templateUrl: "./data-provider.component.html",
   styleUrl: "./data-provider.component.scss",
 })

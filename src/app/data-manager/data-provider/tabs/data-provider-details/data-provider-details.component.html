@@ -9,11 +9,11 @@
   <textarea class="form-control" formControlName="notes"></textarea>
 
   <label for="dataProviderType">Data Provider Type</label>
-  <select class="form-control" id="dataProviderType" formControlName="dataProviderTypeId">
+  <select class="form-control" id="dataProviderType" formControlName="dataProviderTypeId" (change)="dataProviderTypeSelected($event)">
     <option *ngFor="let dpt of dataProviderTypes" [value]="dpt.id">{{ dpt.name }}</option>
   </select>
 
-  <div class="row">
+  <!-- <div class="row">
     <div style="display: flex; gap: 20px">
       <div id="startDateTime" class="data-provider-date">
         <label for="start" class="form-label">Start</label>
@@ -35,5 +35,5 @@
   <label for="dataFrequency">Frequency</label>
   <select class="form-control" id="dataFrequencyType" formControlName="dataFrequencyTypeId">
     <option *ngFor="let dft of dataFrequencyTypes" [value]="dft.id">{{ dft.name }}</option>
-  </select>
+  </select> -->
 </form>

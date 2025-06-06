@@ -1,4 +1,4 @@
-import { Component } from "@angular/core";
+import { Component, EventEmitter, output, Output } from "@angular/core";
 import { NgxFileDropModule, NgxFileDropEntry, FileSystemFileEntry } from "ngx-file-drop";
 import { FileDropService } from "../../_services/file-drop.service";
 
@@ -10,6 +10,8 @@ import { FileDropService } from "../../_services/file-drop.service";
   styleUrl: "./file-drop.component.scss",
 })
 export class FileDropComponent {
+  @Output() onFileDropped = new EventEmitter<any>();
+
   public files: NgxFileDropEntry[] = [];
 
   constructor(private fileDropService: FileDropService) {}
@@ -25,16 +27,18 @@ export class FileDropComponent {
           formData.append("file", file, file.name);
 
           this.fileDropService.dropFile(formData).subscribe((res) => {
-            console.log('file drop result...');
+            console.log("file drop result...");
             console.log(res);
-            
-          })
-
-
+            this.handleFileDrop(res);
+          });
         });
       }
     }
 
     console.log("files dropped...");
+  }
+
+  private handleFileDrop(fileDropResult: any): void {
+    this.onFileDropped.emit(fileDropResult);
   }
 }

@@ -1,0 +1,9 @@
+<file-drop (onFileDropped)="fileDropped($event)"></file-drop>
+
+
+<div *ngFor="let fh of fileHeaders">
+    <p>{{fh}}</p>
+</div>
+
+<button class="btn btn-outline-primary" (click)="createTable()">Create Test Table</button>
+
