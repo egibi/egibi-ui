@@ -1,9 +1,10 @@
-import { Injectable, numberAttribute, signal } from "@angular/core";
+import { Injectable, signal } from "@angular/core";
 import { HttpClient } from "@angular/common/http";
 import { Observable } from "rxjs";
 import { RequestResponse } from "../request-response";
 import { DataProvider } from "../_models/data-provider.model";
 import { DataProviderType } from "../_models/data-provider-type.model";
+import { QuestDbTable } from "../_models/questdb-table.model";
 
 @Injectable({
   providedIn: "root",
@@ -15,8 +16,12 @@ export class DataManagerService {
   // TESTING (DATABASE STUFF)
   //______________________________________________________________________________________________________________
 
-  public createDatabase(): void {
-    let response = this.http.post(`${this.apiBaseUrl}/create-questdb-table`, null);
+  public listQuestDbTables(): Observable<RequestResponse> {
+    return this.http.get<RequestResponse>(`${this.apiBaseUrl}/get-questdb-tables`);
+  }
+
+  public createQuestDbTable(table: QuestDbTable): Observable<RequestResponse> {
+    return this.http.post<RequestResponse>(`${this.apiBaseUrl}/create-questdb-table`, table);
   }
 
   //********************************************************************************************************* */
@@ -51,11 +56,11 @@ export class DataManagerService {
   constructor(private http: HttpClient) {}
 
   public getDataProviders(): Observable<RequestResponse> {
+    console.log("try to get data providers...");
     return this.http.get<RequestResponse>(`${this.apiBaseUrl}/get-data-providers`);
   }
 
   public getDataProvider(id: number): Observable<RequestResponse> {
-    console.log("in service...getting data provider with id: ", id);
     return this.http.get<RequestResponse>(`${this.apiBaseUrl}/get-data-provider?id=${id}`);
   }
 

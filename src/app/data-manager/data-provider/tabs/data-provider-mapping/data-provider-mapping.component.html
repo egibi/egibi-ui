@@ -1,11 +1,31 @@
-<div *ngIf="mapFromFile">
-  <div class="col-6">
-    <button class="btn btn-outline-warning">View QuestDB</button>
-    <button class="btn btn-outline-warning">Ingest</button>
-    <data-provider-file></data-provider-file>
-  </div>
-</div>
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-sm-6 col-md-6 col-lg-6">
+      <div *ngIf="mapFromFile">
+        <div class="col-6">          
+          <button class="btn btn-outline-warning">Ingest</button>
+          <data-provider-file></data-provider-file>
+        </div>
+      </div>
 
-<div *ngIf="mapFromConnection">
-  <data-provider-connection></data-provider-connection>
+      <div *ngIf="mapFromConnection">
+        <data-provider-connection></data-provider-connection>
+      </div>
+    </div>
+
+    <div class="col-sm-6-col-md-6 col-lg-6">
+      <button class="btn btn-outline-primary">Create Table</button>
+      <!-- <button class="btn btn-outline-primary" (click)="listTables()">List Tables</button> -->
+      <button class="btn btn-outline-primary">Copy Table</button>
+      <button class="btn btn-outline-warning" (click)="openDataMapper()">Open Data Mapper</button>
+
+      <div class="row">
+        <div *ngFor="let t of questDbTables">
+          <ul class="list-group">
+            <button type="button" class="list-group-item list-group-item list-group-item-action">{{ t }}</button>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>

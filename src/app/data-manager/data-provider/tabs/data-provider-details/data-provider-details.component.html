@@ -12,28 +12,4 @@
   <select class="form-control" id="dataProviderType" formControlName="dataProviderTypeId" (change)="dataProviderTypeSelected($event)">
     <option *ngFor="let dpt of dataProviderTypes" [value]="dpt.id">{{ dpt.name }}</option>
   </select>
-
-  <!-- <div class="row">
-    <div style="display: flex; gap: 20px">
-      <div id="startDateTime" class="data-provider-date">
-        <label for="start" class="form-label">Start</label>
-        <input id="start" class="form-control" formControlName="start" type="datetime-local" />
-      </div>
-
-      <div id="endDateTime" class="data-provider-date">
-        <label for="end" class="form-label">End</label>
-        <input id="end" class="form-control" formControlName="end" type="datetime-local" />
-      </div>
-    </div>
-  </div>
-
-  <label for="dataFormat">Format</label>
-  <select class="form-control" id="dataFormatType" formControlName="dataFormatTypeId">
-    <option *ngFor="let dft of dataFormatTypes" [value]="dft.id">{{ dft.name }}</option>
-  </select>
-
-  <label for="dataFrequency">Frequency</label>
-  <select class="form-control" id="dataFrequencyType" formControlName="dataFrequencyTypeId">
-    <option *ngFor="let dft of dataFrequencyTypes" [value]="dft.id">{{ dft.name }}</option>
-  </select> -->
 </form>

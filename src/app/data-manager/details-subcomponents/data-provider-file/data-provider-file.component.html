@@ -1,9 +1,9 @@
 <file-drop (onFileDropped)="fileDropped($event)"></file-drop>
 
-
 <div *ngFor="let fh of fileHeaders">
-    <p>{{fh}}</p>
+  <ul class="list-group">
+    <button type="button" class="list-group-item list-group-item list-group-item-action">{{ fh }}</button>
+  </ul>
 </div>
 
-<button class="btn btn-outline-primary" (click)="createTable()">Create Test Table</button>
-
+<button class="btn btn-outline-primary" (click)="createQuestDbTable()">Create Test Table</button>
