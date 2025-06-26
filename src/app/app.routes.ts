@@ -7,6 +7,8 @@ import { ApiTesterComponent } from "./api-tester/api-tester.component";
 import { BacktestComponent } from "./backtester/backtest/backtest.component";
 import { DataManagerComponent } from "./data-manager/data-manager.component";
 import { DataProviderComponent } from "./data-manager/data-provider/data-provider.component";
+import { ConfigurationComponent } from "./configuration/configuration.component";
+import { AdminComponent } from "./admin/admin.component";
 
 export const routes: Routes = [
   {
@@ -45,4 +47,12 @@ export const routes: Routes = [
     path: "api-tester",
     component: ApiTesterComponent
   },
+  {
+    path: "configuration",
+    component: ConfigurationComponent
+  },
+  {
+    path: "admin",
+    component: AdminComponent
+  }
 ];

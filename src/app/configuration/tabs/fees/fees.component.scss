@@ -1,0 +1,28 @@
+    h2 {
+      margin-bottom: 10px;
+    }
+
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      max-width: 800px;
+    }
+
+    th, td {
+      border: 1px solid #ccc;
+      padding: 12px;
+      text-align: center;
+    }
+
+    th {
+      background-color: #f2f2f2;
+    }
+
+    td[contenteditable="true"] {
+      background-color: #fcfcfc;
+      cursor: text;
+    }
+
+    td[contenteditable="true"]:focus {
+      outline: 2px solid #4caf50;
+    }
