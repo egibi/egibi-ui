@@ -3,10 +3,11 @@ import { ActivatedRoute, RouterModule, Router } from "@angular/router";
 import { NgbNavModule } from "@ng-bootstrap/ng-bootstrap";
 import { FormBuilder, FormGroup, ReactiveFormsModule, FormsModule } from "@angular/forms";
 import { FeesComponent } from "./tabs/fees/fees.component";
+import { EntityTypesComponent } from "./tabs/entity-types/entity-types.component";
 
 @Component({
   selector: "configuration",
-  imports: [ReactiveFormsModule, FormsModule, NgbNavModule, FeesComponent],
+  imports: [ReactiveFormsModule, FormsModule, NgbNavModule, FeesComponent, EntityTypesComponent],
   templateUrl: "./configuration.component.html",
   styleUrl: "./configuration.component.scss",
 })

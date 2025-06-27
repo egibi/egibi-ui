@@ -15,11 +15,11 @@ export class ConnectionsService {
 
   constructor(private http: HttpClient) {}
 
-  getSelectedConnection(): Connection {
+  public getSelectedConnection(): Connection {
     return this.selectedConnectionComponent();
   }
 
-  setSelectedConnection(connection: Connection): void {
+  public setSelectedConnection(connection: Connection): void {
     this.selectedConnectionComponent.update(() => connection);
   }
 

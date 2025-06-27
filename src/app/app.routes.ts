@@ -9,6 +9,8 @@ import { DataManagerComponent } from "./data-manager/data-manager.component";
 import { DataProviderComponent } from "./data-manager/data-provider/data-provider.component";
 import { ConfigurationComponent } from "./configuration/configuration.component";
 import { AdminComponent } from "./admin/admin.component";
+import { ExchangesComponent } from "./exchanges/exchanges.component";
+import { MarketsComponent } from "./markets/markets.component";
 
 export const routes: Routes = [
   {
@@ -18,6 +20,14 @@ export const routes: Routes = [
   {
     path: "home",
     component: HomeComponent
+  },
+  {
+    path: "exchanges",
+    component: ExchangesComponent
+  },
+  {
+    path: "markets",
+    component: MarketsComponent
   },
   {
     path: "connections",

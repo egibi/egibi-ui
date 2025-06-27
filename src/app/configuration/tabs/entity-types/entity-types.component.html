@@ -1,0 +1,6 @@
+<select class="form-control" (change)="tableSelectionChanged($event)">
+    <option [value]="null"></option>
+    @for (et of entityTypes; track et){        
+        <option [value]="et">{{et}}</option>
+    }
+</select>
