@@ -4,11 +4,10 @@
     </div>
 
     <div class="modal-body">
-       <!-- Render the dynamic content component -->
-      <ng-container *ngComponentOutlet="bodyComponent"></ng-container>
+       <ng-template #modalBody></ng-template>
     </div>
 
     <div class="modal-footer">
       <button type="button" class="btn btn-secondary" (click)="activeModal.dismiss('Cancel click')">Cancel</button>
-      <button type="button" class="btn btn-primary" (click)="activeModal.close('Save click')">Save</button>
+      <button type="button" class="btn btn-primary" (click)="onSave()">Save</button>
     </div>

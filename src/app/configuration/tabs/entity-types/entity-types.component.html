@@ -8,12 +8,14 @@
   </select>
 
   <table class="table table-hover">
+    @if(tableSelected){
     <thead>
       <tr>
-        <button class="btn btn-outline-primary">Create New</button>
+        <button class="btn btn-outline-primary" (click)="createEntityType()">Create New</button>
         <input type="text" placeholder="search..." />
       </tr>
     </thead>
+    }
 
     <thead>
       <tr>
@@ -31,7 +33,3 @@
     </tbody>
   </table>
 </div>
-
-        <button class="btn btn-outline-warning" (click)="openModal()">Test Modal</button>
-
-       

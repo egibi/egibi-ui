@@ -11,6 +11,7 @@ import { ConfigurationComponent } from "./configuration/configuration.component"
 import { AdminComponent } from "./admin/admin.component";
 import { ExchangesComponent } from "./exchanges/exchanges.component";
 import { MarketsComponent } from "./markets/markets.component";
+import { AccountingComponent } from "./accounting/accounting.component";
 
 export const routes: Routes = [
   {
@@ -60,6 +61,10 @@ export const routes: Routes = [
   {
     path: "configuration",
     component: ConfigurationComponent
+  },
+  {
+    path: "accounting",
+    component: AccountingComponent
   },
   {
     path: "admin",

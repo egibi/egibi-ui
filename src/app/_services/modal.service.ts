@@ -9,7 +9,7 @@ import { EgibiModalComponent } from "../egibi-modal/egibi-modal.component";
 export class ModalService {
   constructor(private modalService: NgbModal) {}
 
-  open(title: string, bodyComponent: any): NgbModalRef {
+  public open(title: string, bodyComponent: any): NgbModalRef {
     const modalRef = this.modalService.open(EgibiModalComponent, { centered: true, size: "lg" });
     modalRef.componentInstance.title = title;
     modalRef.componentInstance.bodyComponent = bodyComponent;
