@@ -1,5 +1,5 @@
 import { Component, OnInit } from "@angular/core";
-import { ActivatedRoute, RouterModule, Router } from "@angular/router";
+import { ActivatedRoute, Router } from "@angular/router";
 import { NgbNavModule } from "@ng-bootstrap/ng-bootstrap";
 import { DataProviderDetailsComponent } from "./tabs/data-provider-details/data-provider-details.component";
 import { FormBuilder, FormGroup, ReactiveFormsModule, FormsModule } from "@angular/forms";

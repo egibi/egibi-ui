@@ -1,7 +1,6 @@
+import { CommonModule } from "@angular/common";
 import { Component, Input, OnInit } from "@angular/core";
 import { FormBuilder, FormGroup, ReactiveFormsModule, FormsModule } from "@angular/forms";
-import { CommonModule } from "@angular/common";
-
 @Component({
   selector: "entity-types-modal",
   imports: [ReactiveFormsModule, FormsModule, CommonModule],

@@ -26,6 +26,6 @@ export class BacktestsGridItemComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.backtestsGridItemForm.patchValue(this.backtesterService.getSelectedBacktest());
+    
   }
 }

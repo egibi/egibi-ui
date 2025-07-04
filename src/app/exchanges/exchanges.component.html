@@ -1,1 +1,6 @@
-<p>exchanges works!</p>
+<div class="row">
+    <div class="actions-container">
+        <button class="btn btn-outline-primary" (click)="addExchange()">Add Exchange</button>
+    </div>
+</div>
+<egibi-table [tableName]="'Exchanges'" [tableColumns]="columns" [rowData]="exchanges" (rowSelect)="onRowSelected($event)"></egibi-table>

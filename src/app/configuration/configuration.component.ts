@@ -1,7 +1,7 @@
 import { Component, OnInit } from "@angular/core";
-import { ActivatedRoute, RouterModule, Router } from "@angular/router";
+import { ActivatedRoute, Router } from "@angular/router";
 import { NgbNavModule } from "@ng-bootstrap/ng-bootstrap";
-import { FormBuilder, FormGroup, ReactiveFormsModule, FormsModule } from "@angular/forms";
+import { FormBuilder, ReactiveFormsModule, FormsModule } from "@angular/forms";
 import { FeesComponent } from "./tabs/fees/fees.component";
 import { EntityTypesComponent } from "./tabs/entity-types/entity-types.component";
 
@@ -11,8 +11,10 @@ import { EntityTypesComponent } from "./tabs/entity-types/entity-types.component
   templateUrl: "./configuration.component.html",
   styleUrl: "./configuration.component.scss",
 })
-export class ConfigurationComponent {
+export class ConfigurationComponent implements OnInit {
   public active = 1;
+
+  ngOnInit(): void {}
 
   constructor(private router: Router, private route: ActivatedRoute, private fb: FormBuilder) {}
 }

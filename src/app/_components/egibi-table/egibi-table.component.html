@@ -1,0 +1,17 @@
+<table class="table table-hover">
+  <thead>
+    <tr>
+      @for(tc of tableColumns; track tc){
+      <th>{{ tc }}</th>
+      }
+    </tr>
+  </thead>
+  <tbody>
+    @for(rd of rowData; track rd){
+    <tr>
+      <td (click)="onRowClick(rd)">{{ rd.name }}</td>
+      <td>test value</td>
+    </tr>
+    }
+  </tbody>
+</table>

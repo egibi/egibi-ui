@@ -12,6 +12,8 @@ import { AdminComponent } from "./admin/admin.component";
 import { ExchangesComponent } from "./exchanges/exchanges.component";
 import { MarketsComponent } from "./markets/markets.component";
 import { AccountingComponent } from "./accounting/accounting.component";
+import { ExchangeComponent } from "./exchanges/exchange/exchange.component";
+import { Exchange } from "./_models/exchange.model";
 
 export const routes: Routes = [
   {
@@ -25,6 +27,14 @@ export const routes: Routes = [
   {
     path: "exchanges",
     component: ExchangesComponent
+  },
+  {
+    path: "exchanges/exchange/:id",
+    component: ExchangeComponent
+  },
+  {
+    path: "exchanges/exchange",
+    component: ExchangeComponent
   },
   {
     path: "markets",
