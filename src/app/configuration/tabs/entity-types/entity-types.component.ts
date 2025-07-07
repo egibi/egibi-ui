@@ -1,10 +1,8 @@
 import { Component, OnInit } from "@angular/core";
-import { CommonModule } from "@angular/common";
 import { ConfigurationService } from "../../configuration.service";
 import { EntityBase } from "../../../_models/entity-base.model";
 import { ModalService } from "../../../_services/modal.service";
 import { EntityTypesModalComponent } from "../../modals/entity-types-modal/entity-types-modal.component";
-import { EgibiModalComponent } from "../../../egibi-modal/egibi-modal.component";
 import { EntityType } from "../../../_models/entity-type.model";
 @Component({
   selector: "entity-types",

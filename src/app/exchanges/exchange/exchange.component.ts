@@ -9,7 +9,6 @@ import { ExchangeAccount } from "../../_models/exchange-account.model";
 import { ExchangeDetailsComponent } from "./tabs/exchange-details/exchange-details.component";
 import { ExchangeFeesComponent } from "./tabs/exchange-fees/exchange-fees.component";
 
-
 @Component({
   selector: "exchange",
   standalone: true,
@@ -20,8 +19,9 @@ import { ExchangeFeesComponent } from "./tabs/exchange-fees/exchange-fees.compon
 export class ExchangeComponent implements OnInit {
   public exchangeID: number;
   public exchanges: Exchange[] = [];
-  public exchangeAccounts: ExchangeAccount [] = [];
+  public exchangeAccounts: ExchangeAccount[] = [];
   public exchangeDetailsForm: FormGroup;
+  public exchangeFeeStructureForm: FormGroup;
 
   public active = 1;
 
@@ -31,13 +31,23 @@ export class ExchangeComponent implements OnInit {
       exchangeTypeId: [""],
       name: [""],
       description: [""],
-      notes: ["",]
+      notes: [""],
+    });
+
+    this.exchangeFeeStructureForm = this.fb.group({
+      id: [""],
+      exchangeId: [""],
+      tier: [""],
+      dayVolume_30: [""],
+      makerFee: [""],
+      takerFee: [""],
+      assetBalance: [""],
     });
   }
 
   public ngOnInit(): void {
     this.exchangeID = Number(this.route.snapshot.paramMap.get("id")); // TODO: Probably don't need this
-   
+
     this.exchangeDetailsForm.get("id")?.setValue(this.exchangeID);
     this.exchangeService.getExchange(this.exchangeID).subscribe((res) => {
       if (res) this.exchangeDetailsForm.patchValue(res.responseData);

@@ -1,6 +1,6 @@
 import { EntityBase } from "./entity-base.model";
 
-export class EntityType implements EntityBase {
+export class Account implements EntityBase{
     id: number;
     name: string;
     description: string;
@@ -8,5 +8,6 @@ export class EntityType implements EntityBase {
     isActive: boolean;
     createdAt: Date;
     lastModifiedAt: Date;
-    tableName: string;
+    username: string;
+    password: string;
 }

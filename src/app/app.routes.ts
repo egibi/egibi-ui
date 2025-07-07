@@ -14,6 +14,8 @@ import { MarketsComponent } from "./markets/markets.component";
 import { AccountingComponent } from "./accounting/accounting.component";
 import { ExchangeComponent } from "./exchanges/exchange/exchange.component";
 import { Exchange } from "./_models/exchange.model";
+import { AccountsComponent } from "./accounts/accounts.component";
+import { AccountComponent } from "./accounts/account/account.component";
 
 export const routes: Routes = [
   {
@@ -23,6 +25,14 @@ export const routes: Routes = [
   {
     path: "home",
     component: HomeComponent
+  },
+  {
+    path: "accounts",
+    component:AccountsComponent
+  },
+  {
+    path: "account",
+    component: AccountComponent
   },
   {
     path: "exchanges",
