@@ -14,6 +14,7 @@ export class EntityTypesComponent implements OnInit {
   entityTypes: string[] = [];
   entityTypeRecords: EntityBase[] = [];
   tableSelected: boolean = false;
+  selectedTable: string;
 
   constructor(private configurationService: ConfigurationService, private modalservice: ModalService) {}
 
@@ -36,8 +37,10 @@ export class EntityTypesComponent implements OnInit {
   public tableSelectionChanged(selected: any) {
     this.tableSelected = true;
     const selectedValue = (selected.target as HTMLSelectElement).value;
+    this.selectedTable = selectedValue;
 
     if (selectedValue != "null") {
+      this.configurationService.setSelectedEntityTypeTable(selectedValue);
       this.configurationService.getEntityTypeRecords(selectedValue).subscribe((res) => {
         this.entityTypeRecords = res.responseData;
       });
@@ -46,20 +49,22 @@ export class EntityTypesComponent implements OnInit {
     }
   }
 
-  public createEntityType(): void {
+  public createEntityTypeValue(): void {
     this.openModal();
   }
 
   public saveEntityType(result: any) {
+    console.log("saveEntityType()");
+    console.log(result);
+
     if (result) {
       let entityType: EntityType = new EntityType();
       entityType.id = 0;
       entityType.name = result.name;
       entityType.description = result.description;
-      entityType.tableName = 'ConnectionType';
 
       this.configurationService.saveEntityType(entityType).subscribe((res) => {
-        console.log('saved:::');
+        console.log("saved:::");
         console.log(res);
       });
     }
@@ -69,19 +74,31 @@ export class EntityTypesComponent implements OnInit {
   // MODAL
   // =========================================================================================================
   public openModal(): void {
-    const modalRef = this.modalservice.open("entity types", EntityTypesModalComponent);
+    console.log("attempting to open modal...");
+
+    const modalRef = this.modalservice.open("entity types", EntityTypesModalComponent, this.selectedTable);
 
     modalRef.componentInstance.bodyComponent = EntityTypesModalComponent;
 
     modalRef.result.then(
       (result) => {
         if (result) {
-          this.saveEntityType(result.value);
+
+          console.log('entity table:::', this.configurationService.getSelectedEntityTypeTable());
+
+
+          const entityType = result.value as EntityType;
+          entityType.tableName = this.configurationService.getSelectedEntityTypeTable();
+
+          console.log('Angular entityType attempting to save:::', entityType)
+
+          this.configurationService.saveEntityType(entityType).subscribe((res) => {
+            console.log('entity type save response:::');
+            console.log(res);
+          });
         }
       },
-      (reason) => {
-        console.log("modal dismissed:", reason);
-      }
+      (reason) => {}
     );
   }
 }

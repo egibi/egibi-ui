@@ -1,12 +1,10 @@
-import { EntityBase } from "./entity-base.model";
-
-export class EntityType implements EntityBase {
-    id: number;
-    name: string;
-    description: string;
-    notes: string;
-    isActive: boolean;
-    createdAt: Date;
-    lastModifiedAt: Date;
-    tableName: string;
+export class EntityType {
+  id: number;
+  name: string;
+  description: string;
+  notes: string;
+  tableName: string;
+  isActive: boolean;
+  createdAt: Date;
+  lastModifiedAt: Date;
 }
