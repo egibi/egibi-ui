@@ -3,7 +3,7 @@ import { NgbModal, NgbModalRef } from "@ng-bootstrap/ng-bootstrap";
 import { EgibiModalComponent } from "../egibi-modal/egibi-modal.component";
 
 @Injectable({
-  providedIn: "root",
+  providedIn: 'root' // This registers it globally
 })
 export class ModalService {
   constructor(private modalService: NgbModal) {}

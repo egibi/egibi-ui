@@ -1,4 +1,4 @@
-<div class="container-fluid">
+<!-- <div class="container-fluid">
   <label for="typeTable">Entity Type Table</label>
   <select class="form-control" (change)="tableSelectionChanged($event)" id="typeTable">
     <option [value]="null">Select...</option>
@@ -12,7 +12,7 @@
     <thead>
       <tr>
         <button class="btn btn-outline-primary" (click)="createEntityTypeValue()">Create New</button>
-        <input type="text" placeholder="search..." />
+        <input class="form-control" type="text" placeholder="search..." />
       </tr>
     </thead>
     }
@@ -20,16 +20,21 @@
     <thead>
       <tr>
         <th>Name</th>
+        <th>Description</th>
         <th>Action</th>
       </tr>
     </thead>
     <tbody>
       @for (etr of entityTypeRecords; track etr){
       <tr>
-        <td>{{ etr.name }}</td>
+        <td contenteditable="true" >{{ etr.name }}</td>
+        <td contenteditable="true">{{etr.description}}</td>
         <button class="btn btn-outline-danger action-btn">Delete</button>
       </tr>
       }
     </tbody>
   </table>
-</div>
+</div> -->
+
+
+<egibi-table></egibi-table>

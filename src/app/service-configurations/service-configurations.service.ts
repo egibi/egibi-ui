@@ -7,8 +7,8 @@ import { EntityType } from "../_models/entity-type.model";
 @Injectable({
   providedIn: "root",
 })
-export class ConfigurationService {
-  private apiBaseUrl: string = "https://localhost:7182/Configuration";
+export class ServiceConfigurationsService {
+  private apiBaseUrl: string = "https://localhost:7182/ServiceConfigurations";
 
   entityTypes: string[] = [];
 

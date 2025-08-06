@@ -1,12 +1,15 @@
 import { Component, OnInit } from "@angular/core";
-import { ConfigurationService } from "../../configuration.service";
+import { ServiceConfigurationsService } from "../../service-configurations.service";
 import { EntityBase } from "../../../_models/entity-base.model";
 import { ModalService } from "../../../_services/modal.service";
 import { EntityTypesModalComponent } from "../../modals/entity-types-modal/entity-types-modal.component";
 import { EntityType } from "../../../_models/entity-type.model";
+import { EgibiModalComponent } from "../../../egibi-modal/egibi-modal.component";
+import { EgibiTableComponent } from "../../../_components/egibi-table/egibi-table.component";
+import { EgibiTable } from "../../../_components/egibi-table/egibi-table.models";
 @Component({
   selector: "entity-types",
-  imports: [],
+  imports: [ EgibiTableComponent],
   templateUrl: "./entity-types.component.html",
   styleUrl: "./entity-types.component.scss",
 })
@@ -16,20 +19,20 @@ export class EntityTypesComponent implements OnInit {
   tableSelected: boolean = false;
   selectedTable: string;
 
-  constructor(private configurationService: ConfigurationService, private modalservice: ModalService) {}
+  constructor(private serviceConfigurationService: ServiceConfigurationsService, private modalservice: ModalService) {}
 
   ngOnInit(): void {
     this.getEntityTypeTables();
   }
 
   public getEntityTypeTables(): void {
-    this.configurationService.getEntityTypeTables().subscribe((res) => {
+    this.serviceConfigurationService.getEntityTypeTables().subscribe((res) => {
       this.entityTypes = res.responseData;
     });
   }
 
   public getEntityTypeRecords(tableName: string): void {
-    this.configurationService.getEntityTypeRecords(tableName).subscribe((res) => {
+    this.serviceConfigurationService.getEntityTypeRecords(tableName).subscribe((res) => {
       this.entityTypeRecords = res.responseData;
     });
   }
@@ -40,8 +43,8 @@ export class EntityTypesComponent implements OnInit {
     this.selectedTable = selectedValue;
 
     if (selectedValue != "null") {
-      this.configurationService.setSelectedEntityTypeTable(selectedValue);
-      this.configurationService.getEntityTypeRecords(selectedValue).subscribe((res) => {
+      this.serviceConfigurationService.setSelectedEntityTypeTable(selectedValue);
+      this.serviceConfigurationService.getEntityTypeRecords(selectedValue).subscribe((res) => {
         this.entityTypeRecords = res.responseData;
       });
     } else {
@@ -63,11 +66,24 @@ export class EntityTypesComponent implements OnInit {
       entityType.name = result.name;
       entityType.description = result.description;
 
-      this.configurationService.saveEntityType(entityType).subscribe((res) => {
+      this.serviceConfigurationService.saveEntityType(entityType).subscribe((res) => {
         console.log("saved:::");
         console.log(res);
       });
     }
+  }
+
+  // =========================================================================================================
+  // TABLE
+  // =========================================================================================================
+
+  public setupTable(columns: any, data: any, config: any): void {
+    let table: EgibiTable = new EgibiTable();
+
+    table.tableName = "Entity Types Table";
+
+    table.columns = [];
+    table.rowData = [];
   }
 
   // =========================================================================================================
@@ -83,22 +99,17 @@ export class EntityTypesComponent implements OnInit {
     modalRef.result.then(
       (result) => {
         if (result) {
-
-          console.log('entity table:::', this.configurationService.getSelectedEntityTypeTable());
-
-
           const entityType = result.value as EntityType;
-          entityType.tableName = this.configurationService.getSelectedEntityTypeTable();
+          entityType.tableName = this.serviceConfigurationService.getSelectedEntityTypeTable();
 
-          console.log('Angular entityType attempting to save:::', entityType)
-
-          this.configurationService.saveEntityType(entityType).subscribe((res) => {
-            console.log('entity type save response:::');
+          this.serviceConfigurationService.saveEntityType(entityType).subscribe((res) => {
             console.log(res);
           });
         }
       },
-      (reason) => {}
+      (reason) => {
+        console.log("close reason:::", reason);
+      }
     );
   }
 }
