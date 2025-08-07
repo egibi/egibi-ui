@@ -4,6 +4,7 @@ import { FormBuilder, ReactiveFormsModule, FormsModule } from "@angular/forms";
 import { EgibiTableComponent } from "../_components/egibi-table/egibi-table.component";
 import { Account } from "../_models/account.model";
 import { AccountsService } from "./accounts.service";
+import { EgibiTableColumn } from "../_components/egibi-table/egibi-table.models";
 
 @Component({
   selector: "accounts",
@@ -15,7 +16,14 @@ export class AccountsComponent implements OnInit {
   // TODO: Test version
   public accountTypes: string[] = ["Crypto Exchange", "Market"];
 
-  public tableColumns: string[] = ["Test Column1", "Test Column2"];
+  public tableColumns: EgibiTableColumn[] = [
+    {name: "Account Name", width:"auto"},
+    {name: "URL", width:"auto"},
+    {name: "Username", width:"auto"},
+    {name: "Account Type", width:"auto"},
+    {name: "Equity", width:"auto"}
+
+  ]
 
   constructor(private route: ActivatedRoute, private fb: FormBuilder, private router: Router, private accountsService: AccountsService) {}
 

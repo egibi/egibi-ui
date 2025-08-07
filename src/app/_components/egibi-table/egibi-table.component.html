@@ -1,15 +1,15 @@
 <table class="table table-hover">
   <thead>
     <tr>
-      @for(tc of tableColumns; track tc){
-      <th>{{ tc }}</th>
+      @for(tableColumn of tableColumns; track tableColumn){
+      <th>{{ tableColumn.name }}</th>
       }
     </tr>
   </thead>
   <tbody>
-    @for(rd of rowData; track rd){
+    @for(row of rowData; track row){
     <tr>
-      <td (click)="onRowClick(rd)">{{ rd.name }}</td>
+      <td (click)="onRowClick(row)">{{ row.name }}</td>
       <td>test value</td>
     </tr>
     }

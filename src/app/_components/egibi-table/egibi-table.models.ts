@@ -1,9 +1,10 @@
 export class EgibiTable{
-    tableName: string;
+    name: string;
     columns: EgibiTableColumn[];
     rowData: any[];
 }
 
 export class EgibiTableColumn{
-    columnName: string;
+    name: string;
+    width: any;
 }

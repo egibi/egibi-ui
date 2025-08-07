@@ -1,4 +1,5 @@
 import { Component, Input, Output, EventEmitter } from "@angular/core";
+import { EgibiTableColumn } from "./egibi-table.models";
 
 @Component({
   selector: "egibi-table",
@@ -9,7 +10,7 @@ import { Component, Input, Output, EventEmitter } from "@angular/core";
 })
 export class EgibiTableComponent {
   @Input() tableName: string;
-  @Input() tableColumns: string[] = ["Name", "Description"];
+  @Input() tableColumns: EgibiTableColumn[] = [];
   @Input() rowData: any[] = [];
 
   @Output() rowSelect = new EventEmitter<any>();

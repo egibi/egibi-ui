@@ -80,7 +80,7 @@ export class EntityTypesComponent implements OnInit {
   public setupTable(columns: any, data: any, config: any): void {
     let table: EgibiTable = new EgibiTable();
 
-    table.tableName = "Entity Types Table";
+    table.name = "Entity Types Table";
 
     table.columns = [];
     table.rowData = [];

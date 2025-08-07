@@ -1,4 +1,5 @@
-<div class="row">
-    <button class="btn btn-outline-primary" (click)="addNew()">Add</button>
+<div class="container-fluid">
+  <div class="table-container">
+    <egibi-table [tableColumns]="tableColumns" (rowSelect)="onRowSelect($event)"></egibi-table>
+  </div>
 </div>
-<egibi-table [tableColumns]="tableColumns" (rowSelect)="onRowSelect($event)"></egibi-table>
