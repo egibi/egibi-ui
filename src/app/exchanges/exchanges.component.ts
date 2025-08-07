@@ -1,8 +1,9 @@
 import { Component, OnInit } from "@angular/core";
 import { ActivatedRoute, RouterModule, Router } from "@angular/router";
-import { EgibiTableComponent } from "../_components/egibi-table/egibi-table.component";
+//import { EgibiTableComponent } from "../_components/egibi-table/egibi-table.component";
 import { ExchangesService } from "./exchanges.service";
 import { Exchange } from "../_models/exchange.model";
+import { EgibiTableComponent } from "../_components/egibi-table/egibi-table.component";
 
 @Component({
   selector: "exchanges",

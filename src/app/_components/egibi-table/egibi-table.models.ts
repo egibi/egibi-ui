@@ -1,10 +1,10 @@
-export class EgibiTable{
-    name: string;
-    columns: EgibiTableColumn[];
-    rowData: any[];
+export class TableColumn {
+  key: string;
+  label: string;
+  sortable?: boolean;
 }
 
-export class EgibiTableColumn{
-    name: string;
-    width: any;
+export class SortConfig {
+  key: string;
+  direction: 'asc' | 'desc' | null;
 }

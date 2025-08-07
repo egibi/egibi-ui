@@ -1,17 +1,29 @@
-<table class="table table-hover">
-  <thead>
-    <tr>
-      @for(tableColumn of tableColumns; track tableColumn){
-      <th>{{ tableColumn.name }}</th>
-      }
-    </tr>
-  </thead>
-  <tbody>
-    @for(row of rowData; track row){
-    <tr>
-      <td (click)="onRowClick(row)">{{ row.name }}</td>
-      <td>test value</td>
-    </tr>
-    }
-  </tbody>
-</table>
+ <div class="table-container">
+      <table class="sortable-table table-hover">
+        <thead>
+          <tr>
+            <th 
+              *ngFor="let column of columns" 
+              [class.sortable]="column.sortable !== false"
+              [class.sorted-asc]="sortConfig.key === column.key && sortConfig.direction === 'asc'"
+              [class.sorted-desc]="sortConfig.key === column.key && sortConfig.direction === 'desc'"
+              (click)="onSort(column.key, column.sortable !== false)">
+              <div class="header-content">
+                <span>{{ column.label }}</span>
+                <div class="sort-icons" *ngIf="column.sortable !== false">
+                  <span class="sort-arrow up" [class.active]="sortConfig.key === column.key && sortConfig.direction === 'asc'">▲</span>
+                  <span class="sort-arrow down" [class.active]="sortConfig.key === column.key && sortConfig.direction === 'desc'">▼</span>
+                </div>
+              </div>
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let row of sortedData; trackBy: trackByFn">
+            <td *ngFor="let column of columns">
+              {{ getNestedValue(row, column.key) }}
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>

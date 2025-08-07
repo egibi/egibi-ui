@@ -6,7 +6,7 @@ import { EntityTypesModalComponent } from "../../modals/entity-types-modal/entit
 import { EntityType } from "../../../_models/entity-type.model";
 import { EgibiModalComponent } from "../../../egibi-modal/egibi-modal.component";
 import { EgibiTableComponent } from "../../../_components/egibi-table/egibi-table.component";
-import { EgibiTable } from "../../../_components/egibi-table/egibi-table.models";
+//import { EgibiTable } from "../../../_components/egibi-table/egibi-table.models";
 @Component({
   selector: "entity-types",
   imports: [ EgibiTableComponent],
@@ -78,12 +78,12 @@ export class EntityTypesComponent implements OnInit {
   // =========================================================================================================
 
   public setupTable(columns: any, data: any, config: any): void {
-    let table: EgibiTable = new EgibiTable();
+    // let table: EgibiTable = new EgibiTable();
 
-    table.name = "Entity Types Table";
+    // table.name = "Entity Types Table";
 
-    table.columns = [];
-    table.rowData = [];
+    // table.columns = [];
+    // table.rowData = [];
   }
 
   // =========================================================================================================

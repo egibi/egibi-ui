@@ -1,5 +1,10 @@
 <div class="container-fluid">
-  <div class="table-container">
-    <egibi-table [tableColumns]="tableColumns" (rowSelect)="onRowSelect($event)"></egibi-table>
+  <div class="row">
+     <accounts-top-actions (addAccount)="addAccount($event)"></accounts-top-actions>
+  </div>
+  <div class="row">
+    <div class="table-container" style="width: 75%">
+      <egibi-table [data]="tableData" [columns]="tableColumns"></egibi-table>
+    </div>
   </div>
 </div>

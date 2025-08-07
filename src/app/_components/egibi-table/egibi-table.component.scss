@@ -1,4 +1,107 @@
-tbody tr:hover {
+.table-hover:hover{
   cursor: pointer;
-  background-color: #c5c4c4;
 }
+
+.table-container {
+      overflow-x: auto;
+      border: 1px solid #e0e0e0;
+      border-radius: 8px;
+    }
+
+    .sortable-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+
+    .sortable-table th,
+    .sortable-table td {
+      padding: 12px 16px;
+      text-align: left;
+      border-bottom: 1px solid #e0e0e0;
+    }
+
+    .sortable-table th {
+      background-color: #f8f9fa;
+      font-weight: 600;
+      color: #495057;
+      position: relative;
+    }
+
+    .sortable-table th.sortable {
+      cursor: pointer;
+      user-select: none;
+      transition: background-color 0.2s ease;
+    }
+
+    .sortable-table th.sortable:hover {
+      background-color: #e9ecef;
+    }
+
+    .header-content {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .sort-icons {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      opacity: 0.3;
+      transition: opacity 0.2s ease;
+    }
+
+    .sortable:hover .sort-icons {
+      opacity: 0.6;
+    }
+
+    .sort-arrow {
+      font-size: 10px;
+      line-height: 1;
+      color: #6c757d;
+      transition: color 0.2s ease;
+    }
+
+    .sort-arrow.up {
+      margin-bottom: -2px;
+    }
+
+    .sort-arrow.down {
+      margin-top: -2px;
+    }
+
+    .sort-arrow.active {
+      color: #007bff;
+      opacity: 1;
+    }
+
+    .sortable-table th.sorted-asc .sort-icons,
+    .sortable-table th.sorted-desc .sort-icons {
+      opacity: 1;
+    }
+
+    .sortable-table tbody tr {
+      transition: background-color 0.2s ease;
+    }
+
+    .sortable-table tbody tr:hover {
+      background-color: #f8f9fa;
+    }
+
+    .sortable-table tbody tr:last-child td {
+      border-bottom: none;
+    }
+
+    .sortable-table td {
+      color: #495057;
+    }
+
+    @media (max-width: 768px) {
+      .sortable-table th,
+      .sortable-table td {
+        padding: 8px 12px;
+        font-size: 14px;
+      }
+    }
