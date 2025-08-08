@@ -1,0 +1,42 @@
+<div class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 1100;">
+      <div 
+        *ngFor="let toast of toasts" 
+        [id]="'toast-' + toast.id"
+        class="toast"
+        [class]="getToastClass(toast.type)"
+        role="alert" 
+        aria-live="assertive" 
+        aria-atomic="true"
+        [attr.data-bs-autohide]="toast.autoHide"
+        [attr.data-bs-delay]="toast.delay">
+        
+        <div class="toast-header" *ngIf="toast.title">
+          <div class="me-auto fw-bold">
+            <i [class]="getIconClass(toast.type)" class="me-2"></i>
+            {{ toast.title }}
+          </div>
+          <button 
+            type="button" 
+            class="btn-close" 
+            data-bs-dismiss="toast" 
+            aria-label="Close"
+            (click)="removeToast(toast.id)">
+          </button>
+        </div>
+        
+        <div class="toast-body" [class.d-flex]="!toast.title" [class.justify-content-between]="!toast.title">
+          <div class="d-flex align-items-center">
+            <i *ngIf="!toast.title" [class]="getIconClass(toast.type)" class="me-2"></i>
+            {{ toast.message }}
+          </div>
+          <button 
+            *ngIf="!toast.title"
+            type="button" 
+            class="btn-close ms-2" 
+            data-bs-dismiss="toast" 
+            aria-label="Close"
+            (click)="removeToast(toast.id)">
+          </button>
+        </div>
+      </div>
+    </div>
