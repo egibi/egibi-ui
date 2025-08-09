@@ -1,15 +1,11 @@
 import { Component, OnInit } from "@angular/core";
 import { ServiceConfigurationsService } from "../../service-configurations.service";
 import { EntityBase } from "../../../_models/entity-base.model";
-import { ModalService } from "../../../_services/modal.service";
-import { EntityTypesModalComponent } from "../../modals/entity-types-modal/entity-types-modal.component";
 import { EntityType } from "../../../_models/entity-type.model";
-import { EgibiModalComponent } from "../../../egibi-modal/egibi-modal.component";
-import { EgibiTableComponent } from "../../../_components/egibi-table/egibi-table.component";
-//import { EgibiTable } from "../../../_components/egibi-table/egibi-table.models";
+
 @Component({
   selector: "entity-types",
-  imports: [ EgibiTableComponent],
+  imports: [ ],
   templateUrl: "./entity-types.component.html",
   styleUrl: "./entity-types.component.scss",
 })
@@ -19,7 +15,7 @@ export class EntityTypesComponent implements OnInit {
   tableSelected: boolean = false;
   selectedTable: string;
 
-  constructor(private serviceConfigurationService: ServiceConfigurationsService, private modalservice: ModalService) {}
+  constructor(private serviceConfigurationService: ServiceConfigurationsService) {}
 
   ngOnInit(): void {
     this.getEntityTypeTables();
@@ -53,7 +49,7 @@ export class EntityTypesComponent implements OnInit {
   }
 
   public createEntityTypeValue(): void {
-    this.openModal();
+
   }
 
   public saveEntityType(result: any) {
@@ -78,38 +74,5 @@ export class EntityTypesComponent implements OnInit {
   // =========================================================================================================
 
   public setupTable(columns: any, data: any, config: any): void {
-    // let table: EgibiTable = new EgibiTable();
-
-    // table.name = "Entity Types Table";
-
-    // table.columns = [];
-    // table.rowData = [];
-  }
-
-  // =========================================================================================================
-  // MODAL
-  // =========================================================================================================
-  public openModal(): void {
-    console.log("attempting to open modal...");
-
-    const modalRef = this.modalservice.open("entity types", EntityTypesModalComponent, this.selectedTable);
-
-    modalRef.componentInstance.bodyComponent = EntityTypesModalComponent;
-
-    modalRef.result.then(
-      (result) => {
-        if (result) {
-          const entityType = result.value as EntityType;
-          entityType.tableName = this.serviceConfigurationService.getSelectedEntityTypeTable();
-
-          this.serviceConfigurationService.saveEntityType(entityType).subscribe((res) => {
-            console.log(res);
-          });
-        }
-      },
-      (reason) => {
-        console.log("close reason:::", reason);
-      }
-    );
   }
 }

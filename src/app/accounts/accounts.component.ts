@@ -1,4 +1,4 @@
-import { Component, OnInit } from "@angular/core";
+import { Component, OnInit, ViewChild, inject, signal, WritableSignal, TemplateRef } from "@angular/core";
 import { Router } from "@angular/router";
 import { EgibiTableComponent } from "../_components/egibi-table/egibi-table.component";
 import { Account } from "../_models/account.model";
@@ -8,6 +8,7 @@ import { AccountsTopActionsComponent } from "./accounts-top-actions/accounts-top
 
 @Component({
   selector: "accounts",
+  standalone: true,
   imports: [EgibiTableComponent, AccountsTopActionsComponent],
   templateUrl: "./accounts.component.html",
   styleUrl: "./accounts.component.scss",

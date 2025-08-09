@@ -1,5 +1,4 @@
 import { Routes } from "@angular/router";
-import { ConnectionsComponent } from "./connections/connections.component";
 import { StrategiesComponent } from "./strategies/strategies.component";
 import { HomeComponent } from "./home/home.component";
 import { BacktesterComponent } from "./backtester/backtester.component";
@@ -53,10 +52,6 @@ export const routes: Routes = [
   {
     path: "markets",
     component: MarketsComponent,
-  },
-  {
-    path: "connections",
-    component: ConnectionsComponent,
   },
   {
     path: "data-manager",

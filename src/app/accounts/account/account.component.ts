@@ -1,7 +1,7 @@
-import { Component, OnInit, ViewChild, inject, signal, WritableSignal, TemplateRef } from "@angular/core";
+import { Component, OnInit, ViewChild } from "@angular/core";
 import { CommonModule } from "@angular/common";
 import { ActivatedRoute, Router } from "@angular/router";
-import { NgbModal, NgbNavModule } from "@ng-bootstrap/ng-bootstrap";
+import { NgbNavModule } from "@ng-bootstrap/ng-bootstrap";
 import { FormBuilder, FormGroup, ReactiveFormsModule } from "@angular/forms";
 import { AccountsService } from "../accounts.service";
 import { EntityType } from "../../_models/entity-type.model";
@@ -11,12 +11,10 @@ import { AccountsBottomActionsComponent } from "../accounts-bottom-actions/accou
 import { ApiComponent } from "./account-sections/api/api.component";
 import { StatusComponent } from "./account-sections/status/status.component";
 import { EgibiModalComponent } from "../../egibi-modal/egibi-modal.component";
-import { ModalService } from "../../_services/modal.service";
-import { Account } from "../../_models/account.model";
 
 @Component({
   selector: "account",
-  imports: [ReactiveFormsModule, CommonModule, NgbNavModule, AccountDetailsComponent, AccountsBottomActionsComponent],
+  imports: [ReactiveFormsModule, CommonModule, NgbNavModule, AccountDetailsComponent, FeesComponent, AccountsBottomActionsComponent, EgibiModalComponent],
   templateUrl: "./account.component.html",
   styleUrl: "./account.component.scss",
 })
@@ -32,22 +30,25 @@ export class AccountComponent implements OnInit {
   accountForm: FormGroup;
   accountTypes: EntityType[] = [];
 
-  constructor(private route: ActivatedRoute, private fb: FormBuilder, private router: Router, private accountsService: AccountsService, private modalService: ModalService) {}
+  constructor(private route: ActivatedRoute, private fb: FormBuilder, private router: Router, private accountsService: AccountsService) {}
 
   ngOnInit(): void {
-    this.accountId = Number(this.route.snapshot.params["id"]);
-    console.log("got id of: ", this.accountId);
 
-    if (this.accountId) {
+    this.accountId = Number(this.route.snapshot.params['id'])
+    console.log('got id of: ', this.accountId);
+    
+    if(this.accountId){
       // TODO: load existing account data
-      console.log("should get account data:::");
+      console.log('should get account data:::');
       this.accountsService.getAccount(this.accountId).subscribe((res) => {
-        console.log("got account data:::");
+        console.log('got account data:::');
         console.log(res);
-      });
-    } else {
+      })
+    }
+    else{
       //TODO: this is a new account creation
     }
+
 
     this.accountForm = this.fb.group({
       id: [""],
@@ -81,6 +82,4 @@ export class AccountComponent implements OnInit {
     console.log("deleting account:::");
   }
   //========================================================
-
-  
 }
