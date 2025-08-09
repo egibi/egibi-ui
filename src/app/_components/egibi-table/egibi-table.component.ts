@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, Output, OnInit, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TableColumn, SortConfig } from './egibi-table.models';
 
@@ -12,6 +12,7 @@ import { TableColumn, SortConfig } from './egibi-table.models';
 export class EgibiTableComponent implements OnInit {
   @Input() data: any[] = [];
   @Input() columns: TableColumn[] = [];
+  @Output() rowClicked = new EventEmitter<any>();
 
   sortConfig: SortConfig = { key: '', direction: null };
   sortedData: any[] = [];
@@ -82,5 +83,11 @@ export class EgibiTableComponent implements OnInit {
 
   trackByFn(index: number, item: any): any {
     return item.id || index;
+  }
+
+  onRowClick(row:any):void{
+    console.log('onRowClick:::');
+    console.log('emitting ', row);
+    this.rowClicked.emit(row);
   }
 }

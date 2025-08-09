@@ -4,7 +4,7 @@
   </div>
   <div class="row">
     <div class="table-container" style="width: 75%">
-      <egibi-table [data]="tableData" [columns]="tableColumns"></egibi-table>
+      <egibi-table [data]="tableData" [columns]="tableColumns" (rowClicked)="rowClicked($event)"></egibi-table>
     </div>
   </div>
 </div>

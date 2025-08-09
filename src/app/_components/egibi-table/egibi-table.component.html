@@ -19,7 +19,7 @@
           </tr>
         </thead>
         <tbody>
-          <tr *ngFor="let row of sortedData; trackBy: trackByFn">
+          <tr *ngFor="let row of sortedData; trackBy: trackByFn" (click)="onRowClick(row)">
             <td *ngFor="let column of columns">
               {{ getNestedValue(row, column.key) }}
             </td>

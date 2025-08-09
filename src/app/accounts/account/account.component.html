@@ -2,7 +2,7 @@
   <li [ngbNavItem]="0">
     <button ngbNavLink>Details</button>
     <ng-template ngbNavContent>
-      <account-details></account-details>
+      <account-details #accountDetails></account-details>
     </ng-template>
   </li>
 
@@ -42,3 +42,4 @@
 <div class="row">
   <accounts-bottom-actions (saveClicked)="handleSave($event)" (cancelClicked)="handleCancel($event)" (deleteClicked)="handleDelete($event)"></accounts-bottom-actions>
 </div>
+
