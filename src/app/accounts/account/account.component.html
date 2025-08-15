@@ -1,20 +1,20 @@
-<ul ngbNav #nav="ngbNav" [(activeId)]="activeTabIndex" class="nav-tabs">
-  <li [ngbNavItem]="0">
-    <button ngbNavLink>Details</button>
+<ul ngbNav #nav="ngbNav" [(activeId)]="activeTab" class="nav-tabs">
+  <li [ngbNavItem]="'details'">
+    <button ngbNavLink (click)="setActiveTab('details')">Details</button>
     <ng-template ngbNavContent>
       <account-details #accountDetails></account-details>
     </ng-template>
   </li>
 
-    <li [ngbNavItem]="1">
-    <button ngbNavLink>Security</button>
+    <li [ngbNavItem]="'security'">
+    <button ngbNavLink (click)="setActiveTab('security')">Security</button>
     <ng-template ngbNavContent>
       <p>security</p>
     </ng-template>
   </li>
 
-  <li [ngbNavItem]="2">
-    <button ngbNavLink>API</button>
+  <li [ngbNavItem]="'api'">
+    <button ngbNavLink (click)="setActiveTab('api')">API</button>
     <ng-template ngbNavContent> 
       <p>api</p>
     </ng-template>
@@ -22,15 +22,15 @@
 
 
 
-  <li [ngbNavItem]="3">
-    <button ngbNavLink>Fees</button>
+  <li [ngbNavItem]="'fees'">
+    <button ngbNavLink (click)="setActiveTab('fees')">Fees</button>
     <ng-template ngbNavContent>
       <p>fees</p>
     </ng-template>
   </li>
 
-  <li [ngbNavItem]="4">
-    <button ngbNavLink>Status</button>
+  <li [ngbNavItem]="'status'">
+    <button ngbNavLink (click)="setActiveTab('status')">Status</button>
     <ng-template ngbNavContent>
       <p>status</p>
     </ng-template>
@@ -40,5 +40,5 @@
 <div [ngbNavOutlet]="nav" class="mt-2"></div>
 
 <div class="row">
-  <accounts-bottom-actions (saveClicked)="handleSave($event)" (cancelClicked)="handleCancel($event)" (deleteClicked)="handleDelete($event)"></accounts-bottom-actions>
+  <accounts-bottom-actions (saveClicked)="handleSave($event, activeTab)" (cancelClicked)="handleCancel($event)" (deleteClicked)="handleDelete($event)"></accounts-bottom-actions>
 </div>

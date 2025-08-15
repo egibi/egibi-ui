@@ -2,7 +2,7 @@ import { Component, OnInit, ViewChild } from "@angular/core";
 import { CommonModule } from "@angular/common";
 import { ActivatedRoute, Router } from "@angular/router";
 import { NgbNavModule } from "@ng-bootstrap/ng-bootstrap";
-import { FormBuilder, FormGroup, ReactiveFormsModule } from "@angular/forms";
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from "@angular/forms";
 import { AccountsService } from "../accounts.service";
 import { EntityType } from "../../_models/entity-type.model";
 import { FeesComponent } from "./account-sections/fees/fees.component";
@@ -24,7 +24,7 @@ export class AccountComponent implements OnInit {
   @ViewChild(FeesComponent) accountFees: FeesComponent;
   @ViewChild(StatusComponent) accountStatus: StatusComponent;
 
-  public activeTabIndex = 0;
+  public activeTab = "details";
   accountId: number;
 
   accountForm: FormGroup;
@@ -33,22 +33,20 @@ export class AccountComponent implements OnInit {
   constructor(private route: ActivatedRoute, private fb: FormBuilder, private router: Router, private accountsService: AccountsService) {}
 
   ngOnInit(): void {
+    this.accountId = Number(this.route.snapshot.params["id"]);
+    console.log("got id of: ", this.accountId);
 
-    this.accountId = Number(this.route.snapshot.params['id'])
-    console.log('got id of: ', this.accountId);
-    
-    if(this.accountId){
+    if (this.accountId) {
       // TODO: load existing account data
-      console.log('should get account data:::');
+      console.log("should get account data:::");
       this.accountsService.getAccount(this.accountId).subscribe((res) => {
-        console.log('got account data:::');
+        console.log("got account data:::");
         console.log(res);
-      })
-    }
-    else{
+      });
+    } else {
       //TODO: this is a new account creation
+      console.log("we are creating a new account");
     }
-
 
     this.accountForm = this.fb.group({
       id: [""],
@@ -62,12 +60,36 @@ export class AccountComponent implements OnInit {
 
   //========================================================
   // Bottom Action Handlers ================================
-  public handleSave(event: any): void {
-    let account = this.accountDetails.getAccountDetails();
-    this.accountsService.saveAccount(account).subscribe((res) => {
-      console.log("save account response:::");
-      console.log(res);
-    });
+  public handleSave(event: any, activeTab: string): void {
+    console.log("handle save for active tab:::", activeTab);
+
+    switch (activeTab) {
+      case "details":
+        console.log('getting details form data:::');
+        let accountDetails = this.accountDetails.getAccountDetails();
+        console.log('account details ==>', accountDetails);
+        
+        console.log("...saved details");
+        break;
+      case "security":
+        console.log("save security");
+        break;
+      case "api":
+        console.log("save api");
+        break;
+      case "fees":
+        console.log("save fees");
+        break;
+      case "status":
+        console.log("save status");
+        break;
+    }
+
+    // let account = this.accountDetails.getAccountDetails();
+    // this.accountsService.saveAccount(account).subscribe((res) => {
+    //   console.log("save account response:::");
+    //   console.log(res);
+    // });
 
     //TODO: Go back when OK'ed
     //this.router.navigate(["accounts"]);
@@ -82,4 +104,9 @@ export class AccountComponent implements OnInit {
     console.log("deleting account:::");
   }
   //========================================================
+
+  public setActiveTab(tabId: string) {
+    this.activeTab = tabId;
+    console.log("selected tab:::", this.activeTab);
+  }
 }

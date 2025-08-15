@@ -12,6 +12,7 @@ export class AccountsService {
 
   constructor(private http: HttpClient) {}
 
+  // CRUD ACTIONS FOR ENTIRE ACCOUNT ENTITY
   public getAccounts(): Observable<RequestResponse> {
     return this.http.get<RequestResponse>(`${this.apiBaseUrl}/get-accounts`);
   }
@@ -30,5 +31,10 @@ export class AccountsService {
   
   public deleteAccount(account: Account): Observable<RequestResponse> {
     return this.http.delete<RequestResponse>(`${this.apiBaseUrl}/delete-account` + "?id=" + account.id);
+  }
+
+  // CRUD ACTIONS FOR ACCOUNT DETAILS
+  public saveAccountDetails(account:any):Observable<RequestResponse>{
+    return this.http.post<RequestResponse>(`${this.apiBaseUrl}/save-account-details`, account);
   }
 }

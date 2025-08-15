@@ -1,8 +1,6 @@
 import { Component, OnInit, Input } from "@angular/core";
 import { CommonModule } from "@angular/common";
-import { ActivatedRoute, Router } from "@angular/router";
-import { FormBuilder, FormGroup, ReactiveFormsModule, FormsModule, FormControl } from "@angular/forms";
-import { AccountsActionBarComponent } from "../../../accounts-action-bar/accounts-action-bar.component";
+import { FormBuilder, FormGroup, ReactiveFormsModule, FormsModule, FormControl, Validators } from "@angular/forms";
 import { AccountType } from "../../../../_models/account-type";
 import { Account } from "../../../../_models/account.model";
 
@@ -25,11 +23,11 @@ export class AccountDetailsComponent implements OnInit {
   constructor(private fb: FormBuilder) {}
   ngOnInit(): void {
     this.form = this.fb.group({
-      name: [""],
-      description: [""],
-      accountType: [null],
-      user: [""],
-      url: [""],
+      name: ["", [Validators.required]],
+      description: ["", [Validators.required]],
+      accountType: [null, [Validators.required]],
+      user: ["", [Validators.required]],
+      url: ["", Validators.required],
     });
   }
 

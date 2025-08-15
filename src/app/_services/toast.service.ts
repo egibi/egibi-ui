@@ -53,7 +53,7 @@ export class ToastService {
   }
 
   showError(message: string, title?: string): void {
-    this.showToast(message, 'error', title, false); // Don't auto-hide errors
+    this.showToast(message, 'error', title); // Don't auto-hide errors
   }
 
   showWarning(message: string, title?: string): void {
