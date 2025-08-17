@@ -1,0 +1,48 @@
+<div class="container-fluid">
+  <form [formGroup]="form">
+    <div class="row">
+      <div class="col-lg-6 col-md-6 col-sm-12">
+        <label>Name</label>
+        <input type="text" class="form-control" formControlName="name" />
+
+        <div *ngIf="form.controls['name'].invalid && form.controls['name'].touched">
+          <span style="color: red">Name is required</span>
+        </div>
+      </div>
+
+      <div class="col-lg-6 col-md-6 col-sm-12">
+        <label>Account Type</label>
+        <select class="form-control" formControlName="accountType">
+          <option value="">Select Account Type...</option>
+          @for (accountType of accountTypes; track accountType){
+          <option [value]="accountType">{{ accountType.name }}</option>
+          }
+        </select>
+
+        <div *ngIf="form.controls['accountType'].invalid && form.controls['accountType'].touched">
+          <span style="color: red">Account Type is required</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-lg-6 col-md-6 col-sm-12">
+        <label>User/Account Login</label>
+        <input type="text" class="form-control" formControlName="user" />
+
+        <div *ngIf="form.controls['user'].invalid && form.controls['user'].touched">
+          <span style="color: red">User is required</span>
+        </div>
+      </div>
+
+      <div class="col-lg-6 col-md-6 col-sm-12">
+        <label>URL</label>
+        <input type="text" class="form-control" formControlName="url" />
+
+        <div *ngIf="form.controls['url'].invalid && form.controls['url'].touched">
+          <span style="color: red">URL is required</span>
+        </div>
+      </div>
+    </div>
+  </form>
+</div>

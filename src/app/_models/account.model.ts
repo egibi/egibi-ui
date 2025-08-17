@@ -1,7 +1,5 @@
 import { EntityBase } from "./entity-base.model";
-import { AccountType } from "./account-type";
+import { AccountDetails } from "./account-details.model";
 export class Account extends EntityBase{
-    user:string;
-    url: string;
-    accountType: AccountType
+    accountDetails: AccountDetails
 }

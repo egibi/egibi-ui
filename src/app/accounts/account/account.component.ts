@@ -10,11 +10,10 @@ import { AccountDetailsComponent } from "./account-sections/account-details/acco
 import { AccountsBottomActionsComponent } from "../accounts-bottom-actions/accounts-bottom-actions.component";
 import { ApiComponent } from "./account-sections/api/api.component";
 import { StatusComponent } from "./account-sections/status/status.component";
-import { EgibiModalComponent } from "../../egibi-modal/egibi-modal.component";
 
 @Component({
   selector: "account",
-  imports: [ReactiveFormsModule, CommonModule, NgbNavModule, AccountDetailsComponent, FeesComponent, AccountsBottomActionsComponent, EgibiModalComponent],
+  imports: [ReactiveFormsModule, CommonModule, NgbNavModule, AccountDetailsComponent, AccountsBottomActionsComponent],
   templateUrl: "./account.component.html",
   styleUrl: "./account.component.scss",
 })
@@ -23,6 +22,11 @@ export class AccountComponent implements OnInit {
   @ViewChild(ApiComponent) accountApi: ApiComponent;
   @ViewChild(FeesComponent) accountFees: FeesComponent;
   @ViewChild(StatusComponent) accountStatus: StatusComponent;
+
+  public accountDetailsForm: FormGroup;
+  public accountApiForm: FormGroup;
+  public accountFeesForm: FormGroup;
+  public accountStatusForm: FormGroup;
 
   public activeTab = "details";
   accountId: number;
@@ -47,15 +51,6 @@ export class AccountComponent implements OnInit {
       //TODO: this is a new account creation
       console.log("we are creating a new account");
     }
-
-    this.accountForm = this.fb.group({
-      id: [""],
-      name: [""],
-      description: [""],
-      notes: [""],
-      isActive: [""],
-      lastModifiedAt: [""],
-    });
   }
 
   //========================================================
@@ -65,11 +60,20 @@ export class AccountComponent implements OnInit {
 
     switch (activeTab) {
       case "details":
-        console.log('getting details form data:::');
-        let accountDetails = this.accountDetails.getAccountDetails();
-        console.log('account details ==>', accountDetails);
-        
-        console.log("...saved details");
+
+        let detailsFormValues = this.accountDetails.accountDetailsForm.form.value;
+
+        let isValid = this.accountDetails.accountDetailsForm.form.valid;
+
+        if(isValid){
+          console.log('form is valid');
+        }else{
+          console.log('form contains validation errors');
+        }
+
+        console.log('details form values:::');
+        console.log(detailsFormValues);
+        console.log("save details");
         break;
       case "security":
         console.log("save security");
@@ -84,15 +88,6 @@ export class AccountComponent implements OnInit {
         console.log("save status");
         break;
     }
-
-    // let account = this.accountDetails.getAccountDetails();
-    // this.accountsService.saveAccount(account).subscribe((res) => {
-    //   console.log("save account response:::");
-    //   console.log(res);
-    // });
-
-    //TODO: Go back when OK'ed
-    //this.router.navigate(["accounts"]);
   }
 
   public handleCancel(event: any): void {
