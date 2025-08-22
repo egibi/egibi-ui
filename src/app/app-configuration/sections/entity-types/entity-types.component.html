@@ -1,0 +1,22 @@
+<div class="container-fluid">
+  <div class="form-container">
+    <div class="section">
+      <select class="form-control" #selectRef (change)="optionChanged(selectRef.value)">
+        <option value="">Select Entity Type...</option>
+        @for(table of entityTypeTables; track table){
+        <option [value]="table">{{ table }}</option>
+        }
+      </select>
+    </div>
+
+    <div class="section">
+      <div class="section">
+        <button class="btn btn-outline-warning" (click)="addNewEntityType()" >Add New</button>
+      </div>
+    </div>
+
+    <section>
+      <egibi-table [columns]="resultsTableColumns" [data]="entityTypeRecords"></egibi-table>
+    </section>
+  </div>
+</div>

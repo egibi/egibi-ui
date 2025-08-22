@@ -2,7 +2,7 @@
   <li [ngbNavItem]="'entity-types'">
     <button ngbNavLink (click)="setActiveTab('entity-types')">Entity Types</button>
     <ng-template ngbNavContent>
-      <p>entity-types</p>
+      <entity-types #entityTypes></entity-types>
     </ng-template>
   </li>
 
