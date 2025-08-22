@@ -1,0 +1,36 @@
+<div class="modal-header">
+  <h4 class="modal-title">{{ title || "Confirm Action" }}</h4>
+  <button type="button" class="btn-close" (click)="activeModal.dismiss('closed with x')"></button>
+</div>
+
+<div class="modal-body">
+  <div class="d-flex align-items-center">
+    <i class="bi bi-exclamation-triangle-fill text-warning me-3" style="font-size: 2rem"></i>
+    <div>
+      <form [formGroup]="form">
+        <label>Account Name</label>
+        <input type="text" class="form-control" formControlName="name" />
+
+        <label>Account Type</label>
+        <select class="form-control" formControlName="accountType">
+          <option value="cryptocurrency">Cryptocurrency</option>
+          <option value="stocks">Stocks</option>
+        </select>
+
+        <div class="form-check">
+          <input class="form-check-input from-control" type="checkbox" value="" id="checkDefault" formControlName="active" />
+          <label class="form-check-label" for="checkDefault"> Active </label>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<div class="modal-footer">
+  <button type="button" class="btn btn-outline-secondary" (click)="activeModal.dismiss('closed with cancel')">
+    {{ "Cancel" }}
+  </button>
+  <button type="button" class="btn btn-primary" (click)="confirm()">
+    {{ "Save" }}
+  </button>
+</div>

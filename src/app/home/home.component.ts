@@ -12,6 +12,7 @@ import { ConfirmationModalComponent } from "../_components/ngb-global-modal-comp
 })
 export class HomeComponent {
 
+  //modal result
    lastResult: any = null;
 
   constructor(private toastService: ToastService, private modalService:NgbGlobalModalService) {}

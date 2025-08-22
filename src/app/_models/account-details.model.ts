@@ -1,8 +1,10 @@
 import { AccountType } from "./account-type";
 
 export class AccountDetails{
+    // accountId: number;
     name: string;
-    accountType: AccountType;
+    // accountTypeId: number;
+    // accountType: AccountType;
     user: string;
     url: string;
 }

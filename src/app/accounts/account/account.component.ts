@@ -5,11 +5,11 @@ import { NgbNavModule } from "@ng-bootstrap/ng-bootstrap";
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from "@angular/forms";
 import { AccountsService } from "../accounts.service";
 import { EntityType } from "../../_models/entity-type.model";
-import { FeesComponent } from "./account-sections/fees/fees.component";
-import { AccountDetailsComponent } from "./account-sections/account-details/account-details.component";
+import { FeesComponent } from "./sections/fees/fees.component";
+import { AccountDetailsComponent } from "./sections/account-details/account-details.component";
 import { AccountsBottomActionsComponent } from "../accounts-bottom-actions/accounts-bottom-actions.component";
-import { ApiComponent } from "./account-sections/api/api.component";
-import { StatusComponent } from "./account-sections/status/status.component";
+import { ApiComponent } from "./sections/api/api.component";
+import { StatusComponent } from "./sections/status/status.component";
 
 @Component({
   selector: "account",
@@ -61,19 +61,19 @@ export class AccountComponent implements OnInit {
     switch (activeTab) {
       case "details":
 
-        let detailsFormValues = this.accountDetails.accountDetailsForm.form.value;
+        let accountDetails = this.accountDetails.accountDetailsForm.form.value;
 
         let isValid = this.accountDetails.accountDetailsForm.form.valid;
 
         if(isValid){
-          console.log('form is valid');
+          this.accountsService.saveAccountDetails(accountDetails).subscribe((res) => {
+            console.log('saving account details...');
+            console.log(res);
+          });
         }else{
           console.log('form contains validation errors');
         }
 
-        console.log('details form values:::');
-        console.log(detailsFormValues);
-        console.log("save details");
         break;
       case "security":
         console.log("save security");

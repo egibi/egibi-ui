@@ -12,14 +12,14 @@
 
       <div class="col-lg-6 col-md-6 col-sm-12">
         <label>Account Type</label>
-        <select class="form-control" formControlName="accountType">
+        <select class="form-control" formControlName="accountTypeId">
           <option value="">Select Account Type...</option>
           @for (accountType of accountTypes; track accountType){
-          <option [value]="accountType">{{ accountType.name }}</option>
+          <option [value]="accountType.id">{{ accountType.name }}</option>
           }
         </select>
 
-        <div *ngIf="form.controls['accountType'].invalid && form.controls['accountType'].touched">
+        <div *ngIf="form.controls['accountTypeId'].invalid && form.controls['accountTypeId'].touched">
           <span style="color: red">Account Type is required</span>
         </div>
       </div>

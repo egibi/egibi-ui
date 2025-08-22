@@ -3,6 +3,7 @@ import { HttpClient } from "@angular/common/http";
 import { Observable } from "rxjs";
 import { RequestResponse } from "../request-response";
 import { Account } from "../_models/account.model";
+import { AccountDetails } from "../_models/account-details.model";
 
 @Injectable({
   providedIn: "root",
@@ -34,7 +35,12 @@ export class AccountsService {
   }
 
   // CRUD ACTIONS FOR ACCOUNT DETAILS
-  public saveAccountDetails(account:any):Observable<RequestResponse>{
-    return this.http.post<RequestResponse>(`${this.apiBaseUrl}/save-account-details`, account);
+  public saveAccountDetails(accountDetails:AccountDetails):Observable<RequestResponse>{
+
+
+    console.log('saveAccountDetails:::');
+    console.log(accountDetails);
+
+    return this.http.post<RequestResponse>(`${this.apiBaseUrl}/save-account-details`, accountDetails);
   }
 }

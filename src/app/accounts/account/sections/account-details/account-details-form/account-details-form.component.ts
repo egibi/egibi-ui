@@ -20,7 +20,8 @@ export class AccountDetailsFormComponent implements OnInit {
     this.form = this.fb.group({
       name: ["", [Validators.required]],
       user: ["", [Validators.required]],
-      accountType: ["", [Validators.required]],
+      // accountType: ["", [Validators.required]],
+      accountTypeId: [""],
       url: ["", [Validators.required]],
     });
   }

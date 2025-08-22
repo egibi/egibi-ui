@@ -1,0 +1,17 @@
+<ul ngbNav #nav="ngbNav" [(activeId)]="activeTab" class="nav-tabs">
+  <li [ngbNavItem]="'entity-types'">
+    <button ngbNavLink (click)="setActiveTab('entity-types')">Entity Types</button>
+    <ng-template ngbNavContent>
+      <p>entity-types</p>
+    </ng-template>
+  </li>
+
+    <li [ngbNavItem]="'other'">
+    <button ngbNavLink (click)="setActiveTab('other')">Other</button>
+    <ng-template ngbNavContent>
+      <p>other</p>
+    </ng-template>
+  </li>
+</ul>
+
+<div [ngbNavOutlet]="nav" class="mt-2"></div>
