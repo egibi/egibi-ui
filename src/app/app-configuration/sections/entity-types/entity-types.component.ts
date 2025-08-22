@@ -3,6 +3,9 @@ import { AppConfigurationService } from "../../app-configuration.service";
 import { EntityType } from "../../../_models/entity-type.model";
 import { EgibiTableComponent } from "../../../_components/egibi-table/egibi-table.component";
 import { TableColumn } from "../../../_components/egibi-table/egibi-table.models";
+import { NgbActiveModal } from "@ng-bootstrap/ng-bootstrap";
+import { NgbGlobalModalService } from "../../../_services/ngb-global-modal.service";
+import { CreateEntityTypeModalComponent } from "../../modal-components/create-entity-type-modal/create-entity-type-modal.component";
 
 @Component({
   selector: "entity-types",
@@ -28,7 +31,7 @@ export class EntityTypesComponent implements OnInit {
 
   entityTypeRecords: EntityType[] = [];
 
-  constructor(private configService: AppConfigurationService) {}
+  constructor(private configService: AppConfigurationService, private modalService:NgbGlobalModalService) {}
 
   ngOnInit(): void {
     this.configService.getEntityTypeTables().subscribe((res) => {
@@ -52,10 +55,21 @@ export class EntityTypesComponent implements OnInit {
     });
   }
 
-  public addNewEntityType(): void {}
-
   //===============================================================================
   // ADD NEW ENTITY TYPE MODAL
   //===============================================================================
-  
+  lastResult: any = null;
+  public addNewEntityType(event:any): void {
+    this.modalService.openModal(
+      CreateEntityTypeModalComponent,
+      {size: "lg", centered:true},
+      {
+        title: "Create Entity Type"
+      }
+    )
+    .subscribe((result) => {
+      this.lastResult = result;
+      console.log("create entity type confirmation result", result);
+    });
+  }
 }

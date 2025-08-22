@@ -27,12 +27,11 @@ export class CreateAccountModalComponent implements OnInit {
     });
   }
 
-  dismiss(dismissedReason:string):void{
+  dismiss(dismissedReason: string): void {
     this.activeModal.dismiss(dismissedReason);
   }
 
   confirm(): void {
-    this.activeModal.close({formData:this.form.value}); 
-
+    this.activeModal.close({ formData: this.form.value });
   }
 }
