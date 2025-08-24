@@ -21,7 +21,10 @@ export class AppConfigurationService {
   }
 
   public saveEntityType(entityType: EntityType): Observable<RequestResponse> {
-    console.log("configuration service should be calling saveEntityType()");
     return this.http.post<RequestResponse>(`${this.apiBaseUrl}/save-entity-type`, entityType);
+  }
+
+  public deleteEntityType(entityType: EntityType):Observable<RequestResponse>{
+    return this.http.post<RequestResponse>(`${this.apiBaseUrl}/delete-entity-type`, entityType);
   }
 }

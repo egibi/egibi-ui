@@ -8,7 +8,6 @@
     <i class="bi bi-exclamation-triangle-fill text-warning me-3" style="font-size: 2rem"></i>
     <div>
       <form [formGroup]="form">
-        
         <label>Name</label>
         <input type="text" class="form-control" formControlName="name" />
 
@@ -16,11 +15,11 @@
         <input type="text" class="form-control" formControlName="description" />
 
         <label>Notes</label>
-         <textarea class="form-control" formControlName="notes"></textarea>
-
-        <div class="form-check">
-          <input class="form-check-input from-control" type="checkbox" value="" id="checkDefault" formControlName="isActive" />
-          <label class="form-check-label" for="checkDefault"> Active </label>
+        <textarea class="form-control" formControlName="notes"></textarea>
+        <div class="row">
+          <div class="delete-button-container">
+            <button id="deleteBtn" type="button" class="btn btn-outline-danger" (click)="deleteEntityType()" >Delete</button>
+          </div>
         </div>
       </form>
     </div>

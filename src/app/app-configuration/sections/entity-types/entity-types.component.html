@@ -11,12 +11,14 @@
 
     <div class="section">
       <div class="section">
-        <button class="btn btn-outline-warning" (click)="addNewEntityType($event)" >Add New</button>
+        <button class="btn btn-outline-warning" (click)="addNewEntityType($event)" [disabled]="addNewButtonDisabled" >Add New</button>
       </div>
     </div>
 
     <section>
-      <egibi-table [columns]="resultsTableColumns" [data]="entityTypeRecords"></egibi-table>
+      <egibi-table [columns]="resultsTableColumns" [data]="entityTypeRecords" (rowClicked)="editEntityType($event)"></egibi-table>
     </section>
   </div>
 </div>
+
+<toast></toast>

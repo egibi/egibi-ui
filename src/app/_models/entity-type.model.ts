@@ -5,6 +5,6 @@ export class EntityType {
   notes: string;
   tableName: string;
   isActive: boolean;
-  createdAt: Date;
-  lastModifiedAt: Date;
+  createdAt?: Date | null;
+  lastModifiedAt?: Date | null;
 }

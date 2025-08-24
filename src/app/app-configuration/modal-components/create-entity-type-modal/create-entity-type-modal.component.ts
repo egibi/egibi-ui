@@ -1,8 +1,7 @@
-import { Component, Input, OnInit } from "@angular/core";
+import { Component, Input, Output, OnInit, EventEmitter } from "@angular/core";
 import { CommonModule } from "@angular/common";
 import { NgbActiveModal } from "@ng-bootstrap/ng-bootstrap";
-import { ReactiveFormsModule, FormGroup, FormControl, FormBuilder } from "@angular/forms";
-
+import { ReactiveFormsModule, FormGroup, FormBuilder } from "@angular/forms";
 @Component({
   selector: "create-entity-type-modal",
   imports: [CommonModule, ReactiveFormsModule],
@@ -11,17 +10,22 @@ import { ReactiveFormsModule, FormGroup, FormControl, FormBuilder } from "@angul
 })
 export class CreateEntityTypeModalComponent implements OnInit {
   @Input() title?: string;
+  @Output() createEntityTypeRecord = new EventEmitter<any>();
   form: FormGroup;
 
   constructor(public activeModal: NgbActiveModal, private fb: FormBuilder) {}
 
   ngOnInit(): void {
     this.form = this.fb.group({
+      id: [""],
       name: [""],
       description: [""],
       notes: [""],
-      active: [""],
-      sortOrder: [""],
+      tableName:[""],
+      isActive: [""],
+      createdAt:[""],
+      lastModifiedAt:[""]
+
     });
   }
 
@@ -30,7 +34,7 @@ export class CreateEntityTypeModalComponent implements OnInit {
   }
 
   confirm(): void {
-    this.activeModal.close({ formData: this.form.value });
+    this.activeModal.close(this.form.value);  
   }
 
 }
