@@ -16,7 +16,7 @@
     </div>
 
     <section>
-      <egibi-table [columns]="resultsTableColumns" [data]="entityTypeRecords" (rowClicked)="editEntityType($event)"></egibi-table>
+      <egibi-table #entityTypeTable [columns]="resultsTableColumns" [data]="entityTypeRecords" (rowClicked)="editEntityType($event)" (rowDeleted)="deleteRow($event)"></egibi-table>
     </section>
   </div>
 </div>

@@ -4,6 +4,8 @@ import { CommonModule } from "@angular/common";
 import { ToastComponent } from "../_components/toast/toast.component";
 import { NgbGlobalModalService } from "../_services/ngb-global-modal.service";
 import { ConfirmationModalComponent } from "../_components/ngb-global-modal-components/confirmation-modal/confirmation-modal.component";
+import { EgibiModalComponent } from "../_components/egibi-modal/egibi-modal.component";
+import { ModalContentTestComponent } from "../_modal-contents/modal-content-test/modal-content-test.component";
 @Component({
   selector: "home",
   imports: [CommonModule, ToastComponent],
@@ -49,4 +51,20 @@ export class HomeComponent {
       console.log('Confirmation result:', result);
     });
   }
+
+  openTestModal():void{
+    this.modalService.openModal(
+      EgibiModalComponent,
+      {size: 'lg', centered: true},
+      {
+        childComponent: ModalContentTestComponent,
+        childInputs: {description: 'test description'},
+        title: 'Test Modal'        
+      }
+    ).subscribe(result => {
+      console.log('confirmation result:', result);
+    })
+  }
+
+
 }

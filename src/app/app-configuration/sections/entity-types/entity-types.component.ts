@@ -1,9 +1,8 @@
-import { Component, OnInit } from "@angular/core";
+import { Component, OnInit, ViewChild } from "@angular/core";
 import { AppConfigurationService } from "../../app-configuration.service";
 import { EntityType } from "../../../_models/entity-type.model";
 import { EgibiTableComponent } from "../../../_components/egibi-table/egibi-table.component";
 import { TableColumn } from "../../../_components/egibi-table/egibi-table.models";
-import { NgbActiveModal } from "@ng-bootstrap/ng-bootstrap";
 import { NgbGlobalModalService } from "../../../_services/ngb-global-modal.service";
 import { CreateEntityTypeModalComponent } from "../../modal-components/create-entity-type-modal/create-entity-type-modal.component";
 import { ToastService } from "../../../_services/toast.service";
@@ -18,6 +17,8 @@ import { EditEntityTypeModalComponent } from "../../modal-components/edit-entity
   styleUrl: "./entity-types.component.scss",
 })
 export class EntityTypesComponent implements OnInit {
+@ViewChild(EgibiTableComponent) entityTypeTable: EgibiTableComponent;
+
   entityTypeTables: string[] = [];
   addNewButtonDisabled = true;
 
@@ -47,7 +48,7 @@ export class EntityTypesComponent implements OnInit {
     if (value) {
       this.addNewButtonDisabled = false;
       this.selectedEntityTypeTable = value;
-      console.log("get type details");
+      this.configService.setSelectedEntityTypeTable(value);
       this.getEntityTypeRecords(value);
     } else {
       this.addNewButtonDisabled = true;
@@ -96,10 +97,9 @@ export class EntityTypesComponent implements OnInit {
   // HANDLE ADDING NEW ENTITY TYPE TO TABLE
   //===============================================================================
   private createEntityType(result: any): void {
-
     const data = result.result;
 
-    let entityType: EntityType = new EntityType;
+    let entityType: EntityType = new EntityType();
     entityType.name = data.name;
     entityType.description = data.description;
     entityType.notes = data.notes;
@@ -107,20 +107,16 @@ export class EntityTypesComponent implements OnInit {
     entityType.tableName = this.selectedEntityTypeTable;
 
     this.configService.saveEntityType(entityType).subscribe((res) => {
-      console.log('entity type saved; reset table');
+      console.log("entity type saved; reset table");
+      this.getEntityTypeRecords(this.selectedEntityTypeTable);
     });
   }
 
   //===============================================================================
   // HANDLE EDITING ENTITY TYPE (MODAL)
-  //===============================================================================  
-  editEntityTypeLastResult: any = null;
+  //===============================================================================
   public editEntityType(entityType: EntityType): void {
-
     entityType.tableName = this.selectedEntityTypeTable;
-
-    console.log('editing entity type:::');
-    console.log(entityType);
 
     if (!this.selectedEntityTypeTable) {
       this.toastService.showError("No EntityType selected", "Error");
@@ -132,19 +128,36 @@ export class EntityTypesComponent implements OnInit {
           {
             // title: "Create Entity Type",
             title: `Edit ${this.selectedEntityTypeTable}`,
-            entityType: entityType
+            entityType: entityType,
           }
         )
-        .subscribe((result) => {
-          this.editEntityTypeLastResult = result;
+        // Need to setup so that if EntityType deletion is confirmed, the deleted row data is returned and removed from the table and the this.EntityTypeRecords variable. 
+        .subscribe((result:any) => {        
+          console.log('EditEntityTypeModalComponent ==> result');
+          console.log(result);
+
+
+
+          // only if deleted
+          console.log('deleted entity type:::');
+          console.log(this.configService.getDeletedEntityType());
+          const deletedEntityType = this.configService.getDeletedEntityType();
+
+          this.entityTypeTable.removeRowByColumnValue("id", deletedEntityType.id);
+
 
           //TODO: Update entityType record
           // if (result) {
           //   this.save(result);
           // }
-
         });
     }
-  }  
+  }
 
+  //===============================================================================
+  // HANDLE DELETING ENTITY TYPE (FROM MODAL)
+  //===============================================================================  
+  public deleteRow(event:any){
+
+  }
 }
