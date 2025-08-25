@@ -1,3 +1,45 @@
-.table-container{
-    width:75%;
+.form-container {
+  width: 100%;
+  margin: 10px auto;
+  background: white;
+  padding: 10px;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.selects-section {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem; /* Space between selects */
+  width: 100%;
+  margin-bottom: 10px;
+}
+
+.selects-section .form-control {
+  flex: 1;
+  min-width: 0; /* Prevents flex items from overflowing */
+  box-sizing: border-box;
+}
+
+/* Large and medium screens - selects side by side (50% each) */
+@media (min-width: 768px) {
+  .selects-section .form-control {
+    flex-basis: calc(50% - 0.5rem); /* 50% minus half the gap */
+  }
+}
+
+/* Small screens - selects stacked (100% each) */
+@media (max-width: 767px) {
+  .selects-section {
+    flex-direction: column;
+  }
+  
+  .selects-section .form-control {
+    flex-basis: 100%;
+    width: 100%;
+  }
+}
+
+.section {
+  margin-bottom: 10px;
 }

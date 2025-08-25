@@ -1,10 +1,30 @@
 <div class="container-fluid">
-  <div class="row">
-     <accounts-top-actions (addAccount)="openAccountCreateModal($event)"></accounts-top-actions>
-  </div>
-  <div class="row">
-    <div class="table-container" style="width: 75%">
-      <egibi-table [data]="tableData" [columns]="tableColumns" (rowClicked)="rowClicked($event)"></egibi-table>
+  <div class="form-container">
+    <!-- Select dropdowns section - responsive 50%/100% -->
+    <div class="selects-section">
+      <select class="form-control" #selectRef (change)="accountTypeChanged(selectRef.value)">
+        <option value="">Select Account Type...</option>
+        " @for(accountType of accountTypes; track accountType){
+        <option [value]="accountType">{{ accountType.name }}</option>
+        }
+      </select>
+
+      <select class="form-control" #selectRef (change)="accountUserChanged(selectRef.value)">
+        <option value="">Select Account User...</option>
+        " @for(accountUser of accountUsers; track accountUser){
+        <option [value]="accountUser">{{ accountUser }}</option>
+        }
+      </select>
+    </div>
+
+    <!-- Button section - NOW MOVED INSIDE the form container -->
+    <div class="section">
+      <button class="btn btn-outline-warning" (click)="addNewAccount($event)">Add New</button>
+    </div>
+
+    <!-- Table section - NOW MOVED INSIDE the form container -->
+    <div class="section">
+      <egibi-table #accountsTable [columns]="tableColumns" [data]="accounts"></egibi-table>
     </div>
   </div>
 </div>

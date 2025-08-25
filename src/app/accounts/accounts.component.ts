@@ -4,7 +4,6 @@ import { EgibiTableComponent } from "../_components/egibi-table/egibi-table.comp
 import { Account } from "../_models/account.model";
 import { AccountsService } from "./accounts.service";
 import { TableColumn } from "../_components/egibi-table/egibi-table.models";
-import { AccountsTopActionsComponent } from "./accounts-top-actions/accounts-top-actions.component";
 import { NgbGlobalModalService } from "../_services/ngb-global-modal.service";
 import { CreateAccountModalComponent } from "./modal-components/create-account-modal/create-account-modal.component";
 import { AccountType } from "../_models/account-type";
@@ -12,7 +11,7 @@ import { AccountType } from "../_models/account-type";
 @Component({
   selector: "accounts",
   standalone: true,
-  imports: [EgibiTableComponent, AccountsTopActionsComponent],
+  imports: [EgibiTableComponent],
   templateUrl: "./accounts.component.html",
   styleUrl: "./accounts.component.scss",
 })
@@ -21,6 +20,16 @@ export class AccountsComponent implements OnInit {
   accountTypes: AccountType[] = [];
   tableData: any[] = [];
 
+//==============================================================================================
+// FOR TESTING ONLY (Will need to pull from existing accounts once they exist)
+//==============================================================================================
+accountUsers: string[] = [
+  "ahubbard0597@gmail.com",
+  "adam@meta.clinic",
+  "admin@waxmathematical.com",
+  "adam@waxmathematical.com",
+]
+//********************************************************************************************** */
   constructor(private accountService: AccountsService, private router: Router, private modalService: NgbGlobalModalService) {}
 
   ngOnInit(): void {
@@ -77,5 +86,17 @@ export class AccountsComponent implements OnInit {
     } else {
       this.router.navigate(["account"]);
     }
+  }
+
+  public accountTypeChanged(value:any):void{
+    console.log('select account type:::');
+  }
+
+  public accountUserChanged(value:any):void{
+    console.log('select account user:::');
+  }
+
+  public addNewAccount(event:any):void{
+    console.log('adding new account:::');
   }
 }
