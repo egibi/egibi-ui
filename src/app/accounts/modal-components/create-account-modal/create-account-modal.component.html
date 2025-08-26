@@ -10,11 +10,16 @@
       <form [formGroup]="form">
         <label>Account Name</label>
         <input type="text" class="form-control" formControlName="name" />
+        <div *ngIf="form.controls['name'].invalid && form.controls['name'].touched">
+          <span style="color: red">* Name is required</span>
+        </div>
 
         <label>Account Type</label>
-        <select class="form-control" formControlName="accountType">
-          <option value="cryptocurrency">Cryptocurrency</option>
-          <option value="stocks">Stocks</option>
+        <select class="form-control" formControlName="accountTypeId">
+          <option value="">Select Account Type...</option>
+          @for(accountType of accountTypes; track accountType){
+          <option [value]="accountType">{{ accountType.name }}</option>
+          }
         </select>
 
         <div class="form-check">
@@ -30,7 +35,10 @@
   <button type="button" class="btn btn-outline-secondary" (click)="activeModal.dismiss('closed with cancel')">
     {{ "Cancel" }}
   </button>
-  <button type="button" class="btn btn-primary" (click)="confirm()">
+  <button type="button" class="btn btn-primary" (click)="confirm('save as new')">
     {{ "Save" }}
+  </button>
+  <button type="button" class="btn btn-primary" (click)="confirm('save and continue')">
+    {{ "Save & Continue" }}
   </button>
 </div>

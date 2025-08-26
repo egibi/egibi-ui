@@ -10,6 +10,7 @@ import { AccountDetailsComponent } from "./sections/account-details/account-deta
 import { AccountsBottomActionsComponent } from "../accounts-bottom-actions/accounts-bottom-actions.component";
 import { ApiComponent } from "./sections/api/api.component";
 import { StatusComponent } from "./sections/status/status.component";
+import { Account } from "../../_models/account.model";
 
 @Component({
   selector: "account",
@@ -36,69 +37,28 @@ export class AccountComponent implements OnInit {
 
   constructor(private route: ActivatedRoute, private fb: FormBuilder, private router: Router, private accountsService: AccountsService) {}
 
-  ngOnInit(): void {
-    this.accountId = Number(this.route.snapshot.params["id"]);
-    console.log("got id of: ", this.accountId);
+  ngOnInit(): void {}
 
-    if (this.accountId) {
-      // TODO: load existing account data
-      console.log("should get account data:::");
-      this.accountsService.getAccount(this.accountId).subscribe((res) => {
-        console.log("got account data:::");
-        console.log(res);
-      });
-    } else {
-      //TODO: this is a new account creation
-      console.log("we are creating a new account");
-    }
+  //=============================================================
+  // Try with no existing accounts to create a new one
+  //=============================================================
+  public handleSave(activeTab: string, isNewAccount: boolean): void {
+    const newAccount = this.accountDetails.accountDetailsForm.form.value;
+    this.accountsService.saveAccount(newAccount).subscribe((res) => {
+      console.log('attempted save:::');
+      console.log(res);
+    });
   }
 
-  //========================================================
-  // Bottom Action Handlers ================================
-  public handleSave(event: any, activeTab: string): void {
-    console.log("handle save for active tab:::", activeTab);
-
-    switch (activeTab) {
-      case "details":
-
-        let accountDetails = this.accountDetails.accountDetailsForm.form.value;
-
-        let isValid = this.accountDetails.accountDetailsForm.form.valid;
-
-        if(isValid){
-          this.accountsService.saveAccountDetails(accountDetails).subscribe((res) => {
-            console.log('saving account details...');
-            console.log(res);
-          });
-        }else{
-          console.log('form contains validation errors');
-        }
-
-        break;
-      case "security":
-        console.log("save security");
-        break;
-      case "api":
-        console.log("save api");
-        break;
-      case "fees":
-        console.log("save fees");
-        break;
-      case "status":
-        console.log("save status");
-        break;
-    }
+  public handleCancel(event: any) {
+    console.log("handle cancel:::");
+    console.log("cancel event ==> ", event);
   }
 
-  public handleCancel(event: any): void {
-    console.log("canceling account edit:::");
-    this.router.navigate(["accounts"]);
+  public handleDelete(event: any) {
+    console.log("handle delete:::");
+    console.log("delete event ==> event");
   }
-
-  public handleDelete(event: any): void {
-    console.log("deleting account:::");
-  }
-  //========================================================
 
   public setActiveTab(tabId: string) {
     this.activeTab = tabId;

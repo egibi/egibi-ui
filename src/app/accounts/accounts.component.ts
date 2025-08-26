@@ -40,7 +40,9 @@ accountUsers: string[] = [
 
     this.accountService.getAccountTypes().subscribe((res) => {
       console.log("accountTypes:::");
+      console.log(res.responseData);
       this.accountTypes = res.responseData;
+
     })
   }
 
@@ -62,9 +64,9 @@ accountUsers: string[] = [
   // modal result
   lastResult: any = null;
 
-  public openAccountCreateModal(event: any): void {
+  public openAccountCreateModal(): void {
     console.log("open account create modal:::");
-    console.log("event data: ", event);
+    
     this.modalService
       .openModal(
         CreateAccountModalComponent,
@@ -96,7 +98,7 @@ accountUsers: string[] = [
     console.log('select account user:::');
   }
 
-  public addNewAccount(event:any):void{
-    console.log('adding new account:::');
+  public addNewAccount():void{
+    this.openAccountCreateModal();
   }
 }

@@ -3,6 +3,8 @@ import { CommonModule } from "@angular/common";
 import { FormBuilder, FormGroup, ReactiveFormsModule, FormsModule, FormControl, Validators } from "@angular/forms";
 import { AccountType } from "../../../../_models/account-type";
 import { AccountDetailsFormComponent } from "./account-details-form/account-details-form.component";
+import { AppConfigurationService } from "../../../../app-configuration/app-configuration.service";
+import { AccountsService } from "../../../accounts.service";
 
 @Component({
   selector: "account-details",
@@ -12,14 +14,15 @@ import { AccountDetailsFormComponent } from "./account-details-form/account-deta
 })
 export class AccountDetailsComponent implements OnInit {
   @ViewChild(AccountDetailsFormComponent) accountDetailsForm: AccountDetailsFormComponent;
+  accountTypes:AccountType[] = [];
 
-  @Input() accountTypes: AccountType[] = [
-    { id: 1, name: "Cryptocurrency", order: 0 },
-    { id: 2, name: "Stocks", order: 1 },
-    { id: 3, name: "Credit", order: 2 },
-    { id: 4, name: "Loan", order: 3 },
-  ];
 
-  constructor(private fb: FormBuilder) {}
-  ngOnInit(): void {}
+  constructor(private fb:FormBuilder, private accountService:AccountsService){}
+
+  ngOnInit(): void {
+    // Get available AccountTypes
+    this.accountService.getAccountTypes().subscribe((res) => {
+      this.accountTypes = res.responseData;
+    });
+  }
 }

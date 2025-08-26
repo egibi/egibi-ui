@@ -39,6 +39,10 @@ export const routes: Routes = [
     component: AccountComponent,
   },
   {
+    path:"account/create",
+    component: AccountComponent
+  },
+  {
     path: "exchanges",
     component: ExchangesComponent,
   },

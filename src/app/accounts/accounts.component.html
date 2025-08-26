@@ -1,10 +1,9 @@
 <div class="container-fluid">
   <div class="form-container">
-    <!-- Select dropdowns section - responsive 50%/100% -->
     <div class="selects-section">
       <select class="form-control" #selectRef (change)="accountTypeChanged(selectRef.value)">
         <option value="">Select Account Type...</option>
-        " @for(accountType of accountTypes; track accountType){
+        @for(accountType of accountTypes; track accountType){
         <option [value]="accountType">{{ accountType.name }}</option>
         }
       </select>
@@ -17,12 +16,10 @@
       </select>
     </div>
 
-    <!-- Button section - NOW MOVED INSIDE the form container -->
     <div class="section">
-      <button class="btn btn-outline-warning" (click)="addNewAccount($event)">Add New</button>
+      <button class="btn btn-outline-warning" (click)="addNewAccount()">Add New</button>
     </div>
 
-    <!-- Table section - NOW MOVED INSIDE the form container -->
     <div class="section">
       <egibi-table #accountsTable [columns]="tableColumns" [data]="accounts"></egibi-table>
     </div>

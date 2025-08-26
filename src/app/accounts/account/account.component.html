@@ -40,5 +40,5 @@
 <div [ngbNavOutlet]="nav" class="mt-2"></div>
 
 <div class="row">
-  <accounts-bottom-actions (saveClicked)="handleSave($event, activeTab)" (cancelClicked)="handleCancel($event)" (deleteClicked)="handleDelete($event)"></accounts-bottom-actions>
+  <accounts-bottom-actions (saveClicked)="handleSave(activeTab, true)" (cancelClicked)="handleCancel($event)" (deleteClicked)="handleDelete($event)"></accounts-bottom-actions>
 </div>
