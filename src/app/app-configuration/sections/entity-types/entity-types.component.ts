@@ -4,10 +4,10 @@ import { EntityType } from "../../../_models/entity-type.model";
 import { EgibiTableComponent } from "../../../_components/egibi-table/egibi-table.component";
 import { TableColumn } from "../../../_components/egibi-table/egibi-table.models";
 import { NgbGlobalModalService } from "../../../_services/ngb-global-modal.service";
-import { CreateEntityTypeModalComponent } from "../../modal-components/create-entity-type-modal/create-entity-type-modal.component";
+import { CreateEntityTypeModalComponent } from "../../modal-components/entity-types-modals/create-entity-type-modal/create-entity-type-modal.component";
 import { ToastService } from "../../../_services/toast.service";
 import { ToastComponent } from "../../../_components/toast/toast.component";
-import { EditEntityTypeModalComponent } from "../../modal-components/edit-entity-type-modal/edit-entity-type-modal.component";
+import { EditEntityTypeModalComponent } from "../../modal-components/entity-types-modals/edit-entity-type-modal/edit-entity-type-modal.component";
 
 @Component({
   selector: "entity-types",
@@ -85,7 +85,7 @@ export class EntityTypesComponent implements OnInit {
 
           //TODO: Save new entityType record
           if (result) {
-            this.createEntityType(result);
+            this.createEntityType(result.result);
           }
 
           // console.log("create entity type confirmation result", result);
@@ -97,13 +97,13 @@ export class EntityTypesComponent implements OnInit {
   // HANDLE ADDING NEW ENTITY TYPE TO TABLE
   //===============================================================================
   private createEntityType(result: any): void {
-    const data = result.result;
+ 
 
     let entityType: EntityType = new EntityType();
-    entityType.name = data.name;
-    entityType.description = data.description;
-    entityType.notes = data.notes;
-    entityType.isActive = data.isActive;
+    entityType.name = result.name;
+    entityType.description = result.description;
+    entityType.notes = result.notes;
+    entityType.isActive = result.isActive;
     entityType.tableName = this.selectedEntityTypeTable;
 
     this.configService.saveEntityType(entityType).subscribe((res) => {

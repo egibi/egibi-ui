@@ -6,12 +6,20 @@
     </ng-template>
   </li>
 
+    <li [ngbNavItem]="'account-users'">
+    <button ngbNavLink (click)="setActiveTab('account-users')">Account Users</button>
+    <ng-template ngbNavContent>
+      <account-users></account-users>
+    </ng-template>
+  </li>
+
     <li [ngbNavItem]="'other'">
     <button ngbNavLink (click)="setActiveTab('other')">Other</button>
     <ng-template ngbNavContent>
       <p>other</p>
     </ng-template>
   </li>
+
 </ul>
 
 <div [ngbNavOutlet]="nav" class="mt-2"></div>

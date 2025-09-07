@@ -1,10 +1,11 @@
 import { Component, ViewChild, OnInit } from "@angular/core";
 import { NgbNavModule } from "@ng-bootstrap/ng-bootstrap";
 import { EntityTypesComponent } from "./sections/entity-types/entity-types.component";
+import { AccountUsersComponent } from "./sections/account-users/account-users.component";
 
 @Component({
   selector: "app-configuration",
-  imports: [NgbNavModule, EntityTypesComponent],
+  imports: [NgbNavModule, EntityTypesComponent, AccountUsersComponent],
   templateUrl: "./app-configuration.component.html",
   styleUrl: "./app-configuration.component.scss",
 })

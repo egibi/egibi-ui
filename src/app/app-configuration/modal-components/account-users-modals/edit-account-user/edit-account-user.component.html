@@ -1,0 +1,39 @@
+<div class="modal-header">
+  <h4 class="modal-title">{{ title || "Confirm Action" }}</h4>
+  <button type="button" class="btn-close" (click)="activeModal.dismiss('closed with x')"></button>
+</div>
+
+<div class="modal-body">
+  <div class="d-flex align-items-center">
+    <i class="bi bi-exclamation-triangle-fill text-warning me-3" style="font-size: 2rem"></i>
+    <div>
+      <form [formGroup]="form">
+        <label>Email</label>
+        <input type="email" class="form-control" formControlName="email" />
+
+        <label>First Name</label>
+        <input type="text" class="form-control" formControlName="firstName" />
+
+        <label>Last Name</label>
+        <input type="text" class="form-control" formControlName="lastName" />
+
+        <label>Phone #</label>
+        <input type="tel" class="form-control" formControlName="phoneNumber" />
+        <div class="row">
+          <div class="delete-button-container">
+            <button id="deleteBtn" type="button" class="btn btn-outline-danger" (click)="deleteAccountUser()" >Delete</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<div class="modal-footer">
+  <button type="button" class="btn btn-outline-secondary" (click)="activeModal.dismiss('closed with cancel')">
+    {{ "Cancel" }}
+  </button>
+  <button type="button" class="btn btn-primary" (click)="confirm('closed with save')">
+    {{ "Save" }}
+  </button>
+</div>
