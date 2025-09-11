@@ -22,7 +22,6 @@ export class CreateEntityTypeModalComponent implements OnInit {
       description: [""],
       notes: [""],
       tableName:[""],
-      isActive: [""],
       createdAt:[""],
       lastModifiedAt:[""]
     });

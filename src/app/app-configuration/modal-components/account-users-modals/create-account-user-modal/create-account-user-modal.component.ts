@@ -22,7 +22,7 @@ export class CreateAccountUserModalComponent implements OnInit {
       firstName: [""],
       lastName:[""],
       phoneNumber:[""] ,
-      isActive:[]    
+  
     });
   }
 

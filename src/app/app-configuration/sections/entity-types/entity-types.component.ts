@@ -25,9 +25,6 @@ export class EntityTypesComponent implements OnInit {
   resultsTableColumns: TableColumn[] = [
     { key: "id", label: "ID", sortable: true },
     { key: "name", label: "Name", sortable: true },
-    { key: "description", label: "Description", sortable: true },
-    { key: "notes", label: "Notes", sortable: true },
-    { key: "active", label: "Active", sortable: true },
     { key: "createdAt", label: "Created", sortable: true },
     { key: "lastModifiedAt", label: "Last Modified", sortable: true },
   ];
@@ -87,8 +84,6 @@ export class EntityTypesComponent implements OnInit {
           if (result) {
             this.createEntityType(result.result);
           }
-
-          // console.log("create entity type confirmation result", result);
         });
     }
   }
@@ -98,12 +93,10 @@ export class EntityTypesComponent implements OnInit {
   //===============================================================================
   private createEntityType(result: any): void {
  
-
     let entityType: EntityType = new EntityType();
     entityType.name = result.name;
     entityType.description = result.description;
     entityType.notes = result.notes;
-    entityType.isActive = result.isActive;
     entityType.tableName = this.selectedEntityTypeTable;
 
     this.configService.saveEntityType(entityType).subscribe((res) => {
@@ -133,19 +126,9 @@ export class EntityTypesComponent implements OnInit {
         )
         // Need to setup so that if EntityType deletion is confirmed, the deleted row data is returned and removed from the table and the this.EntityTypeRecords variable. 
         .subscribe((result:any) => {        
-          console.log('EditEntityTypeModalComponent ==> result');
-          console.log(result);
-
-
-
           // only if deleted
-          console.log('deleted entity type:::');
-          console.log(this.configService.getDeletedEntityType());
           const deletedEntityType = this.configService.getDeletedEntityType();
-
           this.entityTypeTable.removeRowByColumnValue("id", deletedEntityType.id);
-
-
           //TODO: Update entityType record
           // if (result) {
           //   this.save(result);

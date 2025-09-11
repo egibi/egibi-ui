@@ -60,6 +60,34 @@ export class AppConfigurationService {
   }
 
   //=====================================================================================
+  // ACCOUNT USER STATE MANAGEMENT
+  //===================================================================================== 
+  selectedAccountUser = signal<AccountUser>(new AccountUser());
+  getSelectedAccountUser(): AccountUser {
+    return this.selectedAccountUser();
+  }
+  setSelectedAccountUser(accountUser: AccountUser) {
+    this.selectedAccountUser.update(() => accountUser);
+  }
+
+  createdAccountUser = signal<AccountUser>(new AccountUser());
+  getCreatedAccountUser():AccountUser{
+    return this.createdAccountUser();
+  }
+  setCreatedAccountUser(accountUser:AccountUser){
+    this.createdAccountUser.update(() => accountUser);
+  }
+
+  deletedAccountUser = signal<AccountUser>(new AccountUser());
+  getDeletedAccountUser(): AccountUser {
+    return this.deletedAccountUser();
+  }
+  setDeletedAccountUser(accountUser: AccountUser): void {
+    this.deletedAccountUser.update(() => accountUser);
+  }
+  //-------------------------------------------------------------------------------------
+
+  //=====================================================================================
   // ACCOUNT USER OPERATIONS
   //=====================================================================================
   public getAccountUsers(): Observable<RequestResponse> {

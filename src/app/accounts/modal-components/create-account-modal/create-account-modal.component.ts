@@ -22,7 +22,7 @@ export class CreateAccountModalComponent implements OnInit {
   ngOnInit(): void {
     this.form = this.fb.group({
       name: ["", [Validators.required]],
-      accountTypeId: [""],
+      accountTypeId: ["", Validators.required],
       active: [""],
     });
   }

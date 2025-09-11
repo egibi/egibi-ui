@@ -38,7 +38,7 @@ export class EditAccountUserComponent implements OnInit {
     this.modalService.openModal(ConfirmationModalComponent, { size: "sm", centered: true }, { title: "Confirm" }).subscribe((result: any) => {
       if (result && !result.dismissed) {
         this.configService.deleteAccountUser(this.accountUser).subscribe((res) => {
-          this.configService.setDeletedEntityType(res.responseData);
+          this.configService.setDeletedAccountUser(res.responseData);
           this.dismiss({ dismissed: true, reason: "delete confirmed" });
           this.wasDeleted = true;
         });

@@ -10,7 +10,6 @@ import { AccountDetailsComponent } from "./sections/account-details/account-deta
 import { AccountsBottomActionsComponent } from "../accounts-bottom-actions/accounts-bottom-actions.component";
 import { ApiComponent } from "./sections/api/api.component";
 import { StatusComponent } from "./sections/status/status.component";
-import { Account } from "../../_models/account.model";
 
 @Component({
   selector: "account",

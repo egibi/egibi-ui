@@ -9,7 +9,7 @@
     <li [ngbNavItem]="'account-users'">
     <button ngbNavLink (click)="setActiveTab('account-users')">Account Users</button>
     <ng-template ngbNavContent>
-      <account-users></account-users>
+      <account-users #accountUsers></account-users>
     </ng-template>
   </li>
 

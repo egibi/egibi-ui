@@ -17,7 +17,7 @@ import { EditAccountUserComponent } from "../../modal-components/account-users-m
   styleUrl: "./account-users.component.scss",
 })
 export class AccountUsersComponent implements OnInit {
-  @ViewChild(EgibiTableComponent) accountUserTable: EgibiTableComponent;
+  @ViewChild(EgibiTableComponent) accountUsersTable: EgibiTableComponent;
   accountUsers: AccountUser[] = [];
 
   resultsTableColumns: TableColumn[] = [
@@ -37,16 +37,33 @@ export class AccountUsersComponent implements OnInit {
     });
   }
 
+  public getAccountUserRecords():void{
+    this.configService.getAccountUsers().subscribe((res) => {
+      if(res.responseCode == 200)
+        this.accountUsers = res.responseData;
+    });
+  }
+
   //===============================================================================
-  // HANDLE ADDING NEW ACCOUNT USER TO TABLE
+  // ADD NEW ACCOUNT USER MODAL
   //===============================================================================
   public addNewAccountUser(event: any): void {
-    this.modalService.openModal(CreateAccountUserModalComponent, { size: "lg", centered: true }, { title: "Create Account User" }).subscribe((result) => {
+    this.modalService
+      .openModal(
+        CreateAccountUserModalComponent, 
+        { size: "lg", centered: true }, 
+        { title: "Create Account User" }
+      )
+      .subscribe((result) => {
       if (result) {
         this.createAccountUser(result.result);
       }
     });
   }
+
+  //===============================================================================
+  // HANDLE ADDING NEW ACCOUNT USER TO TABLE
+  //===============================================================================
 
   public createAccountUser(result: any): void {
     let accountUser: AccountUser = new AccountUser();
@@ -55,11 +72,9 @@ export class AccountUsersComponent implements OnInit {
     accountUser.firstName = result.firstName;
     accountUser.lastName = result.lastName;
     accountUser.phoneNumber = result.phoneNumber;
-    accountUser.isActive = result.isActive;
 
     this.configService.saveAccountUser(accountUser).subscribe((res) => {
-      console.log("saved account user:::");
-      console.log(res);
+      this.getAccountUserRecords();
     });
   }
 
@@ -67,23 +82,26 @@ export class AccountUsersComponent implements OnInit {
   // HANDLE EDITING ACCOUNT USER (MODAL)
   //===============================================================================
 
-  public editAccountUser(accountUser:AccountUser): void {
+  public editAccountUser(accountUser: AccountUser): void {
     this.modalService
-    .openModal(EditAccountUserComponent,
-      {size:"lg", centered:true},
-      {
-        title: `Edit Account User`,
-        accountUser: accountUser
-      }
-    )
-    .subscribe((result:any) => {
-      console.log('EditAccountUserModalComponent ==> ');
-      console.log(result);
-    });
+      .openModal(
+        EditAccountUserComponent,
+        { size: "lg", centered: true },
+        {
+          title: `Edit Account User`,
+          accountUser: accountUser,
+        }
+      )
+      .subscribe((result: any) => {
+        // only if deleted
+        const deletedAccountUser = this.configService.getDeletedAccountUser();
+        this.accountUsersTable.removeRowByColumnValue("id", deletedAccountUser.id);
+        console.log("EditAccountUserModalComponent ==> ");
+        console.log(result);
+      });
   }
 
   public deleteAccountUser(event: any): void {
     console.log("delete account user...");
   }
-
 }
