@@ -3,6 +3,8 @@ import { CommonModule } from "@angular/common";
 import { NgbActiveModal } from "@ng-bootstrap/ng-bootstrap";
 import { ReactiveFormsModule, FormGroup, FormControl, FormBuilder, Validators } from "@angular/forms";
 import { AccountType } from "../../../_models/account-type";
+import { AccountsService } from "../../accounts.service";
+import { Account } from "../../../_models/account.model";
 
 @Component({
   selector: "create-account-modal",
@@ -17,13 +19,13 @@ export class CreateAccountModalComponent implements OnInit {
 
   form: FormGroup;
 
-  constructor(public activeModal: NgbActiveModal, private fb: FormBuilder) {}
+  constructor(public activeModal: NgbActiveModal, private fb: FormBuilder, private accountService: AccountsService) {}
 
   ngOnInit(): void {
     this.form = this.fb.group({
       name: ["", [Validators.required]],
       accountTypeId: ["", Validators.required],
-      active: [""],
+      // active: [""],
     });
   }
 
@@ -36,20 +38,19 @@ export class CreateAccountModalComponent implements OnInit {
       if (result === "save as new") {
         console.log("create new blank account record:::");
         // use accountService to create new account
-        // if no accountType is selected, default to unknown
-        // close modal and update table with new account
+        let account = new Account();
+        this.accountService.saveAccount(account);
       }
-      if (result === "save and continue") {
-        console.log("create new blank account record then navigate to new account by id where it should default to details tab:::");
-        // use accountSerivce to create new account
-        // if no accountType is selected, default to unknown
-        // get id of newly created account 
-        // navigate to account route where it should default to 'details' tab
-      }
-    } else {
-      console.log("handle invalid form:::");
-    }
 
-    // this.activeModal.close({ formData: this.form.value });
+      // if no accountType is selected, default to unknown
+      // close modal and update table with new account
+    }
+    if (result === "save and continue") {
+      console.log("create new blank account record then navigate to new account by id where it should default to details tab:::");
+      // use accountSerivce to create new account
+      // if no accountType is selected, default to unknown
+      // get id of newly created account
+      // navigate to account route where it should default to 'details' tab
+    }
   }
 }

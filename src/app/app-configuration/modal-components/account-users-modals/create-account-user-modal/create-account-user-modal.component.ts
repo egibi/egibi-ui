@@ -11,6 +11,7 @@ import { NgbActiveModal } from "@ng-bootstrap/ng-bootstrap";
 })
 export class CreateAccountUserModalComponent implements OnInit {
   @Input() title?: string;
+  @Input() states:string[] = [];
   form: FormGroup;
 
   constructor(public activeModal: NgbActiveModal, private fb:FormBuilder) {}

@@ -26,6 +26,7 @@ export class AccountUsersComponent implements OnInit {
     { key: "firstName", label: "First Name", sortable: true },
     { key: "lastName", label: "Last Name", sortable: true },
     { key: "phoneNumber", label: "Phone #", sortable: true },
+    
   ];
 
   constructor(private toastService: ToastService, private configService: AppConfigurationService, private modalService: NgbGlobalModalService) {}

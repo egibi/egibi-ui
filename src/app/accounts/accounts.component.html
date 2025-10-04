@@ -11,7 +11,7 @@
       <select class="form-control" #selectRef (change)="accountUserChanged(selectRef.value)">
           <option value="">Select Account User...</option>
         @for(accountUser of accountUsers; track accountUser){        
-        <option [value]="accountUser">{{ accountUser }}</option>
+        <option [value]="accountUser">{{ accountUser.email }}</option>
         }
       </select>
     </div>

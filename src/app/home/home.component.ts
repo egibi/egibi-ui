@@ -6,6 +6,7 @@ import { NgbGlobalModalService } from "../_services/ngb-global-modal.service";
 import { ConfirmationModalComponent } from "../_components/ngb-global-modal-components/confirmation-modal/confirmation-modal.component";
 import { EgibiModalComponent } from "../_components/egibi-modal/egibi-modal.component";
 import { ModalContentTestComponent } from "../_modal-contents/modal-content-test/modal-content-test.component";
+import { TestingService } from "../_services/testing.service";
 @Component({
   selector: "home",
   imports: [CommonModule, ToastComponent],
@@ -17,7 +18,7 @@ export class HomeComponent {
   //modal result
    lastResult: any = null;
 
-  constructor(private toastService: ToastService, private modalService:NgbGlobalModalService) {}
+  constructor(private toastService: ToastService, private modalService:NgbGlobalModalService, private testingService:TestingService) {}
 
   testSuccessToast(): void {
     this.toastService.showSuccess("Saved Successfully", "Success");
@@ -64,6 +65,14 @@ export class HomeComponent {
     ).subscribe(result => {
       console.log('confirmation result:', result);
     })
+  }
+
+  testGeoDateTimeData():void{
+
+    this.testingService.testGeoDateTimeData().subscribe((res) => {
+      console.log('geo data time data result:::');
+      console.log(res);
+    });
   }
 
 

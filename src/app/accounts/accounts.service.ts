@@ -18,29 +18,24 @@ export class AccountsService {
     return this.http.get<RequestResponse>(`${this.apiBaseUrl}/get-accounts`);
   }
 
-  public getAccount(id:number):Observable<RequestResponse>{
+  public getAccount(id: number): Observable<RequestResponse> {
     return this.http.get<RequestResponse>(`${this.apiBaseUrl}/get-account` + "?id=" + id);
   }
 
-  public getAccountTypes():Observable<RequestResponse>{
+  public getAccountTypes(): Observable<RequestResponse> {
     return this.http.get<RequestResponse>(`${this.apiBaseUrl}/get-account-types`);
   }
 
-  public saveAccount(account:Account):Observable<RequestResponse>{
+  public saveAccount(account: Account): Observable<RequestResponse> {
     return this.http.post<RequestResponse>(`${this.apiBaseUrl}/save-account`, account);
   }
-  
+
   public deleteAccount(account: Account): Observable<RequestResponse> {
     return this.http.delete<RequestResponse>(`${this.apiBaseUrl}/delete-account` + "?id=" + account.id);
   }
 
   // CRUD ACTIONS FOR ACCOUNT DETAILS
-  public saveAccountDetails(accountDetails:AccountDetails):Observable<RequestResponse>{
-
-
-    console.log('saveAccountDetails:::');
-    console.log(accountDetails);
-
+  public saveAccountDetails(accountDetails: AccountDetails): Observable<RequestResponse> {
     return this.http.post<RequestResponse>(`${this.apiBaseUrl}/save-account-details`, accountDetails);
   }
 }
