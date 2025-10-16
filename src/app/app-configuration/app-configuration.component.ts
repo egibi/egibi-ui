@@ -3,10 +3,11 @@ import { NgbNavModule } from "@ng-bootstrap/ng-bootstrap";
 import { EntityTypesComponent } from "./sections/entity-types/entity-types.component";
 import { AccountUsersComponent } from "./sections/account-users/account-users.component";
 import { Account } from "../_models/account.model";
+import { GeoDatetimeDataComponent } from "./sections/geo-datetime-data/geo-datetime-data.component";
 
 @Component({
   selector: "app-configuration",
-  imports: [NgbNavModule, EntityTypesComponent, AccountUsersComponent],
+  imports: [NgbNavModule, EntityTypesComponent, AccountUsersComponent, GeoDatetimeDataComponent],
   templateUrl: "./app-configuration.component.html",
   styleUrl: "./app-configuration.component.scss",
 })
