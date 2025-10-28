@@ -1,0 +1,38 @@
+<div class="upload-container">
+  <h2>File Upload with Real-Time Progress</h2>
+  
+  <div class="upload-section">
+    <input 
+      type="file" 
+      (change)="onFileSelected($event)"
+      [disabled]="isUploading"
+      class="file-input"
+    />
+    
+    <button 
+      (click)="uploadFile()" 
+      [disabled]="!selectedFile || isUploading"
+      class="upload-btn"
+    >
+      {{ isUploading ? 'Uploading...' : 'Upload File' }}
+    </button>
+    
+    <button 
+      (click)="clearLog()" 
+      [disabled]="isUploading"
+      class="clear-btn"
+    >
+      Clear Log
+    </button>
+  </div>
+
+  <div class="progress-section">
+    <h3>Progress Log:</h3>
+    <textarea 
+      [(ngModel)]="progressLog"
+      readonly
+      rows="15"
+      class="progress-textarea"
+    ></textarea>
+  </div>
+</div>

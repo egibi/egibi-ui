@@ -8,9 +8,10 @@ import { EgibiModalComponent } from "../_components/egibi-modal/egibi-modal.comp
 import { ModalContentTestComponent } from "../_modal-contents/modal-content-test/modal-content-test.component";
 import { TestingService } from "../_services/testing.service";
 import { SignalRChatComponent } from "../_signalr-components/signalr-chat/signalr-chat.component";
+import { SignalrFileUploadComponent } from "../_signalr-components/signalr-file-upload/signalr-file-upload.component";
 @Component({
   selector: "home",
-  imports: [CommonModule, ToastComponent, SignalRChatComponent],
+  imports: [CommonModule, ToastComponent, SignalRChatComponent, SignalrFileUploadComponent],
   templateUrl: "./home.component.html",
   styleUrl: "./home.component.scss",
 })

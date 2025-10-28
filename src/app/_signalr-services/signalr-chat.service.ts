@@ -5,7 +5,7 @@ import { BehaviorSubject, Observable } from "rxjs";
 @Injectable({
   providedIn: "root",
 })
-export class SignalrNotificationServiceService {
+export class signalrChatServiceService {
   private hubConnection: signalR.HubConnection | null = null;
   private connectionStatusSubject = new BehaviorSubject<boolean>(false);
   public connectionStatus$: Observable<boolean> = this.connectionStatusSubject.asObservable();
