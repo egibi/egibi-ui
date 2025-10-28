@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { LayoutHeaderMainComponent } from "./_layout/layout-header-main/layout-header-main.component";
 import { HomeComponent } from './home/home.component';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-root',

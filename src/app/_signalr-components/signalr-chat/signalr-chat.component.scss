@@ -1,0 +1,86 @@
+ .chat-container {
+      max-width: 600px;
+      margin: 20px auto;
+      padding: 20px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+    }
+
+    .connection-status {
+      display: flex;
+      justify-content: space-between;
+      padding: 10px;
+      margin-bottom: 15px;
+      background: #f5f5f5;
+      border-radius: 4px;
+      font-size: 14px;
+    }
+
+    .connected {
+      color: #28a745;
+    }
+
+    .disconnected {
+      color: #dc3545;
+    }
+
+    .messages {
+      height: 400px;
+      overflow-y: auto;
+      border: 1px solid #ddd;
+      padding: 15px;
+      margin-bottom: 15px;
+      background: #fafafa;
+      border-radius: 4px;
+    }
+
+    .message {
+      margin-bottom: 10px;
+      padding: 8px;
+      background: white;
+      border-radius: 4px;
+      border-left: 3px solid #007bff;
+    }
+
+    .message small {
+      display: block;
+      color: #666;
+      font-size: 12px;
+      margin-top: 4px;
+    }
+
+    .input-area {
+      display: flex;
+      gap: 10px;
+    }
+
+    input {
+      flex: 1;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      font-size: 14px;
+    }
+
+    input:first-child {
+      flex: 0 0 150px;
+    }
+
+    button {
+      padding: 10px 20px;
+      background: #007bff;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+
+    button:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+    }
+
+    button:not(:disabled):hover {
+      background: #0056b3;
+    }

@@ -1,0 +1,36 @@
+ <div class="chat-container">
+      <h2>Real-time Chat</h2>
+      
+      <div class="connection-status">
+        <span [class.connected]="isConnected" [class.disconnected]="!isConnected">
+          {{ isConnected ? '● Connected' : '○ Disconnected' }}
+        </span>
+        <span *ngIf="connectionId">ID: {{ connectionId }}</span>
+      </div>
+
+      <div class="messages">
+        <div *ngFor="let msg of messages" class="message">
+          <strong>{{ msg.user }}:</strong> {{ msg.text }}
+          <small>{{ msg.timestamp | date:'short' }}</small>
+        </div>
+      </div>
+
+      <div class="input-area">
+        <input 
+          type="text" 
+          [(ngModel)]="username" 
+          placeholder="Your name"
+          [disabled]="!isConnected"
+        />
+        <input 
+          type="text" 
+          [(ngModel)]="messageText" 
+          placeholder="Type a message..."
+          (keyup.enter)="sendMessage()"
+          [disabled]="!isConnected"
+        />
+        <button (click)="sendMessage()" [disabled]="!isConnected || !messageText">
+          Send
+        </button>
+      </div>
+    </div>

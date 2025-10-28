@@ -1,4 +1,4 @@
-import { Component, ViewChild } from "@angular/core";
+import { Component } from "@angular/core";
 import { ToastService } from "../_services/toast.service";
 import { CommonModule } from "@angular/common";
 import { ToastComponent } from "../_components/toast/toast.component";
@@ -7,9 +7,10 @@ import { ConfirmationModalComponent } from "../_components/ngb-global-modal-comp
 import { EgibiModalComponent } from "../_components/egibi-modal/egibi-modal.component";
 import { ModalContentTestComponent } from "../_modal-contents/modal-content-test/modal-content-test.component";
 import { TestingService } from "../_services/testing.service";
+import { SignalRChatComponent } from "../_signalr-components/signalr-chat/signalr-chat.component";
 @Component({
   selector: "home",
-  imports: [CommonModule, ToastComponent],
+  imports: [CommonModule, ToastComponent, SignalRChatComponent],
   templateUrl: "./home.component.html",
   styleUrl: "./home.component.scss",
 })
