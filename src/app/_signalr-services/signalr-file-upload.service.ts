@@ -12,11 +12,13 @@ export class SignalrFileUploadService {
   public uploadComplete$ = new Subject<string>();
   public uploadError$ = new Subject<string>();
 
+ private apiBaseUrl: string = "https://localhost:7182";
+
   constructor() { }
 
  public startConnection(): Promise<void> {
     this.hubConnection = new signalR.HubConnectionBuilder()
-      .withUrl('https://localhost:7182/file-upload-hub', {
+      .withUrl(`${this.apiBaseUrl}/fileUploadHub`, {
         skipNegotiation: true,
         transport: signalR.HttpTransportType.WebSockets
       })
