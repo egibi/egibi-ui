@@ -56,40 +56,25 @@ $sidebar-transition: 0.2s ease;
 .sidebar-brand {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
   text-decoration: none;
   overflow: hidden;
   
   &:hover {
     text-decoration: none;
   }
-  
-  .brand-icon {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 36px;
-    height: 36px;
-    min-width: 36px;
-    background: linear-gradient(135deg, hsl(var(--egibi-primary)), hsl(var(--egibi-primary) / 0.8));
-    color: hsl(var(--egibi-primary-foreground));
-    border-radius: 10px;
-    font-size: 1.125rem;
-    font-weight: 700;
-  }
 }
 
-.sidebar-brand-text {
-  font-size: 1.25rem;
-  font-weight: 700;
+// SVG Logo styling
+.brand-logo {
+  height: 40px;
+  width: auto;
   color: hsl(var(--egibi-foreground));
-  white-space: nowrap;
-  transition: opacity $sidebar-transition, width $sidebar-transition;
+  transition: all $sidebar-transition;
   
-  &.hidden {
-    opacity: 0;
-    width: 0;
-    overflow: hidden;
+  // Collapsed state - show just the lion icon
+  &.collapsed {
+    height: 36px;
+    width: 46px;
   }
 }
 
