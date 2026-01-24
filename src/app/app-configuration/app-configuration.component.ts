@@ -4,16 +4,18 @@ import { EntityTypesComponent } from "./sections/entity-types/entity-types.compo
 import { AccountUsersComponent } from "./sections/account-users/account-users.component";
 import { Account } from "../_models/account.model";
 import { GeoDatetimeDataComponent } from "./sections/geo-datetime-data/geo-datetime-data.component";
+import { DevToolsComponent } from "./sections/dev-tools/dev-tools.component";
 
 @Component({
   selector: "app-configuration",
-  imports: [NgbNavModule, EntityTypesComponent, AccountUsersComponent, GeoDatetimeDataComponent],
+  standalone: true,
+  imports: [NgbNavModule, EntityTypesComponent, AccountUsersComponent, GeoDatetimeDataComponent, DevToolsComponent],
   templateUrl: "./app-configuration.component.html",
   styleUrl: "./app-configuration.component.scss",
 })
 export class AppConfigurationComponent implements OnInit {
-@ViewChild(EntityTypesComponent) entityTypes: EntityTypesComponent;
-@ViewChild(AccountUsersComponent) accountUsers: AccountUsersComponent;
+  @ViewChild(EntityTypesComponent) entityTypes: EntityTypesComponent;
+  @ViewChild(AccountUsersComponent) accountUsers: AccountUsersComponent;
 
   public activeTab = "entity-types";
 

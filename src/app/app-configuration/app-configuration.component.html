@@ -1,31 +1,38 @@
-<ul ngbNav #nav="ngbNav" [(activeId)]="activeTab" class="nav-tabs">
-  <li [ngbNavItem]="'entity-types'">
-    <button ngbNavLink (click)="setActiveTab('entity-types')">Entity Types</button>
-    <ng-template ngbNavContent>
-      <entity-types #entityTypes></entity-types>
-    </ng-template>
-  </li>
+<div class="settings-container">
+  <div class="page-header mb-4">
+    <h1 class="page-title">Settings</h1>
+    <p class="page-subtitle">Manage application configuration and preferences</p>
+  </div>
 
-  <li [ngbNavItem]="'account-users'">
-    <button ngbNavLink (click)="setActiveTab('account-users')">Account Users</button>
-    <ng-template ngbNavContent>
-      <account-users #accountUsers></account-users>
-    </ng-template>
-  </li>
+  <ul ngbNav #nav="ngbNav" [(activeId)]="activeTab" class="nav-tabs">
+    <li [ngbNavItem]="'entity-types'">
+      <button ngbNavLink (click)="setActiveTab('entity-types')">Entity Types</button>
+      <ng-template ngbNavContent>
+        <entity-types #entityTypes></entity-types>
+      </ng-template>
+    </li>
 
-  <li [ngbNavItem]="'geo-datetime-data'">
-    <button ngbNavLink (click)="setActiveTab('geo-datetime-data')">Geo DateTime Data</button>
-    <ng-template ngbNavContent>
-      <geo-datetime-data></geo-datetime-data>
-    </ng-template>
-  </li>
+    <li [ngbNavItem]="'account-users'">
+      <button ngbNavLink (click)="setActiveTab('account-users')">Account Users</button>
+      <ng-template ngbNavContent>
+        <account-users #accountUsers></account-users>
+      </ng-template>
+    </li>
 
-  <li [ngbNavItem]="'other'">
-    <button ngbNavLink (click)="setActiveTab('other')">Other</button>
-    <ng-template ngbNavContent>
-      <p>other</p>
-    </ng-template>
-  </li>
-</ul>
+    <li [ngbNavItem]="'geo-datetime-data'">
+      <button ngbNavLink (click)="setActiveTab('geo-datetime-data')">Geo DateTime Data</button>
+      <ng-template ngbNavContent>
+        <geo-datetime-data></geo-datetime-data>
+      </ng-template>
+    </li>
 
-<div [ngbNavOutlet]="nav" class="mt-2"></div>
+    <li [ngbNavItem]="'dev-tools'">
+      <button ngbNavLink (click)="setActiveTab('dev-tools')">Dev Tools</button>
+      <ng-template ngbNavContent>
+        <dev-tools></dev-tools>
+      </ng-template>
+    </li>
+  </ul>
+
+  <div [ngbNavOutlet]="nav" class="mt-3"></div>
+</div>

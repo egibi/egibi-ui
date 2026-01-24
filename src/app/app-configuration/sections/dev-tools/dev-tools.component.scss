@@ -1,0 +1,28 @@
+.dev-tools-container {
+  padding: 1rem 0;
+}
+
+.card-title {
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+}
+
+.card-description {
+  font-size: 0.875rem;
+  color: hsl(var(--egibi-muted-foreground));
+  margin-bottom: 0;
+}
+
+.alert-secondary {
+  background-color: hsl(var(--egibi-muted));
+  border-color: hsl(var(--egibi-border));
+  color: hsl(var(--egibi-foreground));
+  
+  code {
+    background-color: hsl(var(--egibi-background));
+    padding: 0.125rem 0.375rem;
+    border-radius: 4px;
+    font-size: 0.8125rem;
+  }
+}
