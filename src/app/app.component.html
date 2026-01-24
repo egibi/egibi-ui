@@ -1,8 +1,9 @@
-<div class="app-shell">
+<div class="app-shell" [class.sidebar-collapsed]="sidebarCollapsed">
   <!-- Sidebar -->
   <app-sidebar 
     [isOpen]="sidebarOpen" 
-    (closeSidebar)="closeSidebar()">
+    (closeSidebar)="closeSidebar()"
+    (collapsedChange)="onSidebarCollapsedChange($event)">
   </app-sidebar>
   
   <!-- Main Content Area -->

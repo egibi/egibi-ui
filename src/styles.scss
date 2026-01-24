@@ -1369,4 +1369,21 @@ textarea.form-control {
     -webkit-text-fill-color: transparent;
     background-clip: text;
   }
+  
+  // NgBootstrap Tooltip styling for dark mode
+  .tooltip {
+    .tooltip-inner {
+      background-color: hsl(230, 18%, 18%);
+      color: hsl(0, 0%, 98%);
+      border: 1px solid hsl(230, 15%, 25%);
+      font-size: 0.8125rem;
+      font-weight: 500;
+      padding: 0.4rem 0.65rem;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    }
+    
+    .tooltip-arrow::before {
+      border-right-color: hsl(230, 18%, 18%) !important;
+    }
+  }
 }

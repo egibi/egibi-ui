@@ -2,6 +2,11 @@
 // APP SHELL LAYOUT
 // ============================================
 
+// Variables
+$sidebar-width: 240px;
+$sidebar-collapsed-width: 72px;
+$sidebar-transition: 0.2s ease;
+
 .app-shell {
   display: flex;
   min-height: 100vh;
@@ -9,14 +14,19 @@
 
 .app-main {
   flex: 1;
-  margin-left: var(--egibi-sidebar-width);
+  margin-left: $sidebar-width;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
   background-color: hsl(var(--egibi-background));
+  transition: margin-left $sidebar-transition;
+  
+  .sidebar-collapsed & {
+    margin-left: $sidebar-collapsed-width;
+  }
   
   @media (max-width: 991.98px) {
-    margin-left: 0;
+    margin-left: 0 !important;
   }
 }
 

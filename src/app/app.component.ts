@@ -16,12 +16,21 @@ import { ToastComponent } from './_components/toast/toast.component';
 export class AppComponent {
   title = 'egibi-ui';
   sidebarOpen = false;
+  sidebarCollapsed = false;
   currentPageTitle = 'Dashboard';
+  
+  private readonly COLLAPSED_KEY = 'egibi-sidebar-collapsed';
   
   themeService = inject(ThemeService);
   private router = inject(Router);
   
   constructor() {
+    // Load collapsed state from localStorage
+    const saved = localStorage.getItem(this.COLLAPSED_KEY);
+    if (saved !== null) {
+      this.sidebarCollapsed = saved === 'true';
+    }
+    
     this.router.events.pipe(
       filter(event => event instanceof NavigationEnd)
     ).subscribe(() => {
@@ -37,6 +46,10 @@ export class AppComponent {
   
   closeSidebar() {
     this.sidebarOpen = false;
+  }
+  
+  onSidebarCollapsedChange(collapsed: boolean) {
+    this.sidebarCollapsed = collapsed;
   }
   
   toggleTheme() {
@@ -57,6 +70,8 @@ export class AppComponent {
       'strategies': 'Strategies',
       'backtester': 'Backtester',
       'accounting': 'Accounting',
+      'data-manager': 'Data Manager',
+      'api-tester': 'API Tester',
       'admin': 'Admin',
       'app-configuration': 'Settings'
     };

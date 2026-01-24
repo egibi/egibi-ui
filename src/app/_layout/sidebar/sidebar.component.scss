@@ -1,20 +1,33 @@
-// Sidebar-specific styles (most styles are in global styles.scss)
+// ============================================
+// SIDEBAR STYLES
+// ============================================
+
+// Variables
+$sidebar-width: 240px;
+$sidebar-collapsed-width: 72px;
+$sidebar-transition: 0.2s ease;
 
 .app-sidebar {
   position: fixed;
   top: 0;
   left: 0;
   bottom: 0;
-  width: var(--egibi-sidebar-width);
+  width: $sidebar-width;
   background-color: hsl(var(--egibi-card));
   border-right: 1px solid hsl(var(--egibi-border));
   display: flex;
   flex-direction: column;
   z-index: 1000;
-  transition: transform 0.3s ease;
+  transition: width $sidebar-transition, transform 0.3s ease;
+
+  // Collapsed state
+  &.collapsed {
+    width: $sidebar-collapsed-width;
+  }
 
   @media (max-width: 991.98px) {
     transform: translateX(-100%);
+    width: $sidebar-width !important; // Always full width on mobile
     
     &.show {
       transform: translateX(0);
@@ -22,12 +35,22 @@
   }
 }
 
+// ============================================
+// HEADER
+// ============================================
+
 .sidebar-header {
   display: flex;
   align-items: center;
+  justify-content: space-between;
   height: 64px;
-  padding: 0 1.25rem;
+  padding: 0 1rem;
   border-bottom: 1px solid hsl(var(--egibi-border));
+  
+  .collapsed & {
+    justify-content: center;
+    padding: 0 0.75rem;
+  }
 }
 
 .sidebar-brand {
@@ -35,6 +58,7 @@
   align-items: center;
   gap: 0.75rem;
   text-decoration: none;
+  overflow: hidden;
   
   &:hover {
     text-decoration: none;
@@ -46,6 +70,7 @@
     justify-content: center;
     width: 36px;
     height: 36px;
+    min-width: 36px;
     background: linear-gradient(135deg, hsl(var(--egibi-primary)), hsl(var(--egibi-primary) / 0.8));
     color: hsl(var(--egibi-primary-foreground));
     border-radius: 10px;
@@ -58,16 +83,81 @@
   font-size: 1.25rem;
   font-weight: 700;
   color: hsl(var(--egibi-foreground));
+  white-space: nowrap;
+  transition: opacity $sidebar-transition, width $sidebar-transition;
+  
+  &.hidden {
+    opacity: 0;
+    width: 0;
+    overflow: hidden;
+  }
 }
+
+// ============================================
+// COLLAPSE TOGGLE
+// ============================================
+
+.collapse-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  background: transparent;
+  border: 1px solid hsl(var(--egibi-border));
+  border-radius: var(--egibi-radius);
+  color: hsl(var(--egibi-muted-foreground));
+  cursor: pointer;
+  transition: all 0.15s ease;
+  flex-shrink: 0;
+  
+  &:hover {
+    background-color: hsl(var(--egibi-accent));
+    color: hsl(var(--egibi-foreground));
+    border-color: hsl(var(--egibi-border));
+  }
+  
+  svg {
+    transition: transform $sidebar-transition;
+    
+    &.rotated {
+      transform: rotate(180deg);
+    }
+  }
+  
+  .collapsed & {
+    position: absolute;
+    right: -14px;
+    top: 50%;
+    transform: translateY(-50%);
+    background-color: hsl(var(--egibi-card));
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    z-index: 10;
+  }
+}
+
+// ============================================
+// NAVIGATION
+// ============================================
 
 .sidebar-nav {
   flex: 1;
   overflow-y: auto;
+  overflow-x: hidden;
   padding: 1rem 0.75rem;
+  
+  .collapsed & {
+    padding: 1rem 0.5rem;
+  }
 }
 
 .sidebar-section {
   margin-bottom: 1.25rem;
+  
+  .collapsed & {
+    margin-bottom: 0.5rem;
+  }
 }
 
 .sidebar-section-title {
@@ -78,6 +168,22 @@
   text-transform: uppercase;
   letter-spacing: 0.05em;
   color: hsl(var(--egibi-muted-foreground));
+  white-space: nowrap;
+  transition: opacity $sidebar-transition;
+  
+  &.hidden {
+    opacity: 0;
+    height: 0;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+  }
+}
+
+.section-divider {
+  height: 1px;
+  background-color: hsl(var(--egibi-border));
+  margin: 0.5rem 0.75rem;
 }
 
 .sidebar-link {
@@ -92,6 +198,7 @@
   color: hsl(var(--egibi-muted-foreground));
   text-decoration: none;
   transition: all 0.15s ease;
+  position: relative;
   
   &:hover {
     background-color: hsl(var(--egibi-accent));
@@ -102,6 +209,11 @@
   &.active {
     background-color: hsl(var(--egibi-accent));
     color: hsl(var(--egibi-foreground));
+  }
+  
+  .collapsed & {
+    justify-content: center;
+    padding: 0.625rem;
   }
 }
 
@@ -116,9 +228,39 @@
   }
 }
 
+.sidebar-link-text {
+  white-space: nowrap;
+  transition: opacity $sidebar-transition, width $sidebar-transition;
+  
+  &.hidden {
+    opacity: 0;
+    width: 0;
+    overflow: hidden;
+    position: absolute;
+  }
+}
+
+// ============================================
+// FOOTER
+// ============================================
+
 .sidebar-footer {
-  padding: 1rem 1.25rem;
+  padding: 1rem;
   border-top: 1px solid hsl(var(--egibi-border));
+  
+  .collapsed & {
+    padding: 0.75rem 0.5rem;
+  }
+}
+
+.footer-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  
+  &.collapsed {
+    justify-content: center;
+  }
 }
 
 .avatar {
@@ -137,6 +279,10 @@
   }
 }
 
+// ============================================
+// OVERLAY
+// ============================================
+
 .sidebar-overlay {
   display: none;
   position: fixed;
@@ -148,5 +294,69 @@
     &.show {
       display: block;
     }
+  }
+}
+
+// ============================================
+// DARK MODE ENHANCEMENTS
+// ============================================
+
+[data-theme="dark"] {
+  .app-sidebar {
+    background-color: hsl(230, 22%, 7%);
+    border-right-color: hsl(230, 15%, 12%);
+  }
+  
+  .sidebar-header {
+    border-bottom-color: hsl(230, 15%, 12%);
+  }
+  
+  .sidebar-footer {
+    border-top-color: hsl(230, 15%, 12%);
+  }
+  
+  .collapse-toggle {
+    border-color: hsl(230, 15%, 18%);
+    
+    &:hover {
+      background-color: hsl(230, 18%, 14%);
+      border-color: hsl(230, 15%, 22%);
+    }
+    
+    .collapsed & {
+      background-color: hsl(230, 22%, 10%);
+      border-color: hsl(230, 15%, 18%);
+    }
+  }
+  
+  .section-divider {
+    background-color: hsl(230, 15%, 15%);
+  }
+  
+  .sidebar-link {
+    &:hover {
+      background-color: hsl(230, 18%, 12%);
+    }
+    
+    &.active {
+      background-color: hsla(174, 72%, 46%, 0.15);
+      color: hsl(174, 72%, 56%);
+      
+      &::before {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 3px;
+        height: 60%;
+        background: linear-gradient(180deg, hsl(174, 72%, 46%), hsl(174, 72%, 36%));
+        border-radius: 0 2px 2px 0;
+      }
+    }
+  }
+  
+  .brand-icon {
+    background: linear-gradient(135deg, hsl(174, 72%, 46%), hsl(174, 72%, 36%));
   }
 }
