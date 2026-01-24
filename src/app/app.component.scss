@@ -1,4 +1,6 @@
-// App Shell Layout Styles
+// ============================================
+// APP SHELL LAYOUT
+// ============================================
 
 .app-shell {
   display: flex;
@@ -11,11 +13,16 @@
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+  background-color: hsl(var(--egibi-background));
   
   @media (max-width: 991.98px) {
     margin-left: 0;
   }
 }
+
+// ============================================
+// HEADER STYLES
+// ============================================
 
 .app-header {
   position: sticky;
@@ -23,59 +30,235 @@
   z-index: 100;
   display: flex;
   align-items: center;
+  justify-content: space-between;
   height: 64px;
   padding: 0 1.5rem;
-  background-color: hsla(var(--egibi-background), 0.8);
-  backdrop-filter: blur(8px);
+  background-color: hsl(var(--egibi-card));
   border-bottom: 1px solid hsl(var(--egibi-border));
+  backdrop-filter: blur(12px);
   
-  .breadcrumb {
-    margin: 0;
-    font-size: 0.875rem;
-    
-    .breadcrumb-item {
-      a {
-        color: hsl(var(--egibi-muted-foreground));
-        text-decoration: none;
-        
-        &:hover {
-          color: hsl(var(--egibi-foreground));
-        }
-      }
-      
-      &.active {
-        color: hsl(var(--egibi-foreground));
-        font-weight: 500;
-      }
-      
-      &::before {
-        color: hsl(var(--egibi-muted-foreground));
-      }
-    }
+  @media (max-width: 575.98px) {
+    padding: 0 1rem;
   }
 }
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.header-title {
+  h1 {
+    margin: 0;
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: hsl(var(--egibi-foreground));
+    letter-spacing: -0.01em;
+  }
+}
+
+// ============================================
+// HEADER BUTTONS
+// ============================================
+
+.header-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: var(--egibi-radius);
+  color: hsl(var(--egibi-muted-foreground));
+  cursor: pointer;
+  transition: all 0.2s ease;
+  
+  &:hover {
+    background-color: hsl(var(--egibi-accent));
+    color: hsl(var(--egibi-foreground));
+    border-color: hsl(var(--egibi-border));
+  }
+  
+  &:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px hsl(var(--egibi-ring) / 0.3);
+  }
+  
+  svg {
+    flex-shrink: 0;
+  }
+}
+
+// Theme toggle specific styling
+.theme-toggle {
+  &:hover {
+    color: hsl(var(--egibi-primary));
+    background-color: hsl(var(--egibi-primary) / 0.1);
+    border-color: hsl(var(--egibi-primary) / 0.2);
+  }
+}
+
+// Notification button with indicator
+.has-indicator {
+  position: relative;
+  
+  .indicator {
+    position: absolute;
+    top: 6px;
+    right: 6px;
+    min-width: 16px;
+    height: 16px;
+    padding: 0 4px;
+    font-size: 0.625rem;
+    font-weight: 600;
+    line-height: 16px;
+    text-align: center;
+    color: white;
+    background-color: hsl(var(--egibi-danger));
+    border-radius: 9999px;
+  }
+}
+
+// User button
+.user-btn {
+  width: auto;
+  padding: 0 0.25rem;
+  
+  .user-avatar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    background: linear-gradient(135deg, hsl(var(--egibi-primary)), hsl(var(--egibi-primary) / 0.8));
+    color: hsl(var(--egibi-primary-foreground));
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 600;
+  }
+}
+
+// ============================================
+// SEARCH BAR
+// ============================================
+
+.header-search {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  height: 40px;
+  padding: 0 0.875rem;
+  background-color: hsl(var(--egibi-muted));
+  border: 1px solid hsl(var(--egibi-border));
+  border-radius: var(--egibi-radius);
+  transition: all 0.2s ease;
+  
+  &:focus-within {
+    background-color: hsl(var(--egibi-background));
+    border-color: hsl(var(--egibi-primary));
+    box-shadow: 0 0 0 3px hsl(var(--egibi-primary) / 0.1);
+  }
+  
+  .search-icon {
+    flex-shrink: 0;
+    color: hsl(var(--egibi-muted-foreground));
+  }
+  
+  .search-input {
+    width: 180px;
+    padding: 0;
+    background: transparent;
+    border: none;
+    outline: none;
+    font-size: 0.875rem;
+    color: hsl(var(--egibi-foreground));
+    
+    &::placeholder {
+      color: hsl(var(--egibi-muted-foreground));
+    }
+    
+    @media (max-width: 1199.98px) {
+      width: 140px;
+    }
+  }
+  
+  .search-kbd {
+    padding: 0.125rem 0.375rem;
+    font-size: 0.625rem;
+    font-family: inherit;
+    color: hsl(var(--egibi-muted-foreground));
+    background-color: hsl(var(--egibi-background));
+    border: 1px solid hsl(var(--egibi-border));
+    border-radius: 4px;
+  }
+}
+
+// ============================================
+// MAIN CONTENT
+// ============================================
 
 .app-content {
   flex: 1;
   padding: 1.5rem;
+  
+  @media (max-width: 575.98px) {
+    padding: 1rem;
+  }
 }
 
-// Search Input Styles
-.search-input {
-  position: relative;
-  
-  .search-icon {
-    position: absolute;
-    left: 0.75rem;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 1rem;
-    height: 1rem;
-    color: hsl(var(--egibi-muted-foreground));
-    pointer-events: none;
+// ============================================
+// DARK MODE HEADER ENHANCEMENTS
+// ============================================
+
+[data-theme="dark"] {
+  .app-header {
+    background-color: hsl(230, 22%, 7%);
+    border-bottom-color: hsl(230, 15%, 12%);
   }
   
-  .form-control {
-    padding-left: 2.25rem;
+  .header-btn {
+    &:hover {
+      background-color: hsl(230, 18%, 14%);
+      border-color: hsl(230, 15%, 20%);
+    }
+  }
+  
+  .theme-toggle:hover {
+    background-color: hsl(174, 72%, 46%, 0.15);
+    border-color: hsl(174, 72%, 46%, 0.3);
+    color: hsl(174, 72%, 56%);
+  }
+  
+  .header-search {
+    background-color: hsl(230, 18%, 10%);
+    border-color: hsl(230, 15%, 18%);
+    
+    &:focus-within {
+      background-color: hsl(230, 18%, 12%);
+      border-color: hsl(174, 72%, 46%);
+      box-shadow: 0 0 0 3px hsl(174, 72%, 46%, 0.15);
+    }
+    
+    .search-kbd {
+      background-color: hsl(230, 18%, 14%);
+      border-color: hsl(230, 15%, 22%);
+    }
+  }
+  
+  .user-btn .user-avatar {
+    background: linear-gradient(135deg, hsl(174, 72%, 46%), hsl(174, 72%, 38%));
+  }
+  
+  .has-indicator .indicator {
+    box-shadow: 0 0 8px hsl(var(--egibi-danger) / 0.5);
   }
 }
