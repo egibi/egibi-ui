@@ -1,0 +1,49 @@
+// Dashboard-specific styles
+
+// Make stat cards have consistent height in the grid
+.stat-card {
+  height: 100%;
+}
+
+// Table styling within cards
+.table {
+  margin: 0;
+  
+  th {
+    background-color: hsl(var(--egibi-muted));
+    border-bottom: 1px solid hsl(var(--egibi-border));
+    font-weight: 500;
+    font-size: 0.6875rem;
+    letter-spacing: 0.05em;
+  }
+  
+  td {
+    border-bottom: 1px solid hsl(var(--egibi-border));
+    vertical-align: middle;
+  }
+  
+  tbody tr:last-child td {
+    border-bottom: none;
+  }
+  
+  tbody tr:hover {
+    background-color: hsl(var(--egibi-accent));
+  }
+}
+
+// Responsive grid for stat cards
+.lg-grid-cols-4 {
+  @media (min-width: 992px) {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+// Chart placeholder
+.chart-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 300px;
+  background-color: hsl(var(--egibi-muted));
+  border-radius: var(--egibi-radius);
+}

@@ -1,0 +1,81 @@
+// App Shell Layout Styles
+
+.app-shell {
+  display: flex;
+  min-height: 100vh;
+}
+
+.app-main {
+  flex: 1;
+  margin-left: var(--egibi-sidebar-width);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  
+  @media (max-width: 991.98px) {
+    margin-left: 0;
+  }
+}
+
+.app-header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  height: 64px;
+  padding: 0 1.5rem;
+  background-color: hsla(var(--egibi-background), 0.8);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid hsl(var(--egibi-border));
+  
+  .breadcrumb {
+    margin: 0;
+    font-size: 0.875rem;
+    
+    .breadcrumb-item {
+      a {
+        color: hsl(var(--egibi-muted-foreground));
+        text-decoration: none;
+        
+        &:hover {
+          color: hsl(var(--egibi-foreground));
+        }
+      }
+      
+      &.active {
+        color: hsl(var(--egibi-foreground));
+        font-weight: 500;
+      }
+      
+      &::before {
+        color: hsl(var(--egibi-muted-foreground));
+      }
+    }
+  }
+}
+
+.app-content {
+  flex: 1;
+  padding: 1.5rem;
+}
+
+// Search Input Styles
+.search-input {
+  position: relative;
+  
+  .search-icon {
+    position: absolute;
+    left: 0.75rem;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 1rem;
+    height: 1rem;
+    color: hsl(var(--egibi-muted-foreground));
+    pointer-events: none;
+  }
+  
+  .form-control {
+    padding-left: 2.25rem;
+  }
+}

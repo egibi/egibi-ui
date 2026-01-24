@@ -1,26 +1,49 @@
-<div class="container-fluid">
-  <div class="form-container">
-    <div class="selects-section">
-      <select class="form-control" #selectRef (change)="accountTypeChanged(selectRef.value)">
-        <option value="">Select Account Type...</option>
-        @for(accountType of accountTypes; track accountType){
-        <option [value]="accountType">{{ accountType.name }}</option>
-        }
-      </select>
-
-      <select class="form-control" #selectRef (change)="accountUserChanged(selectRef.value)">
-          <option value="">Select Account User...</option>
-        @for(accountUser of accountUsers; track accountUser){        
-        <option [value]="accountUser">{{ accountUser.email }}</option>
-        }
-      </select>
+<div class="space-y-6">
+  <!-- Page Header -->
+  <div class="page-header">
+    <div class="page-header-content">
+      <h1 class="page-title">Accounts</h1>
+      <p class="page-subtitle">Manage your trading accounts and portfolios</p>
     </div>
-
-    <div class="section">
-      <button class="btn btn-outline-warning" (click)="addNewAccount()">Add New</button>
+    <div class="page-header-actions">
+      <button class="btn btn-primary" (click)="addNewAccount()">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M5 12h14"/>
+          <path d="M12 5v14"/>
+        </svg>
+        Add Account
+      </button>
     </div>
+  </div>
 
-    <div class="section">
+  <!-- Filters Card -->
+  <div class="card">
+    <div class="card-body">
+      <div class="filters-row">
+        <select class="form-select" #accountTypeSelect (change)="accountTypeChanged(accountTypeSelect.value)">
+          <option value="">All Account Types</option>
+          @for(accountType of accountTypes; track accountType) {
+            <option [value]="accountType">{{ accountType.name }}</option>
+          }
+        </select>
+
+        <select class="form-select" #accountUserSelect (change)="accountUserChanged(accountUserSelect.value)">
+          <option value="">All Users</option>
+          @for(accountUser of accountUsers; track accountUser) {
+            <option [value]="accountUser">{{ accountUser.email }}</option>
+          }
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <!-- Accounts Table Card -->
+  <div class="card">
+    <div class="card-header">
+      <h2 class="card-title">Account List</h2>
+      <p class="card-description">View and manage all your trading accounts</p>
+    </div>
+    <div class="card-body p-0">
       <egibi-table #accountsTable [columns]="tableColumns" [data]="accounts"></egibi-table>
     </div>
   </div>

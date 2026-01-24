@@ -1,70 +1,74 @@
-<div class="container-fluid">
-  <div class="row">
-    <button type="button" class="btn btn-outline-warning" (click)="onActionSelect({ name: 'create' }, createModal, editModal, deleteModal)">Add New</button>
+<div class="space-y-6">
+  <!-- Page Header -->
+  <div class="page-header">
+    <div class="page-header-content">
+      <h1 class="page-title">Strategies</h1>
+      <p class="page-subtitle">Create and manage your trading strategies</p>
+    </div>
+    <div class="page-header-actions">
+      <button class="btn btn-primary" (click)="onActionSelect({ name: 'create' }, createModal, editModal, deleteModal)">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M5 12h14"/>
+          <path d="M12 5v14"/>
+        </svg>
+        New Strategy
+      </button>
+    </div>
   </div>
 
-  <div class="row">
-    <div class="col-sm-12 col-lg-12">
-      <div class="grid-container">
-        <strategies-grid [strategies]="rowData" (actionSelect)="onActionSelect($event, createModal, editModal, deleteModal)"></strategies-grid>
-      </div>
+  <!-- Strategies Grid Card -->
+  <div class="card">
+    <div class="card-header">
+      <h2 class="card-title">Your Strategies</h2>
+      <p class="card-description">View, edit, and manage your trading strategies</p>
+    </div>
+    <div class="card-body">
+      <strategies-grid [strategies]="rowData" (actionSelect)="onActionSelect($event, createModal, editModal, deleteModal)"></strategies-grid>
     </div>
   </div>
 </div>
 
-<!---------------------------------------------------------------------------------------------------------------------------->
 <!-- CREATE STRATEGY MODAL -->
-<!--________________________________________________________________________________________________________________________-->
 <ng-template #createModal let-modal>
   <div class="modal-header">
-    <h4 class="modal-title" id="modal-basic-title">Strategy Details</h4>
+    <h4 class="modal-title">Create Strategy</h4>
     <button type="button" class="btn-close" (click)="modal.dismiss('create-cancel')"></button>
   </div>
   <div class="modal-body">
-    <!-- <connection #connectionComponent [connectionTypes]="connectionTypes"></connection> -->
     <strategy #strategyComponent></strategy>
   </div>
   <div class="modal-footer">
-    <button type="button" class="btn btn-outline-secondary" (click)="modal.close('create-save')">Save</button>
+    <button type="button" class="btn btn-outline-secondary" (click)="modal.dismiss('create-cancel')">Cancel</button>
+    <button type="button" class="btn btn-primary" (click)="modal.close('create-save')">Save Strategy</button>
   </div>
 </ng-template>
-<pre>{{ closeResult() }}</pre>
-<!-- ************************************************************************************************************************-->
 
-<!---------------------------------------------------------------------------------------------------------------------------->
 <!-- EDIT STRATEGY MODAL -->
-<!--________________________________________________________________________________________________________________________-->
 <ng-template #editModal let-modal>
   <div class="modal-header">
-    <h4 class="modal-title" id="modal-basic-title">Strategy Details</h4>
+    <h4 class="modal-title">Edit Strategy</h4>
     <button type="button" class="btn-close" (click)="modal.dismiss('edit-cancel')"></button>
   </div>
   <div class="modal-body">
     <strategy #strategyComponent></strategy>
   </div>
   <div class="modal-footer">
-    <button type="button" class="btn btn-outline-secondary" (click)="modal.close('edit-save')">Save</button>
+    <button type="button" class="btn btn-outline-secondary" (click)="modal.dismiss('edit-cancel')">Cancel</button>
+    <button type="button" class="btn btn-primary" (click)="modal.close('edit-save')">Save Changes</button>
   </div>
 </ng-template>
-<!-- <pre>{{ closeResult() }}</pre> -->
-<!-- ************************************************************************************************************************-->
 
-<!---------------------------------------------------------------------------------------------------------------------------->
 <!-- DELETE STRATEGY MODAL -->
-<!--________________________________________________________________________________________________________________________-->
-
 <ng-template #deleteModal let-modal>
   <div class="modal-header">
-    <h4 class="modal-title" id="modal-basic-title">Confirm Delete</h4>
+    <h4 class="modal-title">Delete Strategy</h4>
     <button type="button" class="btn-close" (click)="modal.dismiss('delete-cancel')"></button>
   </div>
   <div class="modal-body">
-    <p>DELETE</p>
+    <p>Are you sure you want to delete this strategy? This action cannot be undone.</p>
   </div>
   <div class="modal-footer">
-    <button type="button" class="btn btn-outline-secondary" (click)="modal.close('delete-confirm')">Confirm</button>
+    <button type="button" class="btn btn-outline-secondary" (click)="modal.dismiss('delete-cancel')">Cancel</button>
+    <button type="button" class="btn btn-danger" (click)="modal.close('delete-confirm')">Delete</button>
   </div>
 </ng-template>
-
-<!-- <pre>{{ closeResult() }}</pre> -->
-<!-- ************************************************************************************************************************-->

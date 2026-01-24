@@ -1,6 +1,7 @@
 import { Component } from "@angular/core";
 import { ToastService } from "../_services/toast.service";
 import { CommonModule } from "@angular/common";
+import { RouterModule } from "@angular/router";
 import { ToastComponent } from "../_components/toast/toast.component";
 import { NgbGlobalModalService } from "../_services/ngb-global-modal.service";
 import { ConfirmationModalComponent } from "../_components/ngb-global-modal-components/confirmation-modal/confirmation-modal.component";
@@ -11,7 +12,7 @@ import { SignalRChatComponent } from "../_signalr-components/signalr-chat/signal
 import { SignalrFileUploadComponent } from "../_signalr-components/signalr-file-upload/signalr-file-upload.component";
 @Component({
   selector: "home",
-  imports: [CommonModule, ToastComponent, SignalRChatComponent, SignalrFileUploadComponent],
+  imports: [CommonModule, RouterModule, ToastComponent, SignalRChatComponent, SignalrFileUploadComponent],
   templateUrl: "./home.component.html",
   styleUrl: "./home.component.scss",
 })

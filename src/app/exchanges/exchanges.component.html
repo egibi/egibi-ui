@@ -1,7 +1,29 @@
-<div class="row">
-    <div class="actions-container">
-        <button class="btn btn-outline-primary" (click)="addExchange()">Add Exchange</button>
+<div class="space-y-6">
+  <!-- Page Header -->
+  <div class="page-header">
+    <div class="page-header-content">
+      <h1 class="page-title">Exchanges</h1>
+      <p class="page-subtitle">Connect and manage your exchange accounts</p>
     </div>
+    <div class="page-header-actions">
+      <button class="btn btn-primary" (click)="addExchange()">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M5 12h14"/>
+          <path d="M12 5v14"/>
+        </svg>
+        Add Exchange
+      </button>
+    </div>
+  </div>
+
+  <!-- Exchanges Table Card -->
+  <div class="card">
+    <div class="card-header">
+      <h2 class="card-title">Connected Exchanges</h2>
+      <p class="card-description">View and manage your exchange connections</p>
+    </div>
+    <div class="card-body p-0">
+      <egibi-table></egibi-table>
+    </div>
+  </div>
 </div>
-<egibi-table></egibi-table>
-<!-- <egibi-table [tableName]="'Exchanges'" [tableColumns]="columns" [rowData]="exchanges" (rowSelect)="onRowSelected($event)"></egibi-table> -->
