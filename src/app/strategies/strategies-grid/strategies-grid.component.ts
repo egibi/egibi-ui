@@ -1,32 +1,27 @@
-import { Component, Input, Output, OnInit, EventEmitter, signal } from "@angular/core";
+import { Component, Input, Output, OnInit, EventEmitter, inject } from "@angular/core";
 import { Strategy } from "../../_models/strategy.model";
 import { AgGridModule } from "ag-grid-angular";
 import {
   ColDef,
   GridReadyEvent,
   Module,
-  themeQuartz,
-  colorSchemeDark,
   GridApi,
   GetRowIdFunc,
   GetRowIdParams,
   SelectionChangedEvent,
   ClientSideRowModelModule,
   RowSelectionOptions,
-  RowSelectionModule,
-  ModuleRegistry,
   CellClickedEvent,
 } from "ag-grid-community";
-// import { ConnectionsGridActionsComponent } from "./connections-grid-actions/connections-grid-actions.component";
-// import { ConnectionsGridService } from "./connections-grid.service";
-// import { ConnectionsGridAction } from "./connections-grid.models";
 
 import { StrategiesGridActionsComponent } from "./strategies-grid-actions/strategies-grid-actions.component";
 import { StrategiesGridService } from "./strategies-grid.service";
 import { StrategiesGridAction } from "./strategies-grid.models";
+import { AgGridThemeService } from "../../_services/ag-grid-theme.service";
 
 @Component({
   selector: "strategies-grid",
+  standalone: true,
   imports: [AgGridModule],
   templateUrl: "./strategies-grid.component.html",
   styleUrl: "./strategies-grid.component.scss",
@@ -35,11 +30,15 @@ export class StrategiesGridComponent implements OnInit {
   @Input() strategies: Strategy[];
   @Output() actionSelect = new EventEmitter<StrategiesGridAction>();
 
+  private agGridTheme = inject(AgGridThemeService);
+  
   public gridApi: GridApi<Strategy>;
   public selectedRow: Strategy;
   public selectedRows: Strategy[] = [];
   public modules: Module[] = [ClientSideRowModelModule];
-  public gridTheme = themeQuartz.withPart(colorSchemeDark); //TODO: globalize theme related stuff
+  
+  // Use the theme service's computed signal
+  public gridTheme = this.agGridTheme.theme;
 
   components = {
     gridActionsComponent: StrategiesGridActionsComponent,
@@ -72,16 +71,20 @@ export class StrategiesGridComponent implements OnInit {
       headerName: "Actions",
       field: "actions",
       cellRenderer: StrategiesGridActionsComponent,
+      sortable: false,
+      filter: false,
       onCellClicked: (event: CellClickedEvent) => {
         this.gridAction(event.data);
       }
     },
   ];
 
-  public defaultColDef = {
+  public defaultColDef: ColDef = {
     sortable: true,
     filter: true,
     resizable: true,
+    flex: 1,
+    minWidth: 100,
   };
 
   public ngOnInit(): void {

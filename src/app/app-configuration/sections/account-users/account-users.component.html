@@ -1,15 +1,27 @@
-<div class="container-fluid">
-  <div class="form-container">
-    <div class="section">
-      <div class="section">
-        <button class="btn btn-outline-warning" (click)="addNewAccountUser($event)">Add New</button>
+<div class="settings-section">
+  <!-- Account Users Card -->
+  <div class="card">
+    <div class="card-header d-flex justify-content-between align-items-center">
+      <div>
+        <h3 class="card-title">Account Users</h3>
+        <p class="card-description">Manage users who have access to trading accounts</p>
       </div>
+      <button class="btn btn-primary" (click)="addNewAccountUser($event)">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M5 12h14"/>
+          <path d="M12 5v14"/>
+        </svg>
+        Add User
+      </button>
     </div>
-
-    <section>
-      <egibi-table #accountUsersTable [columns]="resultsTableColumns" [data]="accountUsers" (rowClicked)="editAccountUser($event)" (rowDeleted)="deleteAccountUser($event)"></egibi-table>
-    </section>
+    <div class="card-body p-0">
+      <egibi-table 
+        #accountUsersTable 
+        [columns]="resultsTableColumns" 
+        [data]="accountUsers" 
+        (rowClicked)="editAccountUser($event)" 
+        (rowDeleted)="deleteAccountUser($event)">
+      </egibi-table>
+    </div>
   </div>
 </div>
-
-<toast></toast>

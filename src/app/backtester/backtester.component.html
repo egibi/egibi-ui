@@ -1,70 +1,74 @@
-<div class="container-fluid">
-  <div class="row">
-    <button type="button" class="btn btn-outline-warning" (click)="onActionSelect({ name: 'create' }, createModal, editModal, deleteModal)">Add New</button>
-    <!-- <button type="button" class="btn btn-outline-warning" (click)="onActionSelect($event)">Add New</button> -->
+<div class="space-y-6">
+  <!-- Page Header -->
+  <div class="page-header">
+    <div class="page-header-content">
+      <h1 class="page-title">Backtester</h1>
+      <p class="page-subtitle">Test your trading strategies against historical data</p>
+    </div>
+    <div class="page-header-actions">
+      <button class="btn btn-primary" (click)="onActionSelect({ name: 'create' }, createModal, editModal, deleteModal)">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M5 12h14"/>
+          <path d="M12 5v14"/>
+        </svg>
+        New Backtest
+      </button>
+    </div>
   </div>
 
-  <div class="row">
-    <div class="col-sm-12 col-lg-12">
-      <div class="grid-container">
-        <backtests-grid [backtests]="rowData" (actionSelect)="onActionSelect($event, createModal, editModal, deleteModal)"></backtests-grid>
-      </div>
+  <!-- Backtests Grid Card -->
+  <div class="card">
+    <div class="card-header">
+      <h2 class="card-title">Backtests</h2>
+      <p class="card-description">View and manage your backtest runs</p>
+    </div>
+    <div class="card-body">
+      <backtests-grid [backtests]="rowData" (actionSelect)="onActionSelect($event, createModal, editModal, deleteModal)"></backtests-grid>
     </div>
   </div>
 </div>
 
-<!---------------------------------------------------------------------------------------------------------------------------->
 <!-- CREATE BACKTEST MODAL -->
-<!--________________________________________________________________________________________________________________________-->
 <ng-template #createModal let-modal>
   <div class="modal-header">
-    <h4 class="modal-title" id="modal-basic-title">Backtest Details</h4>
+    <h4 class="modal-title">Create Backtest</h4>
     <button type="button" class="btn-close" (click)="modal.dismiss('create-cancel')"></button>
   </div>
   <div class="modal-body">
     <backtests-grid-item #backtestsGridItem></backtests-grid-item>
   </div>
   <div class="modal-footer">
-    <button type="button" class="btn btn-outline-secondary" (click)="modal.close('create-save')">Save</button>
+    <button type="button" class="btn btn-outline-secondary" (click)="modal.dismiss('create-cancel')">Cancel</button>
+    <button type="button" class="btn btn-primary" (click)="modal.close('create-save')">Create Backtest</button>
   </div>
 </ng-template>
-<pre>{{ closeResult() }}</pre>
-<!-- ************************************************************************************************************************-->
 
-<!---------------------------------------------------------------------------------------------------------------------------->
 <!-- EDIT BACKTEST MODAL -->
-<!--________________________________________________________________________________________________________________________-->
 <ng-template #editModal let-modal>
   <div class="modal-header">
-    <h4 class="modal-title" id="modal-basic-title">Backtest Details</h4>
+    <h4 class="modal-title">Edit Backtest</h4>
     <button type="button" class="btn-close" (click)="modal.dismiss('edit-cancel')"></button>
   </div>
   <div class="modal-body">
     <backtests-grid-item #backtestsGridItem></backtests-grid-item>    
   </div>
   <div class="modal-footer">
-    <button type="button" class="btn btn-outline-secondary" (click)="modal.close('edit-save')">Save</button>
+    <button type="button" class="btn btn-outline-secondary" (click)="modal.dismiss('edit-cancel')">Cancel</button>
+    <button type="button" class="btn btn-primary" (click)="modal.close('edit-save')">Save Changes</button>
   </div>
 </ng-template>
-<!-- <pre>{{ closeResult() }}</pre> -->
-<!-- ************************************************************************************************************************-->
 
-<!---------------------------------------------------------------------------------------------------------------------------->
 <!-- DELETE BACKTEST MODAL -->
-<!--________________________________________________________________________________________________________________________-->
-
 <ng-template #deleteModal let-modal>
   <div class="modal-header">
-    <h4 class="modal-title" id="modal-basic-title">Confirm Delete</h4>
+    <h4 class="modal-title">Delete Backtest</h4>
     <button type="button" class="btn-close" (click)="modal.dismiss('delete-cancel')"></button>
   </div>
   <div class="modal-body">
-    <p>DELETE</p>
+    <p>Are you sure you want to delete this backtest? This action cannot be undone.</p>
   </div>
   <div class="modal-footer">
-    <button type="button" class="btn btn-outline-secondary" (click)="modal.close('delete-confirm')">Confirm</button>
+    <button type="button" class="btn btn-outline-secondary" (click)="modal.dismiss('delete-cancel')">Cancel</button>
+    <button type="button" class="btn btn-danger" (click)="modal.close('delete-confirm')">Delete</button>
   </div>
 </ng-template>
-
-<!-- <pre>{{ closeResult() }}</pre> -->
-<!-- ************************************************************************************************************************-->

@@ -1,13 +1,13 @@
 <ag-grid-angular
-style="width: auto; height: 100%;"
-[suppressCellFocus]="true"
-[theme]="gridTheme"
-[modules]="modules"    
-[rowData]="rowData"
-[columnDefs]="columnDefs"
-[defaultColDef]="defaultColDef"
-[getRowId]="getRowId"
-[components]="components"
-(gridReady)="onGridReady($event)"
-(selectionChanged)="onSelectionChanged($event)"  
-></ag-grid-angular>
+  style="width: 100%; height: 100%;"
+  [suppressCellFocus]="true"
+  [theme]="gridTheme()"
+  [modules]="modules"    
+  [rowData]="rowData"
+  [columnDefs]="columnDefs"
+  [defaultColDef]="defaultColDef"
+  [getRowId]="getRowId"
+  [components]="components"
+  (gridReady)="onGridReady($event)"
+  (selectionChanged)="onSelectionChanged($event)">
+</ag-grid-angular>

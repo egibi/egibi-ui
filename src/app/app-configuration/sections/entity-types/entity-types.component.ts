@@ -6,13 +6,12 @@ import { TableColumn } from "../../../_components/egibi-table/egibi-table.models
 import { NgbGlobalModalService } from "../../../_services/ngb-global-modal.service";
 import { CreateEntityTypeModalComponent } from "../../modal-components/entity-types-modals/create-entity-type-modal/create-entity-type-modal.component";
 import { ToastService } from "../../../_services/toast.service";
-import { ToastComponent } from "../../../_components/toast/toast.component";
 import { EditEntityTypeModalComponent } from "../../modal-components/entity-types-modals/edit-entity-type-modal/edit-entity-type-modal.component";
 
 @Component({
   selector: "entity-types",
   standalone: true,
-  imports: [EgibiTableComponent, ToastComponent],
+  imports: [EgibiTableComponent],
   templateUrl: "./entity-types.component.html",
   styleUrl: "./entity-types.component.scss",
 })

@@ -1,28 +1,44 @@
-<div class="container-fluid">
-  <div class="row">
-    <div class="col-sm-12 col-md-12 col-lg-12">
-      <button type="button" class="btn btn-outline-warning" (click)="addNew()">Add New</button>
-      <div class="grid-container" style="height: 750px">
-        <data-providers-grid [rowData]="rowData" (actionSelect)="onActionSelect($event, deleteModal)"></data-providers-grid>
-      </div>
+<div class="space-y-6">
+  <!-- Page Header -->
+  <div class="page-header">
+    <div class="page-header-content">
+      <h1 class="page-title">Data Manager</h1>
+      <p class="page-subtitle">Manage your data providers and market data sources</p>
+    </div>
+    <div class="page-header-actions">
+      <button class="btn btn-primary" (click)="addNew()">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M5 12h14"/>
+          <path d="M12 5v14"/>
+        </svg>
+        Add Provider
+      </button>
+    </div>
+  </div>
+
+  <!-- Data Providers Grid Card -->
+  <div class="card">
+    <div class="card-header">
+      <h2 class="card-title">Data Providers</h2>
+      <p class="card-description">Configure and manage your market data sources</p>
+    </div>
+    <div class="card-body">
+      <data-providers-grid [rowData]="rowData" (actionSelect)="onActionSelect($event, deleteModal)"></data-providers-grid>
     </div>
   </div>
 </div>
 
-  <!---------------------------------------------------------------------------------------------------------------------------->
-  <!-- DELETE CONNECTION MODAL -->
-  <!--________________________________________________________________________________________________________________________-->  
-  <ng-template #deleteModal let-modal>
-    <div class="modal-header">
-      <h4 class="modal-title" id="modal-basic-title">Confirm Delete</h4>
-      <button type="button" class="btn-close" (click)="modal.dismiss('delete-cancel')"></button>
-    </div>
-    <div class="modal-body">
-      <p>DELETE</p>
-    </div>
-    <div class="modal-footer">
-      <button type="button" class="btn btn-outline-secondary" (click)="modal.close('delete-confirm')">Confirm</button>
-    </div>
-  </ng-template>
-
-
+<!-- DELETE DATA PROVIDER MODAL -->
+<ng-template #deleteModal let-modal>
+  <div class="modal-header">
+    <h4 class="modal-title">Delete Data Provider</h4>
+    <button type="button" class="btn-close" (click)="modal.dismiss('delete-cancel')"></button>
+  </div>
+  <div class="modal-body">
+    <p>Are you sure you want to delete this data provider? This action cannot be undone.</p>
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-outline-secondary" (click)="modal.dismiss('delete-cancel')">Cancel</button>
+    <button type="button" class="btn btn-danger" (click)="modal.close('delete-confirm')">Delete</button>
+  </div>
+</ng-template>

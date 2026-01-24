@@ -1,4 +1,4 @@
-import { Component, Input, Output, OnInit, EventEmitter } from "@angular/core";
+import { Component, Input, Output, OnInit, EventEmitter, inject } from "@angular/core";
 import { DataProvider } from "../../../_models/data-provider.model";
 
 import { AgGridModule } from "ag-grid-angular";
@@ -6,8 +6,6 @@ import {
   ColDef,
   GridReadyEvent,
   Module,
-  themeQuartz,
-  colorSchemeDark,
   GridApi,
   GetRowIdFunc,
   GetRowIdParams,
@@ -22,11 +20,13 @@ import {
 import { DataProvidersGridAction } from "./data-providers-grid.models";
 import { DataProvidersGridActionsComponent } from "./data-providers-grid-actions/data-providers-grid-actions.component";
 import { DataProvidersGridService } from "./data-providers-grid.service";
+import { AgGridThemeService } from "../../../_services/ag-grid-theme.service";
 
 ModuleRegistry.registerModules([RowSelectionModule]);
 
 @Component({
   selector: "data-providers-grid",
+  standalone: true,
   imports: [AgGridModule],
   templateUrl: "./data-providers-grid.component.html",
   styleUrl: "./data-providers-grid.component.scss",
@@ -37,11 +37,15 @@ export class DataProvidersGridComponent implements OnInit {
   @Output() actionSelect = new EventEmitter<DataProvidersGridAction>();
   @Output() rowSelect = new EventEmitter<number>();
 
+  private agGridTheme = inject(AgGridThemeService);
+
   public gridApi: GridApi<any>;
   public selectedRow: any;
   public selectedRows: any[] = [];
   public modules: Module[] = [ClientSideRowModelModule];
-  public gridTheme = themeQuartz.withPart(colorSchemeDark); //TODO: globalize theme related stuff
+  
+  // Use the theme service's computed signal
+  public gridTheme = this.agGridTheme.theme;
 
   components = {
     gridActionsComponent: DataProvidersGridActionsComponent,
@@ -66,16 +70,20 @@ export class DataProvidersGridComponent implements OnInit {
       headerName: "Actions",
       field: "actions",
       cellRenderer: DataProvidersGridActionsComponent,
+      sortable: false,
+      filter: false,
       onCellClicked: (event: CellClickedEvent) => {
         this.gridAction(event.data);
       },
     },
   ];
 
-  public defaultColDef = {
+  public defaultColDef: ColDef = {
     sortable: true,
     filter: true,
     resizable: true,
+    flex: 1,
+    minWidth: 100,
   };
 
   public ngOnInit(): void {

@@ -1,24 +1,59 @@
-<div class="container-fluid">
-  <div class="form-container">
-    <div class="section">
-      <select class="form-control" #selectRef (change)="optionChanged(selectRef.value)">
-        <option value="">Select Entity Type...</option>
-        @for(table of entityTypeTables; track table){
-        <option [value]="table">{{ table }}</option>
-        }
-      </select>
-    </div>
-
-    <div class="section">
-      <div class="section">
-        <button class="btn btn-outline-warning" (click)="addNewEntityType($event)" [disabled]="addNewButtonDisabled" >Add New</button>
+<div class="settings-section">
+  <!-- Controls Row -->
+  <div class="card mb-4">
+    <div class="card-body">
+      <div class="d-flex flex-wrap align-items-end gap-3">
+        <div class="flex-grow-1" style="max-width: 300px;">
+          <label class="form-label">Entity Type</label>
+          <select class="form-select" #selectRef (change)="optionChanged(selectRef.value)">
+            <option value="">Select Entity Type...</option>
+            @for(table of entityTypeTables; track table){
+              <option [value]="table">{{ table }}</option>
+            }
+          </select>
+        </div>
+        <button class="btn btn-primary" (click)="addNewEntityType($event)" [disabled]="addNewButtonDisabled">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M5 12h14"/>
+            <path d="M12 5v14"/>
+          </svg>
+          Add New
+        </button>
       </div>
     </div>
-
-    <section>
-      <egibi-table #entityTypeTable [columns]="resultsTableColumns" [data]="entityTypeRecords" (rowClicked)="editEntityType($event)" (rowDeleted)="deleteRow($event)"></egibi-table>
-    </section>
   </div>
-</div>
 
-<toast></toast>
+  <!-- Results Table Card -->
+  @if (selectedEntityTypeTable) {
+    <div class="card">
+      <div class="card-header">
+        <h3 class="card-title">{{ selectedEntityTypeTable }} Records</h3>
+        <p class="card-description">Manage {{ selectedEntityTypeTable.toLowerCase() }} entries</p>
+      </div>
+      <div class="card-body p-0">
+        <egibi-table 
+          #entityTypeTable 
+          [columns]="resultsTableColumns" 
+          [data]="entityTypeRecords" 
+          (rowClicked)="editEntityType($event)" 
+          (rowDeleted)="deleteRow($event)">
+        </egibi-table>
+      </div>
+    </div>
+  } @else {
+    <div class="card">
+      <div class="card-body text-center py-5">
+        <div class="text-muted">
+          <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="mb-3 opacity-50">
+            <path d="M3 3h18v18H3z"/>
+            <path d="M21 9H3"/>
+            <path d="M21 15H3"/>
+            <path d="M9 3v18"/>
+            <path d="M15 3v18"/>
+          </svg>
+          <p class="mb-0">Select an entity type from the dropdown to view records</p>
+        </div>
+      </div>
+    </div>
+  }
+</div>

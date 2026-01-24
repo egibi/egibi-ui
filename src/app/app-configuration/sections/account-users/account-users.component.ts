@@ -2,7 +2,6 @@ import { Component, OnInit, ViewChild } from "@angular/core";
 import { EgibiTableComponent } from "../../../_components/egibi-table/egibi-table.component";
 import { TableColumn } from "../../../_components/egibi-table/egibi-table.models";
 import { ToastService } from "../../../_services/toast.service";
-import { ToastComponent } from "../../../_components/toast/toast.component";
 import { AccountUser } from "../../../_models/account-user.model";
 import { AppConfigurationService } from "../../app-configuration.service";
 import { NgbGlobalModalService } from "../../../_services/ngb-global-modal.service";
@@ -12,7 +11,7 @@ import { EditAccountUserComponent } from "../../modal-components/account-users-m
 @Component({
   selector: "account-users",
   standalone: true,
-  imports: [EgibiTableComponent, ToastComponent],
+  imports: [EgibiTableComponent],
   templateUrl: "./account-users.component.html",
   styleUrl: "./account-users.component.scss",
 })
