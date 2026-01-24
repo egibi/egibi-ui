@@ -1,107 +1,183 @@
-.table-hover:hover{
+// ============================================
+// EGIBI TABLE - THEME-AWARE STYLING
+// ============================================
+
+.table-container {
+  overflow-x: auto;
+  border-radius: var(--egibi-radius);
+}
+
+.sortable-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  font-size: 0.875rem;
+}
+
+// Header styling
+.sortable-table th {
+  padding: 0.75rem 1rem;
+  text-align: left;
+  font-weight: 600;
+  font-size: 0.6875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: hsl(var(--egibi-muted-foreground));
+  background-color: hsl(var(--egibi-muted) / 0.3);
+  border-bottom: 1px solid hsl(var(--egibi-border));
+  position: relative;
+  white-space: nowrap;
+}
+
+.sortable-table th.sortable {
+  cursor: pointer;
+  user-select: none;
+  transition: background-color 0.15s ease;
+}
+
+.sortable-table th.sortable:hover {
+  background-color: hsl(var(--egibi-muted) / 0.5);
+}
+
+.header-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+// Sort icons
+.sort-icons {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  opacity: 0.3;
+  transition: opacity 0.15s ease;
+}
+
+.sortable:hover .sort-icons {
+  opacity: 0.6;
+}
+
+.sort-arrow {
+  font-size: 0.5rem;
+  line-height: 1;
+  color: hsl(var(--egibi-muted-foreground));
+  transition: color 0.15s ease;
+}
+
+.sort-arrow.up {
+  margin-bottom: -2px;
+}
+
+.sort-arrow.down {
+  margin-top: -2px;
+}
+
+.sort-arrow.active {
+  color: hsl(var(--egibi-primary));
+  opacity: 1;
+}
+
+.sortable-table th.sorted-asc .sort-icons,
+.sortable-table th.sorted-desc .sort-icons {
+  opacity: 1;
+}
+
+// Cell styling
+.sortable-table td {
+  padding: 0.875rem 1rem;
+  text-align: left;
+  color: hsl(var(--egibi-foreground));
+  border-bottom: 1px solid hsl(var(--egibi-border) / 0.5);
+  vertical-align: middle;
+}
+
+// Row styling
+.sortable-table tbody tr {
+  transition: background-color 0.15s ease;
   cursor: pointer;
 }
 
-.table-container {
-      overflow-x: auto;
-      border: 1px solid #e0e0e0;
-      border-radius: 8px;
-    }
+.sortable-table tbody tr:hover {
+  background-color: hsl(var(--egibi-muted) / 0.3);
+}
 
-    .sortable-table {
-      width: 100%;
-      border-collapse: collapse;
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    }
+.sortable-table tbody tr:last-child td {
+  border-bottom: none;
+}
 
-    .sortable-table th,
-    .sortable-table td {
-      padding: 12px 16px;
-      text-align: left;
-      border-bottom: 1px solid #e0e0e0;
-    }
+// Selected row styling
+.sortable-table tbody tr.selected {
+  background-color: hsl(var(--egibi-primary) / 0.1);
+  
+  &::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 3px;
+    background: hsl(var(--egibi-primary));
+  }
+}
 
-    .sortable-table th {
-      background-color: #f8f9fa;
-      font-weight: 600;
-      color: #495057;
-      position: relative;
-    }
+// Empty state
+.table-empty {
+  padding: 3rem 1rem;
+  text-align: center;
+  color: hsl(var(--egibi-muted-foreground));
+  
+  svg {
+    margin-bottom: 1rem;
+    opacity: 0.5;
+  }
+  
+  p {
+    margin: 0;
+  }
+}
 
-    .sortable-table th.sortable {
-      cursor: pointer;
-      user-select: none;
-      transition: background-color 0.2s ease;
-    }
+// Responsive
+@media (max-width: 768px) {
+  .sortable-table th,
+  .sortable-table td {
+    padding: 0.625rem 0.75rem;
+    font-size: 0.8125rem;
+  }
+}
 
-    .sortable-table th.sortable:hover {
-      background-color: #e9ecef;
+// ============================================
+// DARK MODE OVERRIDES
+// ============================================
+:host-context([data-theme="dark"]) {
+  .sortable-table th {
+    background-color: hsl(230, 22%, 7%);
+    border-bottom-color: hsl(230, 15%, 12%);
+    color: hsl(220, 10%, 60%);
+  }
+  
+  .sortable-table th.sortable:hover {
+    background-color: hsl(230, 18%, 10%);
+  }
+  
+  .sortable-table td {
+    border-bottom-color: hsl(230, 15%, 12%);
+  }
+  
+  .sortable-table tbody tr:hover {
+    background-color: hsl(230, 18%, 10%);
+  }
+  
+  .sortable-table tbody tr.selected {
+    background-color: hsla(174, 72%, 46%, 0.08);
+    
+    &:hover {
+      background-color: hsla(174, 72%, 46%, 0.12);
     }
-
-    .header-content {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 8px;
-    }
-
-    .sort-icons {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      opacity: 0.3;
-      transition: opacity 0.2s ease;
-    }
-
-    .sortable:hover .sort-icons {
-      opacity: 0.6;
-    }
-
-    .sort-arrow {
-      font-size: 10px;
-      line-height: 1;
-      color: #6c757d;
-      transition: color 0.2s ease;
-    }
-
-    .sort-arrow.up {
-      margin-bottom: -2px;
-    }
-
-    .sort-arrow.down {
-      margin-top: -2px;
-    }
-
-    .sort-arrow.active {
-      color: #007bff;
-      opacity: 1;
-    }
-
-    .sortable-table th.sorted-asc .sort-icons,
-    .sortable-table th.sorted-desc .sort-icons {
-      opacity: 1;
-    }
-
-    .sortable-table tbody tr {
-      transition: background-color 0.2s ease;
-    }
-
-    .sortable-table tbody tr:hover {
-      background-color: #f8f9fa;
-    }
-
-    .sortable-table tbody tr:last-child td {
-      border-bottom: none;
-    }
-
-    .sortable-table td {
-      color: #495057;
-    }
-
-    @media (max-width: 768px) {
-      .sortable-table th,
-      .sortable-table td {
-        padding: 8px 12px;
-        font-size: 14px;
-      }
-    }
+  }
+  
+  .sort-arrow.active {
+    color: hsl(174, 72%, 46%);
+  }
+}
