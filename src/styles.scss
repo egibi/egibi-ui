@@ -1678,3 +1678,95 @@ textarea.form-control {
     }
   }
 }
+
+// ============================================
+// BREADCRUMB STYLES - Override Bootstrap
+// ============================================
+
+// Kill ALL Bootstrap breadcrumb styles
+.egibi-breadcrumb,
+.egibi-breadcrumb-list,
+.egibi-breadcrumb-item,
+.egibi-breadcrumb-link,
+.egibi-breadcrumb-text {
+  &::before {
+    content: none !important;
+    display: none !important;
+  }
+}
+
+.egibi-breadcrumb {
+  --bs-breadcrumb-divider: none;
+  display: flex;
+  align-items: center;
+  background: transparent;
+  margin: 0;
+  padding: 0;
+}
+
+.egibi-breadcrumb-list {
+  display: flex;
+  align-items: center;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  gap: 0;
+  background: transparent;
+}
+
+.egibi-breadcrumb-item {
+  display: flex;
+  align-items: center;
+  font-size: 0.875rem;
+  padding: 0;
+  
+  &::before {
+    content: none !important;
+    display: none !important;
+  }
+  
+  &:not(:last-child)::after {
+    content: '›';
+    display: inline-block;
+    margin: 0 0.5rem;
+    color: hsl(var(--egibi-muted-foreground) / 0.5);
+    font-size: 1rem;
+  }
+  
+  &.current {
+    .egibi-breadcrumb-text {
+      color: hsl(var(--egibi-foreground));
+      font-weight: 500;
+    }
+  }
+}
+
+.egibi-breadcrumb-link,
+.egibi-breadcrumb-text {
+  display: inline-flex;
+  align-items: center;
+  text-decoration: none;
+  color: hsl(var(--egibi-muted-foreground));
+  transition: color 0.15s ease;
+  padding: 0;
+  
+  &::before {
+    content: none !important;
+    display: none !important;
+  }
+}
+
+.egibi-breadcrumb-link:hover {
+  color: hsl(var(--egibi-foreground));
+}
+
+// Dark mode breadcrumb enhancements
+[data-theme="dark"] {
+  .egibi-breadcrumb-link:hover {
+    color: hsl(174, 72%, 46%);
+  }
+  
+  .egibi-breadcrumb-item.current .egibi-breadcrumb-text {
+    color: hsl(0, 0%, 98%);
+  }
+}

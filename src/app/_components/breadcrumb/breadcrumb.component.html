@@ -1,0 +1,23 @@
+<nav class="egibi-breadcrumb" aria-label="Breadcrumb">
+  <ol class="egibi-breadcrumb-list">
+    @for (crumb of breadcrumbs; track crumb.url; let last = $last) {
+      <li class="egibi-breadcrumb-item" [class.current]="crumb.isCurrent">
+        @if (crumb.isHome) {
+          <!-- Dashboard link -->
+          @if (!crumb.isCurrent) {
+            <a [routerLink]="crumb.url" class="egibi-breadcrumb-link">Dashboard</a>
+          } @else {
+            <span class="egibi-breadcrumb-text" aria-current="page">Dashboard</span>
+          }
+        } @else {
+          <!-- Regular breadcrumb -->
+          @if (!crumb.isCurrent && crumb.url) {
+            <a [routerLink]="crumb.url" class="egibi-breadcrumb-link">{{ crumb.label }}</a>
+          } @else {
+            <span class="egibi-breadcrumb-text" [attr.aria-current]="crumb.isCurrent ? 'page' : null">{{ crumb.label }}</span>
+          }
+        }
+      </li>
+    }
+  </ol>
+</nav>

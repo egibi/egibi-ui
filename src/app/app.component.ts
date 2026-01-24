@@ -6,11 +6,12 @@ import { SidebarComponent } from './_layout/sidebar/sidebar.component';
 import { ThemeService } from './_services/theme.service';
 import { HighchartsThemeService } from './_services/highcharts-theme.service';
 import { ToastComponent } from './_components/toast/toast.component';
+import { BreadcrumbComponent } from './_components/breadcrumb/breadcrumb.component';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [CommonModule, RouterOutlet, RouterModule, SidebarComponent, ToastComponent],
+  imports: [CommonModule, RouterOutlet, RouterModule, SidebarComponent, ToastComponent, BreadcrumbComponent],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss'
 })
@@ -18,7 +19,6 @@ export class AppComponent {
   title = 'egibi-ui';
   sidebarOpen = false;
   sidebarCollapsed = false;
-  currentPageTitle = 'Dashboard';
   
   private readonly COLLAPSED_KEY = 'egibi-sidebar-collapsed';
   
@@ -36,7 +36,6 @@ export class AppComponent {
     this.router.events.pipe(
       filter(event => event instanceof NavigationEnd)
     ).subscribe(() => {
-      this.updateCurrentPage();
       // Close sidebar on navigation (mobile)
       this.sidebarOpen = false;
     });
@@ -60,23 +59,5 @@ export class AppComponent {
   
   get isDarkMode() {
     return this.themeService.isDarkMode();
-  }
-  
-  private updateCurrentPage() {
-    const path = this.router.url.split('/')[1]?.split('?')[0] || '';
-    const pageMap: Record<string, string> = {
-      '': 'Dashboard',
-      'accounts': 'Accounts',
-      'exchanges': 'Exchanges',
-      'markets': 'Markets',
-      'strategies': 'Strategies',
-      'backtester': 'Backtester',
-      'accounting': 'Accounting',
-      'data-manager': 'Data Manager',
-      'api-tester': 'API Tester',
-      'admin': 'Admin',
-      'app-configuration': 'Settings'
-    };
-    this.currentPageTitle = pageMap[path] || 'Dashboard';
   }
 }
