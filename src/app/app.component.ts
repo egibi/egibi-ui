@@ -4,6 +4,7 @@ import { CommonModule } from '@angular/common';
 import { filter } from 'rxjs/operators';
 import { SidebarComponent } from './_layout/sidebar/sidebar.component';
 import { ThemeService } from './_services/theme.service';
+import { HighchartsThemeService } from './_services/highcharts-theme.service';
 import { ToastComponent } from './_components/toast/toast.component';
 
 @Component({
@@ -22,6 +23,7 @@ export class AppComponent {
   private readonly COLLAPSED_KEY = 'egibi-sidebar-collapsed';
   
   themeService = inject(ThemeService);
+  private highchartsTheme = inject(HighchartsThemeService); // Initialize Highcharts theme
   private router = inject(Router);
   
   constructor() {

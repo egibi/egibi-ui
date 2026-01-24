@@ -95,9 +95,13 @@
           </div>
         </div>
         <div class="card-body">
-          <div class="d-flex align-items-center justify-content-center" style="height: 300px;">
-            <p class="text-muted">Chart placeholder - Highcharts integration</p>
-          </div>
+          <highcharts-time-series
+            [series]="portfolioSeries"
+            [height]="'300px'"
+            [yAxisTitle]="'Value ($)'"
+            [showLegend]="false"
+            [chartType]="'areaspline'">
+          </highcharts-time-series>
         </div>
       </div>
     </div>
