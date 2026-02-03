@@ -187,6 +187,15 @@
         }
       </button>
     </div>
+    <!-- Environment Indicator -->
+    <div class="env-indicator" [class.collapsed]="isCollapsed" [class.env-prod]="envService.isProduction()">
+      @if (isCollapsed) {
+        <span class="env-dot" [ngbTooltip]="envService.environment().name" placement="right" container="body"></span>
+      } @else {
+        <span class="env-tag">{{ envService.environment().tag }}</span>
+        <span class="env-name">{{ envService.environment().name }}</span>
+      }
+    </div>
   </div>
 </aside>
 

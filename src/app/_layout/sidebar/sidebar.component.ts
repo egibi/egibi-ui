@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { NgbTooltipModule } from '@ng-bootstrap/ng-bootstrap';
 import { ThemeService } from '../../_services/theme.service';
+import { EnvironmentService } from '../../_services/environment.service';
 
 interface NavItem {
   label: string;
@@ -29,6 +30,7 @@ export class SidebarComponent {
   @Output() collapsedChange = new EventEmitter<boolean>();
   
   themeService = inject(ThemeService);
+  envService = inject(EnvironmentService);
   isMobile = false;
   isCollapsed = false;
   

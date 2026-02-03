@@ -265,6 +265,73 @@ $sidebar-transition: 0.2s ease;
 }
 
 // ============================================
+// ENVIRONMENT INDICATOR
+// ============================================
+
+.env-indicator {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.375rem 0.75rem;
+  margin-top: 0.5rem;
+  border-radius: var(--egibi-radius);
+  background-color: hsla(174, 72%, 46%, 0.08);
+  border: 1px solid hsla(174, 72%, 46%, 0.15);
+  
+  &.collapsed {
+    justify-content: center;
+    padding: 0.375rem;
+    margin-top: 0.375rem;
+  }
+  
+  // Production style - amber/orange
+  &.env-prod {
+    background-color: hsla(38, 92%, 50%, 0.08);
+    border-color: hsla(38, 92%, 50%, 0.15);
+    
+    .env-tag {
+      background-color: hsla(38, 92%, 50%, 0.15);
+      color: hsl(38, 92%, 50%);
+    }
+    
+    .env-dot {
+      background-color: hsl(38, 92%, 50%);
+    }
+  }
+}
+
+.env-tag {
+  font-size: 0.625rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  padding: 0.125rem 0.375rem;
+  border-radius: 4px;
+  background-color: hsla(174, 72%, 46%, 0.15);
+  color: hsl(174, 72%, 46%);
+  line-height: 1.4;
+}
+
+.env-name {
+  font-size: 0.6875rem;
+  color: hsl(var(--egibi-muted-foreground));
+  font-weight: 500;
+}
+
+.env-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: hsl(174, 72%, 46%);
+  animation: env-pulse 2s ease-in-out infinite;
+}
+
+@keyframes env-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+// ============================================
 // OVERLAY
 // ============================================
 
