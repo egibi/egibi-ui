@@ -16,11 +16,20 @@ import { Exchange } from "./_models/exchange.model";
 import { AccountsComponent } from "./accounts/accounts.component";
 import { AccountComponent } from "./accounts/account/account.component";
 import { AppConfigurationComponent } from "./app-configuration/app-configuration.component";
+import { DocumentationComponent } from "./documentation/documentation.component";
 
 export const routes: Routes = [
   {
     path: "",
     component: HomeComponent,
+  },
+  {
+    path: "documentation",
+    component: DocumentationComponent
+  },
+  {
+    path: "app-configuration",
+    component: AppConfigurationComponent
   },
   {
     path: "home",

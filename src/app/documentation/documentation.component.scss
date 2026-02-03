@@ -1,0 +1,239 @@
+// ============================================
+// DOCUMENTATION PAGE STYLES
+// ============================================
+
+// Last updated badge in header
+.doc-updated {
+  font-size: 0.8rem;
+  color: hsl(var(--egibi-muted-foreground));
+  font-style: italic;
+}
+
+// Tab navigation
+.doc-tabs {
+  margin-bottom: 0;
+
+  .nav-link {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.85rem;
+    font-weight: 500;
+    padding: 0.5rem 0.85rem;
+  }
+
+  .tab-icon {
+    display: flex;
+    align-items: center;
+    opacity: 0.7;
+  }
+}
+
+// Card sections
+.doc-card {
+  .card-header {
+    padding: 1rem 1.25rem 0.5rem;
+  }
+
+  .card-body {
+    padding: 0.75rem 1.25rem 1.25rem;
+  }
+}
+
+// Typography
+.doc-text {
+  font-size: 0.9rem;
+  line-height: 1.7;
+  color: hsl(var(--egibi-foreground));
+  margin-bottom: 0.75rem;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.doc-heading {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: hsl(var(--egibi-foreground));
+  margin-top: 1.25rem;
+  margin-bottom: 0.5rem;
+  padding-bottom: 0.35rem;
+  border-bottom: 1px solid hsl(var(--egibi-border));
+
+  &:first-child {
+    margin-top: 0;
+  }
+}
+
+// Lists
+.doc-list {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 0.75rem;
+
+  li {
+    font-size: 0.875rem;
+    line-height: 1.6;
+    padding: 0.3rem 0 0.3rem 1.25rem;
+    position: relative;
+    color: hsl(var(--egibi-foreground));
+
+    &::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0.7rem;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: hsl(var(--egibi-primary));
+      opacity: 0.6;
+    }
+
+    strong {
+      color: hsl(var(--egibi-foreground));
+      font-weight: 600;
+    }
+  }
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+// Schema tables
+.doc-table {
+  width: 100%;
+  font-size: 0.85rem;
+  border-collapse: collapse;
+  margin: 0.5rem 0;
+
+  th {
+    text-align: left;
+    font-weight: 600;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    color: hsl(var(--egibi-muted-foreground));
+    padding: 0.5rem 0.75rem;
+    border-bottom: 2px solid hsl(var(--egibi-border));
+  }
+
+  td {
+    padding: 0.5rem 0.75rem;
+    border-bottom: 1px solid hsl(var(--egibi-border));
+    color: hsl(var(--egibi-foreground));
+    vertical-align: top;
+
+    code {
+      font-size: 0.825rem;
+      font-weight: 600;
+      color: hsl(var(--egibi-primary));
+      background: none;
+      padding: 0;
+    }
+  }
+
+  tr:last-child td {
+    border-bottom: none;
+  }
+}
+
+.doc-badge {
+  display: inline-block;
+  font-size: 0.75rem;
+  font-weight: 500;
+  padding: 0.15rem 0.5rem;
+  border-radius: var(--egibi-radius);
+  background: hsl(var(--egibi-secondary));
+  color: hsl(var(--egibi-secondary-foreground));
+  white-space: nowrap;
+}
+
+// Code blocks
+.doc-code {
+  background: hsl(var(--egibi-secondary));
+  border: 1px solid hsl(var(--egibi-border));
+  border-radius: var(--egibi-radius);
+  padding: 1rem;
+  font-size: 0.825rem;
+  line-height: 1.6;
+  overflow-x: auto;
+  margin: 0.5rem 0;
+
+  code {
+    background: none;
+    color: hsl(var(--egibi-foreground));
+  }
+}
+
+// Diagrams (monospace blocks)
+.doc-diagram {
+  background: hsl(var(--egibi-secondary));
+  border: 1px solid hsl(var(--egibi-border));
+  border-radius: var(--egibi-radius);
+  padding: 1.25rem;
+  font-family: 'SF Mono', 'Fira Code', 'Cascadia Code', monospace;
+  font-size: 0.78rem;
+  line-height: 1.5;
+  overflow-x: auto;
+  margin: 0.5rem 0;
+  color: hsl(var(--egibi-foreground));
+  white-space: pre;
+}
+
+// Status indicators
+.doc-status {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.65rem;
+  padding: 0.6rem 0;
+  font-size: 0.875rem;
+
+  & + .doc-status {
+    border-top: 1px solid hsl(var(--egibi-border));
+  }
+
+  .status-indicator {
+    flex-shrink: 0;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    margin-top: 0.375rem;
+  }
+
+  .status-text {
+    color: hsl(var(--egibi-foreground));
+    line-height: 1.5;
+  }
+}
+
+.doc-status-done .status-indicator {
+  background: hsl(var(--egibi-success));
+  box-shadow: 0 0 0 3px hsla(var(--egibi-success), 0.15);
+}
+
+.doc-status-active .status-indicator {
+  background: hsl(var(--egibi-primary));
+  box-shadow: 0 0 0 3px hsla(var(--egibi-primary), 0.15);
+  animation: status-pulse 2s ease-in-out infinite;
+}
+
+.doc-status-planned .status-indicator {
+  background: hsl(var(--egibi-muted-foreground));
+  opacity: 0.5;
+}
+
+.doc-status-info .status-indicator {
+  background: hsl(var(--egibi-primary));
+}
+
+.doc-status-warning .status-indicator {
+  background: hsl(var(--egibi-warning));
+}
+
+@keyframes status-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}

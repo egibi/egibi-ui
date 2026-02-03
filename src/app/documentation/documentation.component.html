@@ -1,0 +1,132 @@
+<div class="space-y-6">
+  <!-- Page Header -->
+  <div class="page-header">
+    <div class="page-header-content">
+      <h1 class="page-title">Documentation</h1>
+      <p class="page-subtitle">Technical reference for the Egibi trading platform</p>
+    </div>
+    <div class="page-header-actions">
+      <span class="doc-updated">Last updated: {{ lastUpdated }}</span>
+    </div>
+  </div>
+
+  <!-- Tab Navigation -->
+  <div class="doc-layout">
+    <ul ngbNav #nav="ngbNav" [(activeId)]="activeTab" class="nav-tabs doc-tabs">
+      @for (tab of tabs; track tab.id) {
+        <li [ngbNavItem]="tab.id">
+          <button ngbNavLink (click)="setActiveTab(tab.id)">
+            <span class="tab-icon">
+              @if (tab.icon === 'overview') {
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>
+                </svg>
+              }
+              @if (tab.icon === 'architecture') {
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <rect width="18" height="18" x="3" y="3" rx="2"/><path d="M3 9h18"/><path d="M9 21V9"/>
+                </svg>
+              }
+              @if (tab.icon === 'frontend') {
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <rect width="20" height="14" x="2" y="3" rx="2"/><line x1="8" x2="16" y1="21" y2="21"/><line x1="12" x2="12" y1="17" y2="21"/>
+                </svg>
+              }
+              @if (tab.icon === 'backend') {
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <rect width="20" height="8" x="2" y="2" rx="2" ry="2"/><rect width="20" height="8" x="2" y="14" rx="2" ry="2"/><line x1="6" x2="6.01" y1="6" y2="6"/><line x1="6" x2="6.01" y1="18" y2="18"/>
+                </svg>
+              }
+              @if (tab.icon === 'database') {
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5V19A9 3 0 0 0 21 19V5"/><path d="M3 12A9 3 0 0 0 21 12"/>
+                </svg>
+              }
+              @if (tab.icon === 'security') {
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                </svg>
+              }
+              @if (tab.icon === 'status') {
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>
+                </svg>
+              }
+            </span>
+            {{ tab.label }}
+          </button>
+        </li>
+      }
+    </ul>
+
+    <div [ngbNavOutlet]="nav" class="doc-content"></div>
+  </div>
+
+  <!-- Section Content (rendered by each tab) -->
+  @for (section of sections[activeTab]; track section.id) {
+    <div class="card doc-card" [id]="section.id">
+      <div class="card-header">
+        <h2 class="card-title">{{ section.title }}</h2>
+      </div>
+      <div class="card-body">
+        @for (block of section.content; track $index) {
+          @switch (block.type) {
+            @case ('text') {
+              <p class="doc-text">{{ block.value }}</p>
+            }
+            @case ('heading') {
+              <h3 class="doc-heading">{{ block.value }}</h3>
+            }
+            @case ('list') {
+              <ul class="doc-list">
+                @for (item of block.items; track $index) {
+                  <li>
+                    @if (item.includes(' — ')) {
+                      <strong>{{ item.split(' — ')[0] }}</strong> — {{ item.split(' — ').slice(1).join(' — ') }}
+                    } @else {
+                      {{ item }}
+                    }
+                  </li>
+                }
+              </ul>
+            }
+            @case ('schema') {
+              <div class="table-responsive">
+                <table class="doc-table">
+                  <thead>
+                    <tr>
+                      <th>Entity / Column</th>
+                      <th>Type</th>
+                      <th>Purpose</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    @for (row of block.rows; track row.column) {
+                      <tr>
+                        <td><code>{{ row.column }}</code></td>
+                        <td><span class="doc-badge">{{ row.type }}</span></td>
+                        <td>{{ row.purpose }}</td>
+                      </tr>
+                    }
+                  </tbody>
+                </table>
+              </div>
+            }
+            @case ('code') {
+              <pre class="doc-code"><code>{{ block.value }}</code></pre>
+            }
+            @case ('diagram') {
+              <pre class="doc-diagram">{{ block.value }}</pre>
+            }
+            @case ('status') {
+              <div class="doc-status" [class]="'doc-status-' + block.variant">
+                <span class="status-indicator"></span>
+                <span class="status-text">{{ block.value }}</span>
+              </div>
+            }
+          }
+        }
+      </div>
+    </div>
+  }
+</div>

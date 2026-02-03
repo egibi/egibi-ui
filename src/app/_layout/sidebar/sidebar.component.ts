@@ -64,7 +64,8 @@ export class SidebarComponent {
         { label: 'Data Manager', route: '/data-manager', icon: 'database' },
         { label: 'Settings', route: '/app-configuration', icon: 'settings' },
         { label: 'API Tester', route: '/api-tester', icon: 'terminal' },
-        { label: 'Admin', route: '/admin', icon: 'shield' }
+        { label: 'Admin', route: '/admin', icon: 'shield' },
+        { label: 'Documentation', route: '/documentation', icon: 'book' }
       ]
     }
   ];
