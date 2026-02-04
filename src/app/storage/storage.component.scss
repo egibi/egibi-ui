@@ -1,0 +1,171 @@
+// Disk usage cards
+.disk-usage-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 0.5rem;
+}
+
+.usage-label {
+  font-size: 0.875rem;
+  color: var(--egibi-text-secondary);
+}
+
+.usage-percent {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--egibi-text);
+}
+
+.disk-details {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 0.5rem;
+  font-size: 0.8rem;
+  color: var(--egibi-text-secondary);
+}
+
+.threshold-warning {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 1rem;
+  padding: 0.5rem 0.75rem;
+  border-radius: 6px;
+  background: rgba(var(--bs-warning-rgb), 0.1);
+  color: var(--bs-warning);
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+
+.disk-not-mounted {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 2rem 1rem;
+  text-align: center;
+  color: var(--egibi-text-secondary);
+
+  p {
+    margin: 0;
+    font-weight: 500;
+    color: var(--egibi-text);
+  }
+
+  span {
+    font-size: 0.8rem;
+  }
+
+  svg {
+    opacity: 0.4;
+  }
+}
+
+// Quick actions
+.quick-actions {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+}
+
+// Partition table
+.selected-row {
+  background: rgba(var(--bs-primary-rgb), 0.05) !important;
+}
+
+.table {
+  th {
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--egibi-text-secondary);
+    border-bottom-width: 2px;
+  }
+
+  td {
+    vertical-align: middle;
+    font-size: 0.875rem;
+  }
+
+  code {
+    font-size: 0.85rem;
+    padding: 0.125rem 0.375rem;
+    border-radius: 4px;
+    background: var(--egibi-bg);
+    color: var(--egibi-text);
+  }
+}
+
+// Config form
+.config-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.config-field {
+  .form-label {
+    font-weight: 500;
+    font-size: 0.875rem;
+    margin-bottom: 0.375rem;
+  }
+
+  .form-text {
+    display: block;
+    margin-top: 0.25rem;
+    font-size: 0.75rem;
+    color: var(--egibi-text-secondary);
+  }
+
+  .form-control {
+    background: var(--egibi-bg);
+    border-color: var(--egibi-border);
+    color: var(--egibi-text);
+
+    &:focus {
+      border-color: var(--egibi-primary);
+      box-shadow: 0 0 0 0.2rem rgba(var(--bs-primary-rgb), 0.15);
+    }
+  }
+
+  .form-check-input:checked {
+    background-color: var(--egibi-primary);
+    border-color: var(--egibi-primary);
+  }
+}
+
+// Alert overrides for dark mode
+.alert {
+  font-size: 0.875rem;
+}
+
+// Badge styles
+.badge {
+  font-size: 0.7rem;
+  font-weight: 500;
+}
+
+// Card description helper
+.card-description {
+  font-size: 0.8rem;
+  color: var(--egibi-text-secondary);
+  margin: 0;
+}
+
+// Nav tab badge
+.nav-link .badge {
+  font-size: 0.65rem;
+  padding: 0.2em 0.45em;
+}

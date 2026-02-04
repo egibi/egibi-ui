@@ -62,6 +62,7 @@ export class SidebarComponent {
       items: [
         { label: 'Accounting', route: '/accounting', icon: 'calculator' },
         { label: 'Data Manager', route: '/data-manager', icon: 'database' },
+        { label: 'Storage', route: '/storage', icon: 'hard-drive' },
         { label: 'Settings', route: '/app-configuration', icon: 'settings' },
         { label: 'API Tester', route: '/api-tester', icon: 'terminal' },
         { label: 'Admin', route: '/admin', icon: 'shield' },

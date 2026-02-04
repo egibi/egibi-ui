@@ -1,0 +1,478 @@
+<div class="space-y-6">
+  <!-- Page Header -->
+  <div class="page-header">
+    <div class="page-header-content">
+      <h1 class="page-title">Storage Management</h1>
+      <p class="page-subtitle">Monitor disk usage, manage data archival, and configure tiered storage</p>
+    </div>
+    <div class="page-header-actions">
+      <button class="btn btn-sm btn-outline-secondary" (click)="refreshAll()" [disabled]="operationInProgress">
+        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74L21 8"/>
+          <path d="M21 3v5h-5"/>
+        </svg>
+        Refresh
+      </button>
+    </div>
+  </div>
+
+  <!-- Operation Status Banner -->
+  @if (operationMessage) {
+    <div class="alert" [class.alert-success]="operationSuccess && !operationInProgress" [class.alert-danger]="!operationSuccess && !operationInProgress" [class.alert-info]="operationInProgress">
+      @if (operationInProgress) {
+        <span class="spinner-border spinner-border-sm me-2"></span>
+      }
+      {{ operationMessage }}
+    </div>
+  }
+
+  <!-- Tab Navigation -->
+  <ul ngbNav #nav="ngbNav" [(activeId)]="activeTab" class="nav-tabs">
+    <li ngbNavItem="overview">
+      <button ngbNavLink>
+        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="me-1">
+          <rect width="18" height="18" x="3" y="3" rx="2"/><path d="M3 9h18"/><path d="M9 21V9"/>
+        </svg>
+        Overview
+      </button>
+    </li>
+    <li ngbNavItem="partitions">
+      <button ngbNavLink>
+        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="me-1">
+          <ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5V19A9 3 0 0 0 21 19V5"/><path d="M3 12A9 3 0 0 0 21 12"/>
+        </svg>
+        Partitions
+        @if (eligibleCount > 0) {
+          <span class="badge bg-warning ms-1">{{ eligibleCount }}</span>
+        }
+      </button>
+    </li>
+    <li ngbNavItem="backups">
+      <button ngbNavLink>
+        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="me-1">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/>
+        </svg>
+        Backups
+      </button>
+    </li>
+    <li ngbNavItem="config">
+      <button ngbNavLink>
+        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="me-1">
+          <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/>
+          <circle cx="12" cy="12" r="3"/>
+        </svg>
+        Configuration
+      </button>
+    </li>
+    <li ngbNavItem="log">
+      <button ngbNavLink>
+        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="me-1">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" x2="8" y1="13" y2="13"/><line x1="16" x2="8" y1="17" y2="17"/>
+        </svg>
+        Activity Log
+      </button>
+    </li>
+  </ul>
+
+  <div [ngbNavOutlet]="nav"></div>
+
+  <!-- ====================================================================== -->
+  <!-- OVERVIEW TAB -->
+  <!-- ====================================================================== -->
+  @if (activeTab === 'overview') {
+    @if (loading) {
+      <div class="card">
+        <div class="card-body text-center py-5">
+          <span class="spinner-border spinner-border-sm me-2"></span>
+          Loading storage status...
+        </div>
+      </div>
+    } @else if (status) {
+      <!-- Disk Usage Cards -->
+      <div class="row g-4">
+        <!-- Docker Volume -->
+        <div class="col-md-6">
+          <div class="card h-100">
+            <div class="card-header">
+              <h3 class="card-title">Docker Volume</h3>
+              <p class="card-description">Primary storage for PostgreSQL + QuestDB containers</p>
+            </div>
+            <div class="card-body">
+              <div class="disk-usage-header">
+                <span class="usage-label">{{ formatBytes(status.dockerVolume.usedBytes) }} of {{ formatBytes(status.dockerVolume.totalBytes) }}</span>
+                <span class="usage-percent" [class.text-danger]="status.dockerVolume.usagePercent >= 90" [class.text-warning]="status.dockerVolume.usagePercent >= 75 && status.dockerVolume.usagePercent < 90">
+                  {{ status.dockerVolume.usagePercent }}%
+                </span>
+              </div>
+              <ngb-progressbar
+                [type]="getProgressType(status.dockerVolume.usagePercent)"
+                [value]="status.dockerVolume.usagePercent"
+                [max]="100"
+                height="8px">
+              </ngb-progressbar>
+              <div class="disk-details">
+                <span>Available: {{ formatBytes(status.dockerVolume.availableBytes) }}</span>
+                <span>Threshold: {{ status.config.thresholdPercent }}%</span>
+              </div>
+              @if (status.thresholdExceeded) {
+                <div class="threshold-warning">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/>
+                    <line x1="12" x2="12" y1="9" y2="13"/><line x1="12" x2="12.01" y1="17" y2="17"/>
+                  </svg>
+                  Disk usage exceeds threshold — archive recommended
+                </div>
+              }
+            </div>
+          </div>
+        </div>
+
+        <!-- External Disk -->
+        <div class="col-md-6">
+          <div class="card h-100">
+            <div class="card-header">
+              <h3 class="card-title">External Disk</h3>
+              <p class="card-description">{{ status.config.externalDiskPath }}</p>
+            </div>
+            <div class="card-body">
+              @if (status.externalDisk) {
+                <div class="disk-usage-header">
+                  <span class="usage-label">{{ formatBytes(status.externalDisk.usedBytes) }} of {{ formatBytes(status.externalDisk.totalBytes) }}</span>
+                  <span class="usage-percent">{{ status.externalDisk.usagePercent }}%</span>
+                </div>
+                <ngb-progressbar
+                  [type]="getProgressType(status.externalDisk.usagePercent)"
+                  [value]="status.externalDisk.usagePercent"
+                  [max]="100"
+                  height="8px">
+                </ngb-progressbar>
+                <div class="disk-details">
+                  <span>Available: {{ formatBytes(status.externalDisk.availableBytes) }}</span>
+                  <span>Archived: {{ status.archivedPartitionCount }} partition(s)</span>
+                </div>
+              } @else {
+                <div class="disk-not-mounted">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/>
+                    <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>
+                  </svg>
+                  <p>External disk not mounted</p>
+                  <span>Configure the path in Settings or mount a disk at {{ status.config.externalDiskPath }}</span>
+                </div>
+              }
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick Actions -->
+      <div class="card mt-4">
+        <div class="card-header">
+          <h3 class="card-title">Quick Actions</h3>
+        </div>
+        <div class="card-body">
+          <div class="quick-actions">
+            <button class="btn btn-outline-primary" (click)="archiveAll()" [disabled]="operationInProgress || eligibleCount === 0"
+                    ngbTooltip="Archive QuestDB partitions older than {{ config.keepMonths }} months">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect width="20" height="5" x="2" y="3" rx="1"/><path d="M4 8v11a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8"/><path d="M10 12h4"/>
+              </svg>
+              Archive Eligible ({{ eligibleCount }})
+            </button>
+            <button class="btn btn-outline-secondary" (click)="cleanupTokens()" [disabled]="operationInProgress"
+                    ngbTooltip="Prune expired OIDC tokens and stale authorizations">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/>
+              </svg>
+              Cleanup OIDC Tokens
+            </button>
+            <button class="btn btn-outline-secondary" (click)="createBackup()" [disabled]="operationInProgress || !status.externalDisk"
+                    ngbTooltip="Backup PostgreSQL database to external disk">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/>
+              </svg>
+              Backup PostgreSQL
+            </button>
+          </div>
+        </div>
+      </div>
+    }
+  }
+
+  <!-- ====================================================================== -->
+  <!-- PARTITIONS TAB -->
+  <!-- ====================================================================== -->
+  @if (activeTab === 'partitions') {
+    <!-- Hot Partitions -->
+    <div class="card">
+      <div class="card-header d-flex justify-content-between align-items-center">
+        <div>
+          <h3 class="card-title">Hot Partitions (QuestDB)</h3>
+          <p class="card-description">Active OHLC data partitions in the Docker volume</p>
+        </div>
+        <div class="btn-group btn-group-sm">
+          <button class="btn btn-outline-secondary" (click)="selectAllEligible()" [disabled]="eligibleCount === 0">Select Eligible</button>
+          <button class="btn btn-outline-secondary" (click)="clearSelection()" [disabled]="selectedPartitions.size === 0">Clear</button>
+          <button class="btn btn-outline-primary" (click)="archiveSelected()" [disabled]="selectedPartitions.size === 0 || operationInProgress">
+            Archive Selected ({{ selectedPartitions.size }})
+          </button>
+        </div>
+      </div>
+      <div class="card-body p-0">
+        <div class="table-responsive">
+          <table class="table table-hover mb-0">
+            <thead>
+              <tr>
+                <th style="width: 40px"></th>
+                <th>Partition</th>
+                <th class="text-end">Rows</th>
+                <th class="text-end">Size</th>
+                <th>Date Range</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (p of hotPartitions; track p.name) {
+                <tr [class.table-warning]="p.isArchiveEligible" [class.selected-row]="selectedPartitions.has(p.name)">
+                  <td>
+                    @if (p.isArchiveEligible) {
+                      <input type="checkbox" class="form-check-input"
+                             [checked]="selectedPartitions.has(p.name)"
+                             (change)="togglePartitionSelection(p.name)">
+                    }
+                  </td>
+                  <td><code>{{ p.name }}</code></td>
+                  <td class="text-end">{{ p.rowCount.toLocaleString() }}</td>
+                  <td class="text-end">{{ p.diskSizeFormatted }}</td>
+                  <td>
+                    @if (p.minTimestamp && p.maxTimestamp) {
+                      {{ p.minTimestamp }} → {{ p.maxTimestamp }}
+                    }
+                  </td>
+                  <td>
+                    @if (p.isActive) {
+                      <span class="badge bg-success">Active</span>
+                    } @else if (p.isArchiveEligible) {
+                      <span class="badge bg-warning text-dark">Eligible</span>
+                    } @else {
+                      <span class="badge bg-secondary">Hot</span>
+                    }
+                  </td>
+                </tr>
+              } @empty {
+                <tr>
+                  <td colspan="6" class="text-center text-muted py-4">No QuestDB partitions found</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Archived Partitions -->
+    <div class="card mt-4">
+      <div class="card-header">
+        <h3 class="card-title">Archived Partitions (External Disk)</h3>
+        <p class="card-description">Cold storage — restore to make data queryable again</p>
+      </div>
+      <div class="card-body p-0">
+        <div class="table-responsive">
+          <table class="table table-hover mb-0">
+            <thead>
+              <tr>
+                <th>Partition</th>
+                <th class="text-end">Size</th>
+                <th>Archived</th>
+                <th style="width: 100px"></th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (p of archivedPartitions; track p.name) {
+                <tr>
+                  <td><code>{{ p.name }}</code></td>
+                  <td class="text-end">{{ p.sizeFormatted }}</td>
+                  <td>{{ formatDate(p.archivedAt) }}</td>
+                  <td>
+                    <button class="btn btn-sm btn-outline-primary" (click)="restorePartition(p.name)" [disabled]="operationInProgress">
+                      Restore
+                    </button>
+                  </td>
+                </tr>
+              } @empty {
+                <tr>
+                  <td colspan="4" class="text-center text-muted py-4">No archived partitions</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- ====================================================================== -->
+  <!-- BACKUPS TAB -->
+  <!-- ====================================================================== -->
+  @if (activeTab === 'backups') {
+    <div class="card">
+      <div class="card-header d-flex justify-content-between align-items-center">
+        <div>
+          <h3 class="card-title">PostgreSQL Backups</h3>
+          <p class="card-description">Compressed database backups on the external disk</p>
+        </div>
+        <button class="btn btn-sm btn-outline-primary" (click)="createBackup()" [disabled]="operationInProgress">
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="12" x2="12" y1="5" y2="19"/><line x1="5" x2="19" y1="12" y2="12"/>
+          </svg>
+          Create Backup
+        </button>
+      </div>
+      <div class="card-body p-0">
+        <div class="table-responsive">
+          <table class="table table-hover mb-0">
+            <thead>
+              <tr>
+                <th>File</th>
+                <th class="text-end">Size</th>
+                <th>Created</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (b of backups; track b.fileName) {
+                <tr>
+                  <td><code>{{ b.fileName }}</code></td>
+                  <td class="text-end">{{ b.sizeFormatted }}</td>
+                  <td>{{ formatDate(b.createdAt) }}</td>
+                </tr>
+              } @empty {
+                <tr>
+                  <td colspan="3" class="text-center text-muted py-4">No backups found — create one or mount the external disk</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- ====================================================================== -->
+  <!-- CONFIG TAB -->
+  <!-- ====================================================================== -->
+  @if (activeTab === 'config') {
+    <div class="card">
+      <div class="card-header">
+        <h3 class="card-title">Archival Configuration</h3>
+        <p class="card-description">Configure thresholds, retention policies, and storage paths</p>
+      </div>
+      <div class="card-body">
+        @if (configSaved) {
+          <div class="alert alert-success">Configuration saved successfully</div>
+        }
+        @if (configError) {
+          <div class="alert alert-danger">{{ configError }}</div>
+        }
+
+        <div class="config-grid">
+          <div class="config-field">
+            <label class="form-label">External Disk Path</label>
+            <input type="text" class="form-control" [(ngModel)]="config.externalDiskPath" placeholder="/mnt/egibi-external">
+            <span class="form-text">Mount point for the external storage disk</span>
+          </div>
+
+          <div class="config-field">
+            <label class="form-label">Disk Usage Threshold (%)</label>
+            <input type="number" class="form-control" [(ngModel)]="config.thresholdPercent" min="10" max="95">
+            <span class="form-text">Trigger archival when Docker volume usage exceeds this percentage</span>
+          </div>
+
+          <div class="config-field">
+            <label class="form-label">Hot Data Retention (months)</label>
+            <input type="number" class="form-control" [(ngModel)]="config.keepMonths" min="1" max="60">
+            <span class="form-text">Keep this many months of QuestDB data in the Docker volume</span>
+          </div>
+
+          <div class="config-field">
+            <label class="form-label">Auto-Archive Interval (hours)</label>
+            <input type="number" class="form-control" [(ngModel)]="config.autoArchiveIntervalHours" min="1" max="168">
+            <span class="form-text">How often the background archival check runs (requires cron setup)</span>
+          </div>
+
+          <div class="config-field">
+            <label class="form-label">Max PostgreSQL Backups</label>
+            <input type="number" class="form-control" [(ngModel)]="config.maxPostgresBackups" min="1" max="50">
+            <span class="form-text">Keep this many recent backups on the external disk</span>
+          </div>
+
+          <div class="config-field">
+            <div class="form-check form-switch">
+              <input class="form-check-input" type="checkbox" id="autoArchiveEnabled" [(ngModel)]="config.autoArchiveEnabled">
+              <label class="form-check-label" for="autoArchiveEnabled">Enable Auto-Archive</label>
+            </div>
+            <span class="form-text">Automatically archive when threshold is exceeded (cron must be installed)</span>
+          </div>
+        </div>
+
+        <div class="mt-4">
+          <button class="btn btn-primary" (click)="saveConfig()">Save Configuration</button>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- ====================================================================== -->
+  <!-- LOG TAB -->
+  <!-- ====================================================================== -->
+  @if (activeTab === 'log') {
+    <div class="card">
+      <div class="card-header">
+        <h3 class="card-title">Activity Log</h3>
+        <p class="card-description">Recent archival, restore, cleanup, and backup operations</p>
+      </div>
+      <div class="card-body p-0">
+        <div class="table-responsive">
+          <table class="table table-hover mb-0">
+            <thead>
+              <tr>
+                <th style="width: 50px"></th>
+                <th>Action</th>
+                <th>Target</th>
+                <th>Details</th>
+                <th>Time</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (entry of logEntries; track $index) {
+                <tr>
+                  <td>
+                    @if (entry.success) {
+                      <span class="badge bg-success">✓</span>
+                    } @else {
+                      <span class="badge bg-danger">✗</span>
+                    }
+                  </td>
+                  <td>
+                    <span class="badge" [class.bg-primary]="entry.action === 'archive'"
+                          [class.bg-info]="entry.action === 'restore'"
+                          [class.bg-secondary]="entry.action === 'cleanup'"
+                          [class.bg-warning]="entry.action === 'backup'">
+                      {{ entry.action }}
+                    </span>
+                  </td>
+                  <td><code>{{ entry.target }}</code></td>
+                  <td class="text-muted">{{ entry.details }}</td>
+                  <td class="text-nowrap">{{ formatDate(entry.timestamp) }}</td>
+                </tr>
+              } @empty {
+                <tr>
+                  <td colspan="5" class="text-center text-muted py-4">No activity recorded yet</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  }
+</div>

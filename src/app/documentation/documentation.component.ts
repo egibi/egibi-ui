@@ -68,10 +68,12 @@ export class DocumentationComponent {
             items: [
               'Frontend — Angular 19, Bootstrap 5.3.3, AG Grid, Highcharts',
               'Backend — .NET 8 (ASP.NET Core Web API)',
-              'Primary Database — PostgreSQL 16 (relational data, configuration, user accounts)',
+              'Authentication — OpenIddict 6.x (OAuth 2.0 / OpenID Connect with Authorization Code + PKCE)',
+              'Primary Database — PostgreSQL 16 (relational data, configuration, user accounts, OIDC grants)',
               'Time-Series Database — QuestDB 8.2.1 (OHLC candles, market data)',
               'Exchange SDKs — Binance.Net, Coinbase, Coinbase Pro',
               'Infrastructure — Docker Compose (PostgreSQL + QuestDB containers with named volumes)',
+              'Storage Management — Tiered storage with automatic archival (Docker volumes → external disk), QuestDB partition management',
               'Real-Time — SignalR (WebSocket hubs for live updates)'
             ]
           }
@@ -84,10 +86,11 @@ export class DocumentationComponent {
           {
             type: 'list',
             items: [
+              'Authentication — Login, Signup, Password Reset, OIDC callback',
               'Dashboard — Home overview and summary metrics',
               'Portfolio — Accounts, Exchanges, and Markets management',
               'Trading — Strategies and Backtester',
-              'System — Accounting, Data Manager, Settings, API Tester, Admin, Documentation'
+              'System — Accounting, Data Manager, Storage Management, Settings, API Tester, Admin, Documentation'
             ]
           }
         ]
@@ -105,8 +108,8 @@ export class DocumentationComponent {
 │              │ ◄────────────────► │                  │
 │  Angular 19  │     SignalR/WS     │  .NET 8 Web API  │
 │  (egibi-ui)  │ ◄────────────────► │  (egibi-api)     │
-│              │                    │                  │
-│  Port: 4200  │                    │  Port: 5000      │
+│              │     OIDC/PKCE      │  + OpenIddict     │
+│  Port: 4200  │ ◄────────────────► │  Port: 5000      │
 └──────────────┘                    └────────┬─────────┘
                                              │
                                     ┌────────┴─────────┐
@@ -117,10 +120,67 @@ export class DocumentationComponent {
                               │           │      │ILP:  9009 │
                               │Config,    │      │PG:   8812 │
                               │Users,     │      │           │
-                              │Entities   │      │OHLC,      │
-                              │           │      │Time-series│
+                              │OIDC,      │      │OHLC,      │
+                              │Entities   │      │Time-series│
                               └───────────┘      └───────────┘
                               ◄── Docker Compose (egibi-network) ──►`
+          }
+        ]
+      },
+      {
+        id: 'auth-architecture',
+        title: 'Authentication Architecture',
+        content: [
+          {
+            type: 'text',
+            value: 'Authentication uses OpenIddict as an embedded OIDC 2.0 server within the API. The Angular SPA authenticates via the Authorization Code flow with PKCE (Proof Key for Code Exchange), which is the recommended OAuth flow for public clients.'
+          },
+          {
+            type: 'diagram',
+            value: `Angular SPA (localhost:4200)                    .NET API + OpenIddict (localhost:7182)
+─────────────────────────────                    ────────────────────────────────────
+1. User enters credentials
+   on /auth/login
+        │
+        ▼
+2. POST /auth/login ─────────────────────────► Validates bcrypt hash
+   (withCredentials: true)                     Sets EgibiCookie (SameSite=None)
+        │                                      ◄──── 200 OK + Set-Cookie
+        ▼
+3. Generate PKCE pair:
+   code_verifier  (64 random chars)
+   code_challenge (SHA-256 hash)
+   Store verifier in sessionStorage
+        │
+        ▼
+4. Redirect to /connect/authorize ────────────► OpenIddict sees EgibiCookie
+   ?client_id=egibi-ui                         Auto-approves (ConsentType=Implicit)
+   &code_challenge=...                         Generates authorization code
+   &code_challenge_method=S256                 ◄──── 302 → /auth/callback?code=ABC
+   &response_type=code
+   &redirect_uri=.../auth/callback
+   &state=CSRF_TOKEN
+        │
+        ▼
+5. /auth/callback extracts
+   code + state from URL
+   Validates state matches
+        │
+        ▼
+6. POST /connect/token ──────────────────────► OpenIddict validates:
+   grant_type=authorization_code                 • code is valid
+   code=ABC                                      • code_verifier matches challenge
+   code_verifier=...                             • redirect_uri matches
+   client_id=egibi-ui                           Issues access_token + refresh_token
+        │                                       ◄──── 200 OK + tokens
+        ▼
+7. Store tokens in sessionStorage
+   Schedule auto-refresh (expires_in - 60s)
+   Redirect to requested page
+        │
+        ▼
+8. All API requests include ──────────────────► OpenIddict validates JWT
+   Authorization: Bearer <token>                 Returns protected data`
           }
         ]
       },
@@ -150,7 +210,7 @@ export class DocumentationComponent {
           {
             type: 'list',
             items: [
-              'egibi-api — Main ASP.NET Core Web API project',
+              'egibi-api — Main ASP.NET Core Web API project (includes OpenIddict OIDC server)',
               'EgibiBinanceUsSdk — Binance US exchange integration library',
               'EgibiCoinbaseSdk — Coinbase exchange integration library',
               'EgibiCoreLibrary — Shared core utilities and models',
@@ -210,7 +270,7 @@ export class DocumentationComponent {
           {
             type: 'schema',
             rows: [
-              { column: 'egibi-postgres', type: 'postgres:16-alpine', purpose: 'Application database — users, accounts, strategies, config' },
+              { column: 'egibi-postgres', type: 'postgres:16-alpine', purpose: 'Application database — users, accounts, strategies, config, OIDC grants' },
               { column: 'egibi-questdb', type: 'questdb/questdb:8.2.1', purpose: 'Time-series database — OHLC candles, market data' }
             ]
           },
@@ -238,17 +298,119 @@ export class DocumentationComponent {
             type: 'code',
             value: `docker compose up -d          # Start all services
 docker compose down           # Stop (data persists in volumes)
-docker compose down -v        # Stop AND delete all data
+docker compose down -v        # Stop AND delete all data (re-seeds admin account)
 docker compose ps             # Check service status
 ./backup.sh                   # Backup to ./backups/
 ./backup.sh /mnt/external     # Backup to external drive
 ./restore.sh ./backups/egibi-backup_20260203_120000`
           }
         ]
+      },
+      {
+        id: 'tiered-storage',
+        title: 'Tiered Storage Architecture',
+        content: [
+          {
+            type: 'text',
+            value: 'Egibi uses a two-tier storage model to manage data growth. Recent data lives in Docker volumes (hot/fast) for active querying, while older data is archived to an external disk (cold/large) and can be restored on demand.'
+          },
+          {
+            type: 'diagram',
+            value: `Docker Volumes (hot)              External Disk (cold)
+┌────────────────────┐           ┌────────────────────────────┐
+│  QuestDB OHLC      │           │  questdb-archive/          │
+│  ├── 2025-12/ ◄ active        │  ├── ohlc_2025-01/         │
+│  ├── 2025-11/ ◄ active        │  ├── ohlc_2025-02/         │
+│  ├── ...                       │  └── ...                    │
+│  └── 2025-07/ ◄ active        │                            │
+│                    │           │  postgres-archive/         │
+│  PostgreSQL        │           │  └── egibi_pg_backup_*.gz  │
+│  (users, config,   │           │                            │
+│   OIDC, strategies)│           │  archive-log.json          │
+└────────────────────┘           └────────────────────────────┘
+     ▲                                      ▲
+     │         StorageService               │
+     └──────── (archive / restore) ─────────┘`
+          },
+          {
+            type: 'heading',
+            value: 'How It Works'
+          },
+          {
+            type: 'list',
+            items: [
+              'QuestDB OHLC table is partitioned by MONTH — each partition is an independent directory of column files',
+              'DETACH PARTITION removes a month from active queries but preserves the files; ATTACH PARTITION reverses this instantly',
+              'Archival copies detached partition files from the Docker container to the external disk, then cleans up the container',
+              'Restoration copies files back into the container and reattaches — data is immediately queryable, no re-import needed',
+              'PostgreSQL stays in Docker (small footprint) with compressed pg_dump backups to external disk',
+              'Expired OIDC tokens and stale authorizations are periodically pruned to prevent table bloat',
+              'All operations are logged to archive-log.json on the external disk for audit trail'
+            ]
+          },
+          {
+            type: 'heading',
+            value: 'Management Interfaces'
+          },
+          {
+            type: 'list',
+            items: [
+              'In-App UI — Storage Management page (/storage) with disk gauges, partition tables, config form, and action buttons',
+              'CLI Script — egibi-archive.sh for cron-based automatic archival (checks threshold every N hours)',
+              'REST API — StorageController endpoints for programmatic access to all storage operations'
+            ]
+          }
+        ]
       }
     ],
 
     frontend: [
+      {
+        id: 'auth-ui',
+        title: 'Authentication Pages',
+        content: [
+          {
+            type: 'text',
+            value: 'All authentication pages render as standalone full-screen layouts (no sidebar or header). The app shell detects auth routes via a reactive isAuthPage() computed signal and conditionally hides the navigation chrome. Each auth page uses the egibi lion logo and shared auth-page styles.'
+          },
+          {
+            type: 'heading',
+            value: 'Auth Pages'
+          },
+          {
+            type: 'list',
+            items: [
+              '/auth/login — Email + password form with visibility toggle, triggers OIDC PKCE flow on success',
+              '/auth/signup — Registration with firstName, lastName, email, password + confirm; live password strength indicators',
+              '/auth/forgot-password — Email input; always shows success message to prevent email enumeration',
+              '/auth/reset-password — Token-based password reset from query params (email + token); validates and sets new password',
+              '/auth/callback — OIDC redirect handler; extracts authorization code + state, exchanges for tokens'
+            ]
+          },
+          {
+            type: 'heading',
+            value: 'Password Requirements (enforced on signup and reset)'
+          },
+          {
+            type: 'list',
+            items: [
+              'Minimum 8 characters',
+              'At least one uppercase letter',
+              'At least one lowercase letter',
+              'At least one number',
+              'At least one special character'
+            ]
+          },
+          {
+            type: 'heading',
+            value: 'Route Guards'
+          },
+          {
+            type: 'text',
+            value: 'All application routes except /auth/* are protected by authGuard (CanActivateFn). If the user is not authenticated, the guard stores the attempted URL in sessionStorage (auth_return_url) and redirects to /auth/login. After successful login, the user is redirected back to their originally requested page.'
+          }
+        ]
+      },
       {
         id: 'design-system',
         title: 'Design System',
@@ -294,7 +456,8 @@ docker compose ps             # Check service status
               'Logo uses currentColor for automatic theme adaptation',
               'Section-grouped navigation: Dashboard, Portfolio, Trading, System',
               'Mobile-responsive with overlay mode on screens < 992px',
-              'Tooltips appear on collapsed nav items for accessibility'
+              'Tooltips appear on collapsed nav items for accessibility',
+              'User menu dropdown in the header bar — displays name, email, and sign out button'
             ]
           },
           {
@@ -311,6 +474,18 @@ docker compose ps             # Check service status
         id: 'key-services',
         title: 'Key Angular Services',
         content: [
+          {
+            type: 'heading',
+            value: 'Authentication Services'
+          },
+          {
+            type: 'list',
+            items: [
+              'AuthService — Manages OIDC PKCE flow: login, signup, logout, token exchange, silent refresh, session restore',
+              'authGuard — CanActivateFn that checks isAuthenticated() and redirects to /auth/login with return URL',
+              'authInterceptor — HttpInterceptorFn that attaches Bearer tokens to API requests and handles 401 refresh/logout'
+            ]
+          },
           {
             type: 'heading',
             value: 'Core Services'
@@ -347,7 +522,32 @@ docker compose ps             # Check service status
               'StrategiesService — CRUD operations for trading strategies',
               'BacktesterService — Manages backtests and their execution state',
               'DataProviderService — CRUD for data provider configurations',
-              'TestingService — API testing and diagnostics'
+              'TestingService — API testing and diagnostics',
+              'StorageService — Disk monitoring, QuestDB partition archival/restore, OIDC cleanup, PostgreSQL backup'
+            ]
+          }
+        ]
+      },
+      {
+        id: 'storage-page',
+        title: 'Storage Management Page',
+        content: [
+          {
+            type: 'text',
+            value: 'The Storage Management page (/storage) provides a full UI for monitoring disk usage, managing QuestDB partition archival, configuring retention policies, and performing database maintenance — all from within the app.'
+          },
+          {
+            type: 'heading',
+            value: 'Tabs'
+          },
+          {
+            type: 'list',
+            items: [
+              'Overview — Disk usage gauges for Docker volume and external disk, threshold warnings, quick action buttons (Archive, Cleanup OIDC, Backup PostgreSQL)',
+              'Partitions — Hot partition table with row counts, sizes, date ranges, and checkbox selection for archiving; archived partition table with one-click restore',
+              'Backups — PostgreSQL backup list on external disk with create button; auto-prunes old backups per config',
+              'Configuration — External disk path, threshold %, hot data retention months, auto-archive interval, max backups, auto-archive toggle',
+              'Activity Log — Chronological history of all archive, restore, cleanup, and backup operations with success/failure status'
             ]
           }
         ]
@@ -361,7 +561,24 @@ docker compose ps             # Check service status
         content: [
           {
             type: 'text',
-            value: 'The backend follows a standard ASP.NET Core pattern with Controllers, Services, and Entity Framework Core for data access. Swagger/OpenAPI documentation is available at /swagger in development mode.'
+            value: 'The backend follows a standard ASP.NET Core pattern with Controllers, Services, and Entity Framework Core for data access. OpenIddict provides the embedded OIDC server. Swagger/OpenAPI documentation is available at /swagger in development mode.'
+          },
+          {
+            type: 'heading',
+            value: 'Authentication Endpoints (AuthorizationController)'
+          },
+          {
+            type: 'list',
+            items: [
+              'POST /auth/login — Validates credentials (bcrypt), signs in with EgibiCookie scheme, returns user profile',
+              'POST /auth/signup — Creates account (password validation, DEK generation), auto-signs in with EgibiCookie',
+              'POST /auth/forgot-password — Generates password reset token (SHA-256 hashed before storage, 1-hour expiry)',
+              'POST /auth/reset-password — Validates token hash + expiry, updates password hash',
+              'GET /connect/authorize — OpenIddict authorization endpoint (auto-approves if EgibiCookie present)',
+              'POST /connect/token — OpenIddict token endpoint (authorization_code + PKCE, refresh_token grants)',
+              'GET /connect/userinfo — Returns authenticated user claims (sub, email, name)',
+              'POST /connect/logout — Signs out of EgibiCookie scheme'
+            ]
           },
           {
             type: 'heading',
@@ -397,6 +614,68 @@ docker compose ps             # Check service status
               'GET /MarketData/get-fetchers — List registered exchange fetcher names',
               'POST /MarketData/import-candles — Bulk import candles from CSV/file sources'
             ]
+          },
+          {
+            type: 'heading',
+            value: 'Storage Endpoints (StorageController)'
+          },
+          {
+            type: 'list',
+            items: [
+              'GET /Storage/status — Disk usage for Docker volume and external disk, threshold status, archived partition count',
+              'GET /Storage/config — Current archival configuration (threshold, retention, paths)',
+              'PUT /Storage/config — Update archival configuration (persisted in AppConfiguration table)',
+              'GET /Storage/partitions — List hot QuestDB partitions and archived partitions on external disk',
+              'POST /Storage/archive — Detach + archive eligible partitions to external disk (supports force and specific partition selection)',
+              'POST /Storage/restore — Restore an archived partition back into QuestDB (copy + ATTACH PARTITION)',
+              'POST /Storage/cleanup — Prune expired OpenIddict tokens and stale authorizations, VACUUM ANALYZE',
+              'GET /Storage/backups — List PostgreSQL backup files on external disk',
+              'POST /Storage/backup — Create compressed pg_dump backup to external disk (auto-prunes old backups)',
+              'GET /Storage/log — Activity log of all archival, restore, cleanup, and backup operations'
+            ]
+          }
+        ]
+      },
+      {
+        id: 'openiddict-config',
+        title: 'OpenIddict OIDC Server',
+        content: [
+          {
+            type: 'text',
+            value: 'The API embeds a full OpenIddict OIDC 2.0 server that manages client registration, authorization codes, access tokens, and refresh tokens. All OIDC state (applications, authorizations, scopes, tokens) is stored in PostgreSQL via Entity Framework Core.'
+          },
+          {
+            type: 'heading',
+            value: 'Server Configuration'
+          },
+          {
+            type: 'list',
+            items: [
+              'Grant Types — Authorization Code (primary) + Refresh Token',
+              'PKCE — Required for all authorization code grants (S256 challenge method)',
+              'Client — "egibi-ui" registered as public client (no client_secret) with redirect URI http://localhost:4200/auth/callback',
+              'Scopes — openid, email, profile, roles, offline_access',
+              'Token Signing — Development ephemeral keys (auto-generated, non-persistent across restarts)',
+              'Token Encryption — Development ephemeral keys (production should use persistent certificates)',
+              'Consent — Implicit (auto-approved, no consent screen)',
+              'Cookie Scheme — "EgibiCookie" with SameSite=None + Secure for cross-origin SPA'
+            ]
+          },
+          {
+            type: 'heading',
+            value: 'Client Seeding (Program.cs)'
+          },
+          {
+            type: 'text',
+            value: 'On startup, the API checks for an existing "egibi-ui" OpenIddict application and creates it if missing. This ensures the OIDC client is always available without manual setup. The admin account (admin@egibi.io) is also seeded at startup with a generated DEK.'
+          },
+          {
+            type: 'heading',
+            value: 'EF Core Integration'
+          },
+          {
+            type: 'text',
+            value: 'OpenIddict uses EgibiDbContext (UseOpenIddict<int>()) to persist its entities. The tables OpenIddictApplications, OpenIddictAuthorizations, OpenIddictScopes, and OpenIddictTokens are auto-created alongside application entities via CreateTablesAsync() on startup.'
           }
         ]
       },
@@ -460,7 +739,7 @@ MarketDataService.GetCandlesAsync()
         content: [
           {
             type: 'text',
-            value: 'EgibiDbContext manages all relational entities with code-first migrations against PostgreSQL. A convention in OnModelCreating maps each entity to a table named after its class. Seed data for reference types (ConnectionType, DataFormatType, etc.) is defined in DbSetup.cs.'
+            value: 'EgibiDbContext manages all relational entities with code-first migrations against PostgreSQL. A convention in OnModelCreating maps each entity to a table named after its class. Seed data for reference types (ConnectionType, DataFormatType, etc.) is defined in DbSetup.cs. OpenIddict entities are registered via UseOpenIddict<int>().'
           },
           {
             type: 'heading',
@@ -482,11 +761,27 @@ MarketDataService.GetCandlesAsync()
           },
           {
             type: 'heading',
+            value: 'Authentication & OIDC'
+          },
+          {
+            type: 'list',
+            items: [
+              'AppUserService — Scoped service for user creation, password validation, reset tokens, and admin seeding',
+              'OpenIddict Core — Entity Framework stores for applications, authorizations, scopes, tokens',
+              'OpenIddict Server — Authorization Code + PKCE + Refresh Token grants, token endpoint, userinfo endpoint',
+              'OpenIddict Validation — Local JWT validation for API endpoints',
+              'Cookie Authentication — "EgibiCookie" scheme with SameSite=None for cross-origin SPA flow'
+            ]
+          },
+          {
+            type: 'heading',
             value: 'Scoped Services (per-request)'
           },
           {
             type: 'list',
             items: [
+              'AppUserService (authentication + user management)',
+              'StorageService (disk monitoring, partition archival, OIDC cleanup, PostgreSQL backup)',
               'DataManagerService, StrategiesService, BacktesterService',
               'ExchangesService, MarketsService, ExchangeAccountsService',
               'AppConfigurationsService, AccountsService',
@@ -514,7 +809,8 @@ MarketDataService.GetCandlesAsync()
             items: [
               'QuestDbOptions — Bound from "QuestDb" config section (HttpUrl, IlpHost, IlpPort)',
               'EgibiEnvironment — Name and Tag for runtime environment identification',
-              'Encryption:MasterKey — Base64-encoded 32-byte key for credential encryption (DI pending)'
+              'Encryption:MasterKey — Base64-encoded 32-byte key for credential encryption',
+              'StorageConfig — Persisted in AppConfiguration table (external disk path, threshold %, retention months, auto-archive settings)'
             ]
           }
         ]
@@ -528,21 +824,34 @@ MarketDataService.GetCandlesAsync()
         content: [
           {
             type: 'text',
-            value: 'The primary database (egibi_app_db on port 5432) stores all relational/configuration data. Tables are named after their entity class names. Extensions: uuid-ossp (UUID generation), pgcrypto (crypto functions).'
+            value: 'The primary database (egibi_app_db on port 5432) stores all relational/configuration data. Tables are named after their entity class names. Extensions: uuid-ossp (UUID generation), pgcrypto (crypto functions). OpenIddict tables are auto-managed by Entity Framework.'
           },
           {
             type: 'heading',
-            value: 'User & Account Entities'
+            value: 'User & Authentication Entities'
           },
           {
             type: 'schema',
             rows: [
-              { column: 'AppUser', type: 'Entity', purpose: 'Application users with auth (email, password hash, encrypted DEK)' },
+              { column: 'AppUser', type: 'Entity', purpose: 'Application users — email, bcrypt password hash, encrypted DEK, firstName, lastName, reset token fields' },
+              { column: 'UserCredential', type: 'Entity', purpose: 'Encrypted API keys per user per connection (AES-256-GCM via DEK)' },
+              { column: 'OpenIddictApplications', type: 'OpenIddict', purpose: 'Registered OIDC clients (egibi-ui public client with PKCE)' },
+              { column: 'OpenIddictAuthorizations', type: 'OpenIddict', purpose: 'Active authorization grants linking users to clients' },
+              { column: 'OpenIddictScopes', type: 'OpenIddict', purpose: 'Registered OAuth scopes (openid, email, profile, roles, offline_access)' },
+              { column: 'OpenIddictTokens', type: 'OpenIddict', purpose: 'Issued access tokens, refresh tokens, and authorization codes' }
+            ]
+          },
+          {
+            type: 'heading',
+            value: 'Account Entities'
+          },
+          {
+            type: 'schema',
+            rows: [
               { column: 'AccountUser', type: 'Entity (legacy)', purpose: 'Original user entity — will merge into AppUser' },
               { column: 'Account', type: 'Entity', purpose: 'Trading accounts linked to users and account types' },
               { column: 'AccountType', type: 'Reference', purpose: 'Account classification types' },
-              { column: 'AccountDetails', type: 'Entity', purpose: 'Extended account info (URL, user reference)' },
-              { column: 'UserCredential', type: 'Entity', purpose: 'Encrypted API keys per user per connection (AES-256-GCM via DEK)' }
+              { column: 'AccountDetails', type: 'Entity', purpose: 'Extended account info (URL, user reference)' }
             ]
           },
           {
@@ -634,7 +943,8 @@ MarketDataService.GetCandlesAsync()
           {
             type: 'list',
             items: [
-              'Partitioned by MONTH — efficient time-range queries and data lifecycle management',
+              'Partitioned by MONTH — enables time-range queries and partition-level archival to external disk',
+              'DETACH/ATTACH PARTITION — partitions older than retention window are detached, archived to external disk, and restored on demand',
               'WAL mode enabled — Write-Ahead Log for crash recovery and concurrent access',
               'DEDUP UPSERT on (symbol, source, interval, timestamp) — prevents duplicate candles on re-import',
               'SYMBOL columns for symbol, source, interval — QuestDB optimizes these as indexed enumerations',
@@ -658,6 +968,72 @@ MarketDataService.GetCandlesAsync()
     ],
 
     security: [
+      {
+        id: 'auth-security',
+        title: 'Authentication & Session Security',
+        content: [
+          {
+            type: 'text',
+            value: 'Egibi uses the OAuth 2.0 Authorization Code flow with PKCE (Proof Key for Code Exchange), which is the industry standard for securing single-page applications. The OIDC server is embedded in the API via OpenIddict, eliminating the need for a separate identity provider.'
+          },
+          {
+            type: 'heading',
+            value: 'PKCE Protection'
+          },
+          {
+            type: 'list',
+            items: [
+              'code_verifier — 64 random base64url characters generated per auth flow, stored in sessionStorage',
+              'code_challenge — SHA-256 hash of verifier, sent with authorization request (S256 method)',
+              'Token exchange requires the original code_verifier, preventing authorization code interception attacks',
+              'Each flow generates a unique state parameter for CSRF protection, validated on callback'
+            ]
+          },
+          {
+            type: 'heading',
+            value: 'Cookie Security'
+          },
+          {
+            type: 'list',
+            items: [
+              'Cookie Name — "egibi.auth" (EgibiCookie authentication scheme)',
+              'HttpOnly — true (JavaScript cannot access the cookie)',
+              'SameSite — None (required for cross-origin SPA at localhost:4200 ↔ API at localhost:7182)',
+              'Secure — Always (required when SameSite=None; ensures HTTPS transport)',
+              'Expiry — 30-minute sliding window'
+            ]
+          },
+          {
+            type: 'heading',
+            value: 'Token Management'
+          },
+          {
+            type: 'list',
+            items: [
+              'Access tokens stored in sessionStorage (cleared when tab closes)',
+              'Refresh tokens stored in sessionStorage for silent renewal',
+              'Auto-refresh scheduled 60 seconds before access token expiry',
+              'HTTP interceptor attaches Bearer token to all API requests (skips /auth/* and /connect/token)',
+              '401 responses trigger automatic token refresh; logout on refresh failure',
+              'Server-side cleanup — StorageService periodically prunes expired tokens and stale authorizations from PostgreSQL (via /Storage/cleanup or cron)'
+            ]
+          },
+          {
+            type: 'heading',
+            value: 'Password Security'
+          },
+          {
+            type: 'list',
+            items: [
+              'Passwords hashed with bcrypt (work factor 12)',
+              'Password reset tokens — cryptographically random, SHA-256 hashed before database storage',
+              'Reset token expiry — 1 hour from generation',
+              'Forgot-password endpoint always returns success to prevent email enumeration',
+              'Password complexity enforced on both frontend (live indicators) and backend (server validation)'
+            ]
+          }
+        ]
+      },
       {
         id: 'encryption-overview',
         title: 'Credential Encryption Architecture',
@@ -731,7 +1107,11 @@ MarketDataService.GetCandlesAsync()
               'EF Core query logging must not capture encrypted field values',
               'Master key must not appear in appsettings.json (production), source control, or logs',
               'All API endpoints accepting credentials must enforce HTTPS',
-              'The old Encryptor.cs (PBKDF2+AES-CBC) is deprecated — use EncryptionService for all new work'
+              'CORS restricted to specific origins (localhost:4200) with AllowCredentials for cookie transport',
+              'Development uses ephemeral signing/encryption keys — production must use persistent certificates',
+              'The old Encryptor.cs (PBKDF2+AES-CBC) is deprecated — use EncryptionService for all new work',
+              'Archived data on external disk retains the same security posture — no credentials are stored in QuestDB partitions or pg_dump backups (credentials are encrypted in PostgreSQL)',
+              'Storage operations (archive, restore, backup) require authentication via [Authorize] on StorageController'
             ]
           }
         ]
@@ -746,12 +1126,22 @@ MarketDataService.GetCandlesAsync()
           {
             type: 'status',
             variant: 'done',
+            value: 'Authentication System — OpenIddict OIDC 2.0 server with Authorization Code + PKCE, login/signup/reset UI, route guards, HTTP interceptor, token auto-refresh'
+          },
+          {
+            type: 'status',
+            variant: 'done',
+            value: 'Storage Management — Tiered storage with QuestDB partition archival to external disk, in-app UI (disk gauges, partition tables, config form, activity log), REST API, OIDC token cleanup, PostgreSQL backup, CLI script with cron support'
+          },
+          {
+            type: 'status',
+            variant: 'done',
             value: 'UI Design System — Dual-theme (light/dark), CSS variables, card-based layouts, consistent page headers'
           },
           {
             type: 'status',
             variant: 'done',
-            value: 'Sidebar Navigation — Collapsible, SVG logo with theme adaptation, section grouping, mobile responsive'
+            value: 'Sidebar Navigation — Collapsible, SVG logo with theme adaptation, section grouping, mobile responsive, user menu dropdown'
           },
           {
             type: 'status',
@@ -808,6 +1198,11 @@ MarketDataService.GetCandlesAsync()
             type: 'status',
             variant: 'active',
             value: 'AppUser Migration — Consolidating AccountUser into AppUser entity'
+          },
+          {
+            type: 'status',
+            variant: 'active',
+            value: 'Email Service — Password reset tokens currently logged to console; email delivery service pending'
           }
         ]
       },
@@ -818,7 +1213,12 @@ MarketDataService.GetCandlesAsync()
           {
             type: 'status',
             variant: 'planned',
-            value: 'Authentication System — User login/registration with JWT tokens, session management'
+            value: 'Production Auth Certificates — Replace ephemeral signing/encryption keys with persistent X.509 certificates'
+          },
+          {
+            type: 'status',
+            variant: 'planned',
+            value: 'EF Core Migrations — Replace CreateTablesAsync() with proper migration history for schema versioning'
           },
           {
             type: 'status',
@@ -834,6 +1234,11 @@ MarketDataService.GetCandlesAsync()
             type: 'status',
             variant: 'planned',
             value: 'Additional Exchange Fetchers — Coinbase, Alpaca, and other data sources for market data ingestion'
+          },
+          {
+            type: 'status',
+            variant: 'planned',
+            value: 'Containerized Deployment — Dockerfiles for egibi-api and egibi-ui, Caddy reverse proxy, single-origin architecture for cloud migration (Railway, Hetzner, Azure)'
           }
         ]
       }
@@ -845,5 +1250,5 @@ MarketDataService.GetCandlesAsync()
   }
 
   // Last updated timestamp
-  lastUpdated = 'February 3, 2026';
+  lastUpdated = 'February 4, 2026';
 }

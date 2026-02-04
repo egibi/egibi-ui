@@ -26,6 +26,7 @@ import { AccountsComponent } from "./accounts/accounts.component";
 import { AccountComponent } from "./accounts/account/account.component";
 import { AppConfigurationComponent } from "./app-configuration/app-configuration.component";
 import { DocumentationComponent } from "./documentation/documentation.component";
+import { StorageComponent } from "./storage/storage.component";
 
 export const routes: Routes = [
   // =============================================
@@ -158,6 +159,12 @@ export const routes: Routes = [
   {
     path: "admin",
     component: AdminComponent,
+    canActivate: [authGuard],
+  },
+  {
+    path: 'storage',
+    component: StorageComponent,
+    title: 'Storage - Egibi',
     canActivate: [authGuard],
   },
 
