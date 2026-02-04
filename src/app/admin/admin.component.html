@@ -1,16 +1,34 @@
-<ul ngbNav #nav="ngbNav" [(activeId)]="active" class="nav-tabs">
-  <li [ngbNavItem]="1">
-    <button ngbNavLink>Tab 1</button>
-    <ng-template ngbNavContent>
-        <h2>Admin Tab 1</h2>
-    </ng-template>
-  </li>
-  <li [ngbNavItem]="2">
-    <button ngbNavLink>Tab 2</button>
-    <ng-template ngbNavContent>
-      <h2>Tab 2</h2>
-    </ng-template>
-  </li>
-</ul>
+<div class="space-y-6">
+  <!-- Page Header -->
+  <div class="page-header">
+    <div class="page-header-content">
+      <h1 class="page-title">Admin</h1>
+      <p class="page-subtitle">System administration and service configuration</p>
+    </div>
+  </div>
 
-<div [ngbNavOutlet]="nav" class="mt-2"></div>
+  <!-- Tabs Card -->
+  <div class="card">
+    <div class="card-body p-0">
+      <ul ngbNav #nav="ngbNav" [(activeId)]="active" class="nav-tabs px-3 pt-2">
+        <li [ngbNavItem]="1">
+          <button ngbNavLink>Service Catalog</button>
+          <ng-template ngbNavContent>
+            <service-catalog></service-catalog>
+          </ng-template>
+        </li>
+        <li [ngbNavItem]="2">
+          <button ngbNavLink>System</button>
+          <ng-template ngbNavContent>
+            <div class="p-4">
+              <h5>System Settings</h5>
+              <p class="text-muted">System-wide configuration options (coming soon).</p>
+            </div>
+          </ng-template>
+        </li>
+      </ul>
+
+      <div [ngbNavOutlet]="nav"></div>
+    </div>
+  </div>
+</div>

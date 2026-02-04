@@ -1,100 +1,93 @@
-import { Component, OnInit, ViewChild, inject, signal, WritableSignal, TemplateRef } from "@angular/core";
-import { Router } from "@angular/router";
-import { EgibiTableComponent } from "../_components/egibi-table/egibi-table.component";
-import { Account } from "../_models/account.model";
-import { AccountsService } from "./accounts.service";
-import { TableColumn } from "../_components/egibi-table/egibi-table.models";
-import { NgbGlobalModalService } from "../_services/ngb-global-modal.service";
-import { CreateAccountModalComponent } from "./modal-components/create-account-modal/create-account-modal.component";
-import { AccountType } from "../_models/account-type";
-import { AppConfigurationService } from "../app-configuration/app-configuration.service";
-import { FormsModule } from "@angular/forms";
-import { CommonModule } from "@angular/common";
-import { AccountUser } from "../_models/account-user.model";
+import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { EgibiTableComponent } from '../_components/egibi-table/egibi-table.component';
+import { Account, CreateAccountRequest } from '../_models/account.model';
+import { AccountsService } from './accounts.service';
+import { TableColumn } from '../_components/egibi-table/egibi-table.models';
+import { NgbGlobalModalService, ModalResult } from '../_services/ngb-global-modal.service';
+import { AddAccountModalComponent } from './add-account-modal/add-account-modal.component';
+import { AccountType } from '../_models/account-type';
+import { Connection } from '../_models/connection.model';
+import { ConnectionsService } from '../_services/connections.service';
 
 @Component({
-  selector: "accounts",
+  selector: 'accounts',
   standalone: true,
   imports: [CommonModule, EgibiTableComponent, FormsModule],
-  templateUrl: "./accounts.component.html",
-  styleUrl: "./accounts.component.scss",
+  templateUrl: './accounts.component.html',
+  styleUrl: './accounts.component.scss',
 })
 export class AccountsComponent implements OnInit {
   accounts: Account[] = [];
   accountTypes: AccountType[] = [];
-  accountUsers: AccountUser[] = [];
+  connections: Connection[] = [];
   tableData: any[] = [];
 
-  //********************************************************************************************** */
-  constructor(private accountService: AccountsService, private appConfigService: AppConfigurationService, private router: Router, private modalService: NgbGlobalModalService) {}
+  constructor(
+    private accountService: AccountsService,
+    private connectionsService: ConnectionsService,
+    private router: Router,
+    private modalService: NgbGlobalModalService
+  ) {}
 
   ngOnInit(): void {
-    this.appConfigService.getAccountUsers().subscribe((res) => {
-      this.accountUsers = res.responseData;
-    });
-
-    this.accountService.getAccounts().subscribe((res) => {
-      this.tableData = <Account[]>res.responseData;
-    });
+    this.loadAccounts();
 
     this.accountService.getAccountTypes().subscribe((res) => {
-      this.accountTypes = res.responseData;
+      this.accountTypes = res.responseData || [];
+    });
+
+    this.connectionsService.getConnections().subscribe((res) => {
+      this.connections = (res.responseData || []).filter((c: Connection) => c.isActive);
     });
   }
 
-  public addAccount(account: Account) {
-    // console.log("navigate to account edit...");
-    // this.router.navigate(["account"]);
-    // TODO: Load modal and create empty new account
+  loadAccounts(): void {
+    this.accountService.getAccounts().subscribe((res) => {
+      this.tableData = <Account[]>(res.responseData || []);
+    });
   }
 
   tableColumns: TableColumn[] = [
-    { key: "id", label: "ID", sortable: true },
-    { key: "name", label: "Name", sortable: true },
-    { key: "accountType", label: "Account Type", sortable: true },
-    { key: "user", label: "User", sortable: true },
-    { key: "url", label: "URL", sortable: true },
-    { key: "description", label: "Description", sortable: true },
+    { key: 'id', label: 'ID', sortable: true },
+    { key: 'name', label: 'Name', sortable: true },
+    { key: 'connectionName', label: 'Service', sortable: true },
+    { key: 'accountTypeName', label: 'Type', sortable: true },
+    { key: 'description', label: 'Description', sortable: true },
   ];
 
-  // modal result
-  lastResult: any = null;
-
-  public openAccountCreateModal(): void {
-    console.log("open account create modal:::");
-
+  public addNewAccount(): void {
     this.modalService
       .openModal(
-        CreateAccountModalComponent,
-        { size: "lg", centered: true },
+        AddAccountModalComponent,
+        { size: 'lg', centered: true },
         {
-          title: "Create Account",
+          connections: this.connections,
           accountTypes: this.accountTypes,
         }
       )
-      .subscribe((result) => {
-        this.lastResult = result;
-        console.log("create account confirmation result:", result);
+      .subscribe((modalResult: ModalResult<CreateAccountRequest>) => {
+        if (modalResult.result && !modalResult.dismissed) {
+          this.accountService.createAccount(modalResult.result).subscribe({
+            next: (res: any) => {
+              console.log('Account created:', res);
+              this.loadAccounts();
+            },
+            error: (err) => {
+              console.error('Failed to create account:', err);
+            },
+          });
+        }
       });
   }
 
-  public rowClicked(account: Account) {
+  public rowClicked(account: Account): void {
     if (account.id) {
       this.router.navigate([`accounts/account/${account.id}`]);
     } else {
-      this.router.navigate(["account"]);
+      this.router.navigate(['account']);
     }
-  }
-
-  public accountTypeChanged(value: any): void {
-    console.log("select account type:::");
-  }
-
-  public accountUserChanged(value: any): void {
-    console.log("select account user:::");
-  }
-
-  public addNewAccount(): void {
-    this.openAccountCreateModal();
   }
 }

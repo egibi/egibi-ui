@@ -1,0 +1,220 @@
+<!-- Modal Header -->
+<div class="modal-header">
+  <div class="d-flex align-items-center gap-2">
+    @if (step === 'configure') {
+      <button class="btn btn-link btn-sm p-0 back-btn" (click)="goBack()">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></svg>
+      </button>
+    }
+    <h5 class="modal-title mb-0">
+      @if (step === 'pick') {
+        Add Account
+      } @else if (selectedConnection) {
+        <span class="service-dot" [style.background-color]="selectedConnection.color"></span>
+        {{ selectedConnection.name }}
+      } @else {
+        Custom Account
+      }
+    </h5>
+  </div>
+  <button type="button" class="btn-close" (click)="dismiss()"></button>
+</div>
+
+<!-- Modal Body -->
+<div class="modal-body">
+
+  <!-- ============================== -->
+  <!-- STEP 1: SERVICE PICKER         -->
+  <!-- ============================== -->
+  @if (step === 'pick') {
+    <p class="text-muted mb-3">Choose a service to connect, or create a custom account.</p>
+
+    <!-- Search -->
+    <div class="search-bar mb-3">
+      <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+      <input
+        type="text"
+        class="form-control form-control-sm"
+        placeholder="Search services..."
+        [(ngModel)]="searchQuery"
+      >
+    </div>
+
+    <!-- Service Cards by Category -->
+    @for (group of getGroupedConnections(); track group.category) {
+      <div class="category-section">
+        <div class="category-label">{{ group.label }}</div>
+        <div class="service-cards">
+          @for (conn of group.items; track conn.id) {
+            <button class="service-card" (click)="selectService(conn)">
+              <div class="card-icon" [style.background-color]="conn.color || '#6C757D'">
+                <span class="icon-letter">{{ (conn.iconKey || conn.name || '?').charAt(0).toUpperCase() }}</span>
+              </div>
+              <div class="card-info">
+                <div class="card-name">{{ conn.name }}</div>
+                @if (conn.description) {
+                  <div class="card-desc">{{ conn.description }}</div>
+                }
+              </div>
+              <svg class="card-arrow" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+            </button>
+          }
+        </div>
+      </div>
+    }
+
+    @if (filteredConnections.length === 0 && searchQuery) {
+      <div class="text-center py-4 text-muted">
+        No services match "{{ searchQuery }}"
+      </div>
+    }
+
+    <!-- Custom Option -->
+    <div class="category-section">
+      <div class="category-label">Custom</div>
+      <div class="service-cards">
+        <button class="service-card custom-card" (click)="selectCustom()">
+          <div class="card-icon custom-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
+          </div>
+          <div class="card-info">
+            <div class="card-name">Custom Setup</div>
+            <div class="card-desc">Connect any service with custom API credentials</div>
+          </div>
+          <svg class="card-arrow" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+        </button>
+      </div>
+    </div>
+  }
+
+  <!-- ============================== -->
+  <!-- STEP 2: CONFIGURE              -->
+  <!-- ============================== -->
+  @if (step === 'configure') {
+    <div class="configure-form">
+
+      <!-- Account Details Section -->
+      <div class="form-section">
+        <div class="section-label">Account Details</div>
+
+        <div class="mb-3">
+          <label class="form-label">Account Name <span class="text-danger">*</span></label>
+          <input
+            type="text"
+            class="form-control form-control-sm"
+            [(ngModel)]="accountName"
+            placeholder="e.g., My Binance Trading Account"
+          >
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">Description</label>
+          <input
+            type="text"
+            class="form-control form-control-sm"
+            [(ngModel)]="accountDescription"
+            placeholder="Optional description"
+          >
+        </div>
+
+        @if (accountTypes.length > 0) {
+          <div class="mb-3">
+            <label class="form-label">Account Type</label>
+            <select class="form-select form-select-sm" [(ngModel)]="accountTypeId">
+              <option [ngValue]="null">Select type...</option>
+              @for (type of accountTypes; track type.id) {
+                <option [ngValue]="type.id">{{ type.name }}</option>
+              }
+            </select>
+          </div>
+        }
+      </div>
+
+      <!-- Credentials Section -->
+      <div class="form-section">
+        <div class="section-label">
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+          API Credentials
+        </div>
+        <p class="text-muted small mb-3">Your credentials are encrypted before storage and never exposed in plaintext.</p>
+
+        @if (selectedConnection?.defaultBaseUrl || isCustom) {
+          <div class="mb-3">
+            <label class="form-label">Base URL</label>
+            <input
+              type="url"
+              class="form-control form-control-sm"
+              [(ngModel)]="baseUrl"
+              placeholder="https://api.example.com"
+            >
+          </div>
+        }
+
+        @for (field of requiredFields; track field) {
+          <div class="mb-3">
+            <label class="form-label">
+              {{ fieldLabels[field] || field }}
+              <span class="text-danger">*</span>
+            </label>
+            <div class="input-group input-group-sm">
+              <input
+                [type]="isSecretField(field) && !showSecrets[field] ? 'password' : 'text'"
+                class="form-control"
+                [(ngModel)]="credentials[field]"
+                [placeholder]="'Enter ' + (fieldLabels[field] || field).toLowerCase()"
+                autocomplete="off"
+              >
+              @if (isSecretField(field)) {
+                <button
+                  class="btn btn-outline-secondary"
+                  type="button"
+                  (click)="toggleVisibility(field)"
+                  [title]="showSecrets[field] ? 'Hide' : 'Show'">
+                  @if (showSecrets[field]) {
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" x2="23" y1="1" y2="23"/></svg>
+                  } @else {
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                  }
+                </button>
+              }
+            </div>
+          </div>
+        }
+
+        <div class="mb-3">
+          <label class="form-label">Credential Label</label>
+          <input
+            type="text"
+            class="form-control form-control-sm"
+            [(ngModel)]="credentialLabel"
+            placeholder="e.g., My Trading Key (optional)"
+          >
+        </div>
+      </div>
+
+      <!-- Security Notice -->
+      <div class="security-notice">
+        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        <span>Credentials are encrypted with AES-256-GCM using your personal encryption key</span>
+      </div>
+    </div>
+  }
+</div>
+
+<!-- Modal Footer -->
+<div class="modal-footer">
+  @if (step === 'pick') {
+    <button class="btn btn-outline-secondary btn-sm" (click)="dismiss()">Cancel</button>
+  } @else {
+    <button class="btn btn-outline-secondary btn-sm" (click)="goBack()">Back</button>
+    <button
+      class="btn btn-primary btn-sm"
+      (click)="save()"
+      [disabled]="!canSave || saving">
+      @if (saving) {
+        <span class="spinner-border spinner-border-sm me-1"></span>
+      }
+      Create Account
+    </button>
+  }
+</div>

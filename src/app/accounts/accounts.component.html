@@ -3,7 +3,7 @@
   <div class="page-header">
     <div class="page-header-content">
       <h1 class="page-title">Accounts</h1>
-      <p class="page-subtitle">Manage your trading accounts and portfolios</p>
+      <p class="page-subtitle">Manage your exchange and broker connections</p>
     </div>
     <div class="page-header-actions">
       <button class="btn btn-primary" (click)="addNewAccount()">
@@ -21,31 +21,33 @@
     <div class="card-header d-flex justify-content-between align-items-start flex-wrap gap-3">
       <div>
         <h2 class="card-title">Account List</h2>
-        <p class="card-description">View and manage all your trading accounts</p>
-      </div>
-      <div class="filters-row">
-        <select class="form-select" #accountTypeSelect (change)="accountTypeChanged(accountTypeSelect.value)">
-          <option value="">All Account Types</option>
-          @for(accountType of accountTypes; track accountType) {
-            <option [value]="accountType">{{ accountType.name }}</option>
-          }
-        </select>
-
-        <select class="form-select" #accountUserSelect (change)="accountUserChanged(accountUserSelect.value)">
-          <option value="">All Users</option>
-          @for(accountUser of accountUsers; track accountUser) {
-            <option [value]="accountUser">{{ accountUser.email }}</option>
-          }
-        </select>
+        <p class="card-description">Your connected exchange and broker accounts</p>
       </div>
     </div>
     <div class="card-body p-0">
-      <egibi-table 
-        #accountsTable 
-        [columns]="tableColumns" 
-        [data]="tableData"
-        (rowClicked)="rowClicked($event)">
-      </egibi-table>
+      @if (tableData.length === 0) {
+        <div class="empty-state">
+          <div class="empty-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
+              <rect width="20" height="14" x="2" y="5" rx="2"/>
+              <path d="M2 10h20"/>
+            </svg>
+          </div>
+          <h5>No accounts yet</h5>
+          <p class="text-muted mb-3">Connect your first exchange or broker to get started.</p>
+          <button class="btn btn-primary btn-sm" (click)="addNewAccount()">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
+            Add Account
+          </button>
+        </div>
+      } @else {
+        <egibi-table
+          #accountsTable
+          [columns]="tableColumns"
+          [data]="tableData"
+          (rowClicked)="rowClicked($event)">
+        </egibi-table>
+      }
     </div>
   </div>
 </div>
