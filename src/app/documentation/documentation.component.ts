@@ -90,7 +90,7 @@ export class DocumentationComponent {
               'Dashboard — Home overview and summary metrics',
               'Portfolio — Accounts, Exchanges, and Markets management',
               'Trading — Strategies and Backtester',
-              'System — Accounting, Data Manager, Storage Management, Settings, API Tester, Admin, Documentation'
+              'System — Accounting, Data Manager, Storage Management, Settings, API Tester, Admin (Service Catalog), Documentation'
             ]
           }
         ]
@@ -522,6 +522,8 @@ docker compose ps             # Check service status
               'StrategiesService — CRUD operations for trading strategies',
               'BacktesterService — Manages backtests and their execution state',
               'DataProviderService — CRUD for data provider configurations',
+              'ConnectionsService — Service catalog operations (list, create, update, delete exchange/broker/data provider definitions)',
+              'AccountsService — Trading account CRUD and create-account flow with credential submission',
               'TestingService — API testing and diagnostics',
               'StorageService — Disk monitoring, QuestDB partition archival/restore, OIDC cleanup, PostgreSQL backup'
             ]
@@ -548,6 +550,95 @@ docker compose ps             # Check service status
               'Backups — PostgreSQL backup list on external disk with create button; auto-prunes old backups per config',
               'Configuration — External disk path, threshold %, hot data retention months, auto-archive interval, max backups, auto-archive toggle',
               'Activity Log — Chronological history of all archive, restore, cleanup, and backup operations with success/failure status'
+            ]
+          }
+        ]
+      },
+      {
+        id: 'admin-service-catalog',
+        title: 'Admin — Service Catalog',
+        content: [
+          {
+            type: 'text',
+            value: 'The Service Catalog tab in Admin (/admin) provides a management interface for configuring which exchanges, brokers, and data providers are available for users to connect to when creating accounts. Each service entry defines the metadata and required credential fields that drive the dynamic account creation form.'
+          },
+          {
+            type: 'heading',
+            value: 'Service Properties'
+          },
+          {
+            type: 'list',
+            items: [
+              'Name — Display name (e.g., Binance US, Alpaca, Alpha Vantage)',
+              'Category — Classification: Crypto Exchange, Stock Broker, Data Provider, or Other',
+              'Icon Key — Identifier for service icon rendering (e.g., binance, coinbase, schwab)',
+              'Brand Color — Hex color for icon backgrounds and UI accents',
+              'Website — Service homepage URL',
+              'Default Base URL — Pre-filled API base URL for the connection',
+              'Required Fields — Toggle buttons for which credentials the service needs: API Key, API Secret, Passphrase, Username, Password, Base URL',
+              'Sort Order — Display ordering within category groups',
+              'Is Data Source — Whether the service provides market data'
+            ]
+          },
+          {
+            type: 'heading',
+            value: 'Seed Data'
+          },
+          {
+            type: 'text',
+            value: 'Nine services are pre-configured via DbSetup.cs: Binance US, Coinbase, Coinbase Pro, Kraken (crypto), Charles Schwab, Alpaca, Interactive Brokers (stock), Alpha Vantage, and Polygon.io (data providers). Each includes category, brand color, default API base URL, and required credential field configuration.'
+          }
+        ]
+      },
+      {
+        id: 'accounts-page',
+        title: 'Accounts — Add Account Flow',
+        content: [
+          {
+            type: 'text',
+            value: 'The Accounts page (/accounts) uses a multi-step modal wizard for creating new accounts. The wizard is driven by the service catalog — selecting a service pre-fills connection details and dynamically renders only the credential fields that service requires.'
+          },
+          {
+            type: 'heading',
+            value: 'Step 1 — Pick a Service'
+          },
+          {
+            type: 'list',
+            items: [
+              'Card grid grouped by category (Crypto Exchange, Stock Broker, Data Provider)',
+              'Search/filter bar to find services by name',
+              'Each card shows service icon (brand color), name, and description',
+              'Selecting a card pre-fills account name, base URL, and credential label from the Connection template',
+              'Custom option (dashed-border card) for unlisted services with manual configuration'
+            ]
+          },
+          {
+            type: 'heading',
+            value: 'Step 2 — Configure Connection'
+          },
+          {
+            type: 'list',
+            items: [
+              'Account details section: name, description, account type dropdown',
+              'Credentials section: dynamically rendered based on Connection.requiredFields JSON',
+              'Password-toggle visibility for secret fields (API keys, secrets, passwords)',
+              'Credential label field (e.g., \"Production Keys\", \"Read-Only\")',
+              'Security notice badge showing AES-256-GCM encryption',
+              'Credentials are submitted as plaintext to the API which encrypts them with the user DEK before storage in UserCredential'
+            ]
+          },
+          {
+            type: 'heading',
+            value: 'Architecture'
+          },
+          {
+            type: 'list',
+            items: [
+              'Connection entity = service catalog template (what services are available)',
+              'Account entity links to Connection via ConnectionId FK (which service was selected)',
+              'UserCredential entity stores encrypted API keys per user per connection',
+              'AddAccountModalComponent receives connections and accountTypes as modal inputs',
+              'Modal emits CreateAccountRequest on save, parent calls POST /Accounts/create-account'
             ]
           }
         ]
@@ -588,11 +679,11 @@ docker compose ps             # Check service status
             type: 'list',
             items: [
               'GET /Environment/get-environment — Returns current environment name and tag',
-              'Accounts — CRUD operations for trading accounts',
+              'Accounts — CRUD operations for trading accounts, POST /Accounts/create-account creates account linked to a service catalog Connection with encrypted credentials',
               'Strategies — CRUD for trading strategy definitions',
               'Backtests — Create, execute, and review backtest results',
               'DataManager — Data provider and import management',
-              'Connections — Manage exchange/API connection definitions',
+              'Connections — Service catalog management (CRUD for exchange/broker/data provider definitions with category, icon, color, requiredFields)',
               'Exchanges — Exchange metadata and fee structures',
               'ExchangeAccounts — User accounts on exchanges',
               'Markets — Trading pairs and market definitions',
@@ -748,6 +839,85 @@ MarketDataService.GetCandlesAsync()
           {
             type: 'text',
             value: 'All entities inherit from EntityBase which provides: Id (int PK), Name, Description, Notes, IsActive, CreatedAt, and LastModifiedAt.'
+          },
+          {
+            type: 'heading',
+            value: 'Running Migrations'
+          },
+          {
+            type: 'text',
+            value: 'Schema changes are managed through EF Core migrations. Migrations can be run from either the .NET CLI or the Visual Studio Package Manager Console. Docker containers must be running before applying migrations since Update-Database connects to PostgreSQL.'
+          },
+          {
+            type: 'heading',
+            value: 'Package Manager Console (Visual Studio)'
+          },
+          {
+            type: 'code',
+            value: `# Ensure Docker containers are running first
+docker compose up -d
+
+# Create a new migration (generates C# migration files — does not require database)
+Add-Migration MigrationName -Project egibi-api -StartupProject egibi-api
+
+# Apply pending migrations to the database (requires PostgreSQL to be running)
+Update-Database -Project egibi-api -StartupProject egibi-api
+
+# Revert the last migration (if not yet applied to database)
+Remove-Migration -Project egibi-api -StartupProject egibi-api
+
+# Revert to a specific migration (rolls back all migrations after it)
+Update-Database TargetMigrationName -Project egibi-api -StartupProject egibi-api`
+          },
+          {
+            type: 'heading',
+            value: '.NET CLI'
+          },
+          {
+            type: 'code',
+            value: `# Run from the egibi-api project directory
+cd egibi-api
+
+# Create a new migration
+dotnet ef migrations add MigrationName
+
+# Apply pending migrations
+dotnet ef database update
+
+# Revert the last migration
+dotnet ef migrations remove
+
+# List all migrations and their applied status
+dotnet ef migrations list`
+          },
+          {
+            type: 'heading',
+            value: 'Migration Workflow'
+          },
+          {
+            type: 'list',
+            items: [
+              'Add or modify entity classes in Data/Entities/',
+              'Update EgibiDbContext if adding a new DbSet or OnModelCreating configuration',
+              'Update seed data in Data/DbSetup.cs if the entity requires default records',
+              'Run Add-Migration to generate the migration files (inspects the model diff)',
+              'Review the generated migration in Migrations/ folder before applying',
+              'Run Update-Database to apply the schema change to PostgreSQL',
+              'For seed data changes without schema changes, reset containers: docker compose down -v && docker compose up -d'
+            ]
+          },
+          {
+            type: 'heading',
+            value: 'Prerequisites'
+          },
+          {
+            type: 'list',
+            items: [
+              'Microsoft.EntityFrameworkCore.Tools NuGet package must be installed (required for PMC commands)',
+              'Microsoft.EntityFrameworkCore.Design package must be installed (required for CLI commands)',
+              'PostgreSQL container must be running and accessible on localhost:5432 for Update-Database',
+              'Add-Migration and Remove-Migration do not require a database connection — they only generate/remove C# files'
+            ]
           }
         ]
       },
@@ -849,7 +1019,7 @@ MarketDataService.GetCandlesAsync()
             type: 'schema',
             rows: [
               { column: 'AccountUser', type: 'Entity (legacy)', purpose: 'Original user entity — will merge into AppUser' },
-              { column: 'Account', type: 'Entity', purpose: 'Trading accounts linked to users and account types' },
+              { column: 'Account', type: 'Entity', purpose: 'Trading accounts linked to a Connection (service) via ConnectionId FK, AppUser via AppUserId FK, and AccountType' },
               { column: 'AccountType', type: 'Reference', purpose: 'Account classification types' },
               { column: 'AccountDetails', type: 'Entity', purpose: 'Extended account info (URL, user reference)' }
             ]
@@ -877,8 +1047,9 @@ MarketDataService.GetCandlesAsync()
           {
             type: 'schema',
             rows: [
-              { column: 'Connection', type: 'Entity', purpose: 'External service connection definitions (base URL, type)' },
+              { column: 'Connection', type: 'Entity', purpose: 'Service catalog — exchange/broker/data provider definitions with category, iconKey, brand color, website, defaultBaseUrl, requiredFields (JSON), sortOrder for card-based UI picker' },
               { column: 'ConnectionType', type: 'Reference', purpose: 'Connection classification (API, unknown)' },
+              { column: 'AppConfiguration', type: 'Entity', purpose: 'General-purpose key-value config store — Name is the config key, Description stores the JSON value (used by StorageService for archival settings)' },
               { column: 'DataProvider', type: 'Entity', purpose: 'Data source configurations' },
               { column: 'DataProviderType', type: 'Reference', purpose: 'Provider type (File, API, Websocket, LLM)' },
               { column: 'DataFormatType', type: 'Reference', purpose: 'Data format (OHLC)' },
@@ -1182,6 +1353,16 @@ MarketDataService.GetCandlesAsync()
             type: 'status',
             variant: 'done',
             value: 'Documentation Page — In-app living documentation (this page)'
+          },
+          {
+            type: 'status',
+            variant: 'done',
+            value: 'Service Catalog & Account Creation — Admin service catalog CRUD, multi-step account wizard with card-based service picker, dynamic credential forms driven by requiredFields JSON, 9 pre-configured services'
+          },
+          {
+            type: 'status',
+            variant: 'done',
+            value: 'EF Core Migrations — Proper migration history for schema versioning via Add-Migration / Update-Database, replacing manual CreateTablesAsync()'
           }
         ]
       },
@@ -1214,11 +1395,6 @@ MarketDataService.GetCandlesAsync()
             type: 'status',
             variant: 'planned',
             value: 'Production Auth Certificates — Replace ephemeral signing/encryption keys with persistent X.509 certificates'
-          },
-          {
-            type: 'status',
-            variant: 'planned',
-            value: 'EF Core Migrations — Replace CreateTablesAsync() with proper migration history for schema versioning'
           },
           {
             type: 'status',
