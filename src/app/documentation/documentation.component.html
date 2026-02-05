@@ -47,6 +47,11 @@
                   <rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
                 </svg>
               }
+              @if (tab.icon === 'api') {
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M4 6h16"/><path d="M4 12h16"/><path d="M4 18h16"/><circle cx="8" cy="6" r="1.5" fill="currentColor"/><circle cx="14" cy="12" r="1.5" fill="currentColor"/><circle cx="10" cy="18" r="1.5" fill="currentColor"/>
+                </svg>
+              }
               @if (tab.icon === 'status') {
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                   <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>
@@ -122,6 +127,30 @@
               <div class="doc-status" [class]="'doc-status-' + block.variant">
                 <span class="status-indicator"></span>
                 <span class="status-text">{{ block.value }}</span>
+              </div>
+            }
+            @case ('endpoint') {
+              <div class="table-responsive">
+                <table class="doc-table endpoint-table">
+                  <thead>
+                    <tr>
+                      <th>Method</th>
+                      <th>Endpoint</th>
+                      <th>Description</th>
+                      <th>Parameters</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    @for (ep of block.endpoints; track ep.path + ep.method) {
+                      <tr>
+                        <td><span class="method-badge" [class]="'method-' + ep.method.toLowerCase()">{{ ep.method }}</span></td>
+                        <td><code>{{ ep.path }}</code></td>
+                        <td>{{ ep.description }}</td>
+                        <td>@if (ep.params) { <span class="endpoint-params">{{ ep.params }}</span> } @else { <span class="endpoint-params none">—</span> }</td>
+                      </tr>
+                    }
+                  </tbody>
+                </table>
               </div>
             }
           }

@@ -9,10 +9,11 @@ interface DocSection {
 }
 
 interface DocBlock {
-  type: 'text' | 'heading' | 'list' | 'schema' | 'code' | 'status' | 'diagram';
+  type: 'text' | 'heading' | 'list' | 'schema' | 'code' | 'status' | 'diagram' | 'endpoint';
   value?: string;
   items?: string[];
   rows?: SchemaRow[];
+  endpoints?: EndpointRow[];
   language?: string;
   variant?: 'done' | 'active' | 'planned' | 'info' | 'warning';
 }
@@ -21,6 +22,13 @@ interface SchemaRow {
   column: string;
   type: string;
   purpose: string;
+}
+
+interface EndpointRow {
+  method: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH';
+  path: string;
+  description: string;
+  params?: string;
 }
 
 @Component({
@@ -40,6 +48,7 @@ export class DocumentationComponent {
     { id: 'backend', label: 'Backend (API)', icon: 'backend' },
     { id: 'database', label: 'Database', icon: 'database' },
     { id: 'security', label: 'Security', icon: 'security' },
+    { id: 'api', label: 'API Reference', icon: 'api' },
     { id: 'status', label: 'Build Status', icon: 'status' }
   ];
 
@@ -1360,6 +1369,370 @@ dotnet ef migrations list`
               'The old Encryptor.cs (PBKDF2+AES-CBC) is deprecated — use EncryptionService for all new work',
               'Archived data on external disk retains the same security posture — no credentials are stored in QuestDB partitions or pg_dump backups (credentials are encrypted in PostgreSQL)',
               'Storage operations (archive, restore, backup) require authentication via [Authorize] on StorageController'
+            ]
+          }
+        ]
+      }
+    ],
+
+    api: [
+      {
+        id: 'api-overview',
+        title: 'API Overview',
+        content: [
+          {
+            type: 'text',
+            value: 'The Egibi API is a .NET 8 ASP.NET Core Web API running on port 5000 (HTTP) / 7182 (HTTPS). All endpoints return a standardized RequestResponse wrapper unless otherwise noted. Swagger UI is available in Development mode at /swagger.'
+          },
+          {
+            type: 'text',
+            value: 'Protected endpoints require a Bearer token obtained via the Authorization Code + PKCE flow. The OpenIddict OIDC endpoints (/connect/*) and auth endpoints (/auth/*) are public.'
+          },
+          {
+            type: 'heading',
+            value: 'Response Format'
+          },
+          {
+            type: 'code',
+            value: `{
+  "responseData": <T>,    // Payload (object, array, or null)
+  "isSuccess": true,       // Operation result
+  "message": "..."         // Status message
+}`
+          }
+        ]
+      },
+      {
+        id: 'api-auth',
+        title: 'Authentication & Authorization',
+        content: [
+          {
+            type: 'text',
+            value: 'OpenIddict OIDC endpoints handle the OAuth 2.0 token lifecycle. The /auth/* endpoints provide the custom login, signup, and password reset flows that integrate with the OIDC server.'
+          },
+          {
+            type: 'heading',
+            value: 'OIDC Endpoints'
+          },
+          {
+            type: 'endpoint',
+            endpoints: [
+              { method: 'GET', path: '/connect/authorize', description: 'Initiate authorization code flow', params: 'client_id, code_challenge, code_challenge_method, response_type, redirect_uri, state' },
+              { method: 'POST', path: '/connect/authorize', description: 'Authorization code flow (form post)' },
+              { method: 'POST', path: '/connect/token', description: 'Exchange authorization code for tokens', params: 'grant_type, code, code_verifier, client_id, redirect_uri' },
+              { method: 'GET', path: '/connect/userinfo', description: 'Get authenticated user claims' },
+              { method: 'POST', path: '/connect/logout', description: 'Revoke tokens and end session' }
+            ]
+          },
+          {
+            type: 'heading',
+            value: 'Auth Endpoints'
+          },
+          {
+            type: 'endpoint',
+            endpoints: [
+              { method: 'POST', path: '/auth/login', description: 'Validate credentials and set auth cookie', params: 'Body: { email, password }' },
+              { method: 'POST', path: '/auth/signup', description: 'Register a new user account', params: 'Body: { email, password, confirmPassword }' },
+              { method: 'POST', path: '/auth/forgot-password', description: 'Request a password reset token', params: 'Body: { email }' },
+              { method: 'POST', path: '/auth/reset-password', description: 'Reset password using token', params: 'Body: { token, email, newPassword }' }
+            ]
+          }
+        ]
+      },
+      {
+        id: 'api-accounts',
+        title: 'Accounts',
+        content: [
+          {
+            type: 'text',
+            value: 'Manage trading accounts, credentials, fees, and connection testing. Accounts are linked to a connection (service) and account type.'
+          },
+          {
+            type: 'endpoint',
+            endpoints: [
+              { method: 'GET', path: '/Accounts/get-accounts', description: 'List all accounts' },
+              { method: 'GET', path: '/Accounts/get-account', description: 'Get account by ID', params: 'id (query)' },
+              { method: 'GET', path: '/Accounts/get-account-detail', description: 'Get full account detail (general, credentials, fees)', params: 'id (query)' },
+              { method: 'GET', path: '/Accounts/get-account-types', description: 'List available account types' },
+              { method: 'POST', path: '/Accounts/create-account', description: 'Create a new account', params: 'Body: CreateAccountRequest' },
+              { method: 'POST', path: '/Accounts/save-account', description: 'Save/update an account', params: 'Body: Account' },
+              { method: 'POST', path: '/Accounts/save-account-details', description: 'Save extended account details', params: 'Body: AccountDetails' },
+              { method: 'PUT', path: '/Accounts/update-account', description: 'Update account properties', params: 'Body: UpdateAccountRequest' },
+              { method: 'PUT', path: '/Accounts/update-credentials', description: 'Update account API credentials', params: 'Body: UpdateCredentialsRequest' },
+              { method: 'PUT', path: '/Accounts/update-fees', description: 'Update account fee structure', params: 'Body: UpdateAccountFeesRequest' },
+              { method: 'POST', path: '/Accounts/test-connection', description: 'Test account API connectivity', params: 'accountId (query)' },
+              { method: 'DELETE', path: '/Accounts/delete-account', description: 'Delete a single account', params: 'id (query)' },
+              { method: 'DELETE', path: '/Accounts/delete-accounts', description: 'Delete multiple accounts', params: 'ids (query)' }
+            ]
+          }
+        ]
+      },
+      {
+        id: 'api-connections',
+        title: 'Connections (Services)',
+        content: [
+          {
+            type: 'text',
+            value: 'Connections represent configured exchange or broker services (e.g., Binance, Coinbase). Managed via the Admin service catalog.'
+          },
+          {
+            type: 'endpoint',
+            endpoints: [
+              { method: 'GET', path: '/Connections/get-connections', description: 'List all connections' },
+              { method: 'GET', path: '/Connections/get-connection', description: 'Get connection by ID', params: 'connectionId (query)' },
+              { method: 'GET', path: '/Connections/get-connection-types', description: 'List connection types' },
+              { method: 'POST', path: '/Connections/save-connection', description: 'Create or update a connection', params: 'Body: Connection' },
+              { method: 'DELETE', path: '/Connections/delete-connection', description: 'Delete a single connection', params: 'id (query)' },
+              { method: 'DELETE', path: '/Connections/delete-connections', description: 'Delete multiple connections', params: 'connectionIds (query)' }
+            ]
+          }
+        ]
+      },
+      {
+        id: 'api-exchanges',
+        title: 'Exchanges',
+        content: [
+          {
+            type: 'text',
+            value: 'Exchange definitions and exchange account management.'
+          },
+          {
+            type: 'heading',
+            value: 'Exchanges'
+          },
+          {
+            type: 'endpoint',
+            endpoints: [
+              { method: 'GET', path: '/Exchanges/get-exchanges', description: 'List all exchanges' },
+              { method: 'GET', path: '/Exchanges/get-exchange', description: 'Get exchange by ID', params: 'id (query)' },
+              { method: 'GET', path: '/Exchanges/get-exchange-types', description: 'List exchange types' },
+              { method: 'POST', path: '/Exchanges/save-exchange', description: 'Create or update an exchange', params: 'Body: Exchange' },
+              { method: 'DELETE', path: '/Exchanges/delete-exchange', description: 'Delete a single exchange', params: 'id (query)' },
+              { method: 'DELETE', path: '/Exchanges/delete-exchanges', description: 'Delete multiple exchanges', params: 'ids (query)' }
+            ]
+          },
+          {
+            type: 'heading',
+            value: 'Exchange Accounts'
+          },
+          {
+            type: 'endpoint',
+            endpoints: [
+              { method: 'GET', path: '/ExchangeAccounts/get-exchange-accounts', description: 'List all exchange accounts' },
+              { method: 'GET', path: '/ExchangeAccounts/get-exchange-account', description: 'Get exchange account by ID', params: 'id (query)' }
+            ]
+          }
+        ]
+      },
+      {
+        id: 'api-markets',
+        title: 'Markets',
+        content: [
+          {
+            type: 'text',
+            value: 'Trading pairs and market definitions.'
+          },
+          {
+            type: 'endpoint',
+            endpoints: [
+              { method: 'GET', path: '/Markets/get-markets', description: 'List all markets' },
+              { method: 'GET', path: '/Markets/get-market', description: 'Get market by ID', params: 'id (query)' },
+              { method: 'POST', path: '/Markets/save-market', description: 'Create or update a market', params: 'Body: Market' },
+              { method: 'DELETE', path: '/Markets/delete-market', description: 'Delete a single market', params: 'id (query)' },
+              { method: 'DELETE', path: '/Markets/delete-markets', description: 'Delete multiple markets', params: 'ids (query)' }
+            ]
+          }
+        ]
+      },
+      {
+        id: 'api-strategies',
+        title: 'Strategies',
+        content: [
+          {
+            type: 'text',
+            value: 'Trading strategy definitions and execution.'
+          },
+          {
+            type: 'endpoint',
+            endpoints: [
+              { method: 'GET', path: '/Strategies/get-strategies', description: 'List all strategies' },
+              { method: 'GET', path: '/Strategies/get-strategy', description: 'Get strategy by ID', params: 'strategyId (query)' },
+              { method: 'POST', path: '/Strategies/save-strategy', description: 'Create or update a strategy', params: 'Body: Strategy' },
+              { method: 'POST', path: '/Strategies/run-strategy', description: 'Execute a strategy', params: 'id (query)' },
+              { method: 'DELETE', path: '/Strategies/delete-strategy', description: 'Delete a single strategy', params: 'id (query)' },
+              { method: 'DELETE', path: '/Strategies/delete-strategies', description: 'Delete multiple strategies', params: 'strategyIds (query)' }
+            ]
+          }
+        ]
+      },
+      {
+        id: 'api-backtester',
+        title: 'Backtester',
+        content: [
+          {
+            type: 'text',
+            value: 'Backtest management, execution, and historical data upload.'
+          },
+          {
+            type: 'endpoint',
+            endpoints: [
+              { method: 'GET', path: '/Backtester/get-backtests', description: 'List all backtests' },
+              { method: 'GET', path: '/Backtester/get-backtest', description: 'Get backtest by ID', params: 'backtestId (query)' },
+              { method: 'GET', path: '/Backtester/get-data-sources', description: 'List available data sources for backtesting' },
+              { method: 'POST', path: '/Backtester/save-backtest', description: 'Create or update a backtest', params: 'Body: Backtest' },
+              { method: 'POST', path: '/Backtester/run-backtest', description: 'Execute a backtest' },
+              { method: 'POST', path: '/Backtester/upload-historical-data-file', description: 'Upload historical data file', params: 'Form: IFormFile' },
+              { method: 'DELETE', path: '/Backtester/delete-backtest', description: 'Delete a single backtest', params: 'backtestId (query)' },
+              { method: 'DELETE', path: '/Backtester/delete-backtests', description: 'Delete multiple backtests', params: 'backtestIds (query)' }
+            ]
+          }
+        ]
+      },
+      {
+        id: 'api-market-data',
+        title: 'Market Data',
+        content: [
+          {
+            type: 'text',
+            value: 'OHLC candle data retrieval from QuestDB, symbol listings, data coverage, and fetcher information.'
+          },
+          {
+            type: 'endpoint',
+            endpoints: [
+              { method: 'POST', path: '/MarketData/get-candles', description: 'Retrieve OHLC candles for a symbol', params: 'Body: MarketDataRequest' },
+              { method: 'POST', path: '/MarketData/import-candles', description: 'Import candle data', params: 'Body: List<Candle>' },
+              { method: 'GET', path: '/MarketData/get-symbols', description: 'List all available symbols' },
+              { method: 'GET', path: '/MarketData/get-source-summaries', description: 'Get data source summaries for a symbol', params: 'symbol (query)' },
+              { method: 'GET', path: '/MarketData/get-coverage', description: 'Get data coverage information', params: 'symbol, source, interval (query)' },
+              { method: 'GET', path: '/MarketData/get-fetchers', description: 'List available data fetchers' }
+            ]
+          }
+        ]
+      },
+      {
+        id: 'api-data-manager',
+        title: 'Data Manager',
+        content: [
+          {
+            type: 'text',
+            value: 'Data provider management, file uploads, and QuestDB table operations.'
+          },
+          {
+            type: 'heading',
+            value: 'Data Providers'
+          },
+          {
+            type: 'endpoint',
+            endpoints: [
+              { method: 'GET', path: '/DataManager/get-data-providers', description: 'List all data providers' },
+              { method: 'GET', path: '/DataManager/get-data-provider', description: 'Get data provider by ID', params: 'id (query)' },
+              { method: 'GET', path: '/DataManager/get-data-provider-types', description: 'List data provider types' },
+              { method: 'GET', path: '/DataManager/get-data-frequency-types', description: 'List data frequency types' },
+              { method: 'GET', path: '/DataManager/get-data-format-types', description: 'List data format types' },
+              { method: 'POST', path: '/DataManager/save-data-provider', description: 'Create or update a data provider', params: 'Body: DataProvider' },
+              { method: 'DELETE', path: '/DataManager/delete-data-provider', description: 'Delete a data provider', params: 'id (query)' }
+            ]
+          },
+          {
+            type: 'heading',
+            value: 'QuestDB Operations'
+          },
+          {
+            type: 'endpoint',
+            endpoints: [
+              { method: 'GET', path: '/DataManager/get-questdb-tables', description: 'List all QuestDB tables' },
+              { method: 'POST', path: '/DataManager/create-questdb-table', description: 'Create a new QuestDB table', params: 'Body: QuestDbTable' },
+              { method: 'POST', path: '/DataManager/drop-questdb-table', description: 'Drop a QuestDB table', params: 'tableName (query)' },
+              { method: 'POST', path: '/DataManager/drop-file', description: 'Upload a data file', params: 'Form: IFormFile' }
+            ]
+          }
+        ]
+      },
+      {
+        id: 'api-storage',
+        title: 'Storage Management',
+        content: [
+          {
+            type: 'text',
+            value: 'Tiered storage operations including partition archival/restoration, PostgreSQL backups, and OIDC token cleanup.'
+          },
+          {
+            type: 'endpoint',
+            endpoints: [
+              { method: 'GET', path: '/Storage/config', description: 'Get storage configuration' },
+              { method: 'PUT', path: '/Storage/config', description: 'Update storage configuration', params: 'Body: StorageConfig' },
+              { method: 'GET', path: '/Storage/status', description: 'Get disk usage and storage status' },
+              { method: 'GET', path: '/Storage/partitions', description: 'List QuestDB partitions with archive status' },
+              { method: 'POST', path: '/Storage/archive', description: 'Archive partitions to external disk', params: 'Body: ArchiveRequest' },
+              { method: 'POST', path: '/Storage/restore', description: 'Restore partition from external disk', params: 'Body: RestoreRequest' },
+              { method: 'POST', path: '/Storage/cleanup', description: 'Prune expired OIDC tokens' },
+              { method: 'GET', path: '/Storage/backups', description: 'List available PostgreSQL backups' },
+              { method: 'POST', path: '/Storage/backup', description: 'Create a PostgreSQL backup' },
+              { method: 'GET', path: '/Storage/log', description: 'Get archive activity log', params: 'limit (query, default: 50)' }
+            ]
+          }
+        ]
+      },
+      {
+        id: 'api-config',
+        title: 'Configuration & Settings',
+        content: [
+          {
+            type: 'text',
+            value: 'Entity type management (reference tables), account user administration, and geographic/timezone data.'
+          },
+          {
+            type: 'heading',
+            value: 'Entity Types'
+          },
+          {
+            type: 'endpoint',
+            endpoints: [
+              { method: 'GET', path: '/AppConfigurations/get-entity-type-tables', description: 'List all entity type tables' },
+              { method: 'GET', path: '/AppConfigurations/get-entity-type-records', description: 'Get records for an entity type table', params: 'tableName (query)' },
+              { method: 'POST', path: '/AppConfigurations/save-entity-type', description: 'Create or update an entity type', params: 'Body: EntityType' },
+              { method: 'POST', path: '/AppConfigurations/delete-entity-type', description: 'Delete an entity type', params: 'Body: EntityType' }
+            ]
+          },
+          {
+            type: 'heading',
+            value: 'Account Users'
+          },
+          {
+            type: 'endpoint',
+            endpoints: [
+              { method: 'GET', path: '/AppConfigurations/get-account-users', description: 'List all account users' },
+              { method: 'POST', path: '/AppConfigurations/save-account-user', description: 'Create or update an account user', params: 'Body: AccountUser' },
+              { method: 'POST', path: '/AppConfigurations/delete-account-user', description: 'Delete an account user', params: 'Body: AccountUser' }
+            ]
+          },
+          {
+            type: 'heading',
+            value: 'Reference Data'
+          },
+          {
+            type: 'endpoint',
+            endpoints: [
+              { method: 'GET', path: '/AppConfigurations/get-country-data', description: 'Get all country records' },
+              { method: 'GET', path: '/AppConfigurations/get-timezone-data', description: 'Get all timezone records' }
+            ]
+          }
+        ]
+      },
+      {
+        id: 'api-system',
+        title: 'System & Diagnostics',
+        content: [
+          {
+            type: 'text',
+            value: 'Environment detection, API connectivity testing, and server time.'
+          },
+          {
+            type: 'endpoint',
+            endpoints: [
+              { method: 'GET', path: '/Environment/get-environment', description: 'Get runtime environment info (DEV/PROD)' },
+              { method: 'GET', path: '/ApiTester/test-connection', description: 'Test API connectivity' },
+              { method: 'GET', path: '/ApiTester/get-server-time', description: 'Get current server time' }
             ]
           }
         ]
