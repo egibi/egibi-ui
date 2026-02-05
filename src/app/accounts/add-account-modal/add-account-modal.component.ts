@@ -79,7 +79,11 @@ export class AddAccountModalComponent implements OnInit {
     this.credentials = {};
     this.showSecrets = {};
     // Pre-init credential fields
-    for (const field of conn.requiredFieldsList) {
+    const requiredFields: string[] = (() => {
+      try { return JSON.parse(conn.requiredFields || '[]'); }
+      catch { return []; }
+    })();
+    for (const field of requiredFields) {
       this.credentials[field] = '';
       this.showSecrets[field] = false;
     }
@@ -103,7 +107,8 @@ export class AddAccountModalComponent implements OnInit {
 
   get requiredFields(): string[] {
     if (this.selectedConnection) {
-      return this.selectedConnection.requiredFieldsList;
+      try { return JSON.parse(this.selectedConnection.requiredFields || '[]'); }
+      catch { return []; }
     }
     // Custom: show api_key and api_secret by default
     return Object.keys(this.credentials);

@@ -4,6 +4,11 @@ import { Observable } from 'rxjs';
 import { RequestResponse } from '../request-response';
 import { Account, CreateAccountRequest } from '../_models/account.model';
 import { AccountDetails } from '../_models/account-details.model';
+import {
+  UpdateAccountRequest,
+  UpdateCredentialsRequest,
+  UpdateAccountFeesRequest,
+} from '../_models/account-detail.model';
 
 @Injectable({
   providedIn: 'root',
@@ -13,7 +18,39 @@ export class AccountsService {
 
   constructor(private http: HttpClient) {}
 
-  // CRUD ACTIONS FOR ENTIRE ACCOUNT ENTITY
+  // =============================================
+  // ACCOUNT DETAIL (for detail page)
+  // =============================================
+
+  /** Returns full account detail with connection, credentials summary, and fees */
+  public getAccountDetail(id: number): Observable<RequestResponse> {
+    return this.http.get<RequestResponse>(`${this.apiBaseUrl}/get-account-detail?id=${id}`);
+  }
+
+  /** Update general account properties */
+  public updateAccount(request: UpdateAccountRequest): Observable<RequestResponse> {
+    return this.http.put<RequestResponse>(`${this.apiBaseUrl}/update-account`, request);
+  }
+
+  /** Update encrypted credentials (only non-null fields are re-encrypted) */
+  public updateCredentials(request: UpdateCredentialsRequest): Observable<RequestResponse> {
+    return this.http.put<RequestResponse>(`${this.apiBaseUrl}/update-credentials`, request);
+  }
+
+  /** Update fee structure for an account */
+  public updateFees(request: UpdateAccountFeesRequest): Observable<RequestResponse> {
+    return this.http.put<RequestResponse>(`${this.apiBaseUrl}/update-fees`, request);
+  }
+
+  /** Test connectivity to the account's exchange API */
+  public testConnection(accountId: number): Observable<RequestResponse> {
+    return this.http.post<RequestResponse>(`${this.apiBaseUrl}/test-connection?accountId=${accountId}`, {});
+  }
+
+  // =============================================
+  // EXISTING ENDPOINTS
+  // =============================================
+
   public getAccounts(): Observable<RequestResponse> {
     return this.http.get<RequestResponse>(`${this.apiBaseUrl}/get-accounts`);
   }

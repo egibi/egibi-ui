@@ -1,0 +1,29 @@
+.info-banner {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  background: hsl(var(--egibi-secondary));
+  border-radius: var(--egibi-radius);
+  border-left: 3px solid hsl(var(--egibi-primary));
+  font-size: 0.875rem;
+  color: hsl(var(--egibi-muted-foreground));
+
+  svg {
+    flex-shrink: 0;
+    color: hsl(var(--egibi-primary));
+  }
+}
+
+.action-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 1rem;
+  border-top: 1px solid hsl(var(--egibi-border));
+}
+
+.save-message {
+  font-size: 0.875rem;
+  font-weight: 500;
+}

@@ -1,1 +1,79 @@
-<p>fees works!</p>
+<form [formGroup]="feeForm" (ngSubmit)="onSave()">
+  @if (!hasFees) {
+    <div class="info-banner mb-4">
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="10" />
+        <line x1="12" y1="16" x2="12" y2="12" />
+        <line x1="12" y1="8" x2="12.01" y2="8" />
+      </svg>
+      <span>No fee structure configured yet. Set your fees below and save.</span>
+    </div>
+  }
+
+  <div class="row g-4">
+    <!-- Fee Type -->
+    <div class="col-md-6">
+      <label class="form-label">Fee Schedule Type</label>
+      <select class="form-select" formControlName="feeScheduleType">
+        @for (type of feeScheduleTypes; track type.value) {
+          <option [value]="type.value">{{ type.label }}</option>
+        }
+      </select>
+      <div class="form-text">How fees are calculated for trades on this account</div>
+    </div>
+
+    <!-- Spacer -->
+    <div class="col-md-6"></div>
+
+    <!-- Maker Fee -->
+    <div class="col-md-6">
+      <label class="form-label">Maker Fee (%)</label>
+      <div class="input-group">
+        <input type="number" class="form-control" formControlName="makerFeePercent"
+          step="0.0001" min="0" max="100" placeholder="0.1000" />
+        <span class="input-group-text">%</span>
+      </div>
+      <div class="form-text">Fee charged when your order adds liquidity to the order book</div>
+    </div>
+
+    <!-- Taker Fee -->
+    <div class="col-md-6">
+      <label class="form-label">Taker Fee (%)</label>
+      <div class="input-group">
+        <input type="number" class="form-control" formControlName="takerFeePercent"
+          step="0.0001" min="0" max="100" placeholder="0.1500" />
+        <span class="input-group-text">%</span>
+      </div>
+      <div class="form-text">Fee charged when your order removes liquidity from the order book</div>
+    </div>
+
+    <!-- Notes -->
+    <div class="col-12">
+      <label class="form-label">Notes</label>
+      <textarea class="form-control" formControlName="notes" rows="3"
+        placeholder="e.g., VIP tier 2 since March 2025, volume-based discount applies above $50k/month..."></textarea>
+    </div>
+  </div>
+
+  <!-- Save / Cancel Bar -->
+  <div class="action-bar mt-4">
+    <div class="d-flex align-items-center gap-2">
+      <button type="submit" class="btn btn-primary" [disabled]="!hasChanges || saving">
+        @if (saving) {
+          <span class="spinner-border spinner-border-sm me-1" role="status"></span>
+        }
+        Save Fees
+      </button>
+      <button type="button" class="btn btn-outline-secondary" [disabled]="!hasChanges" (click)="onCancel()">
+        Cancel
+      </button>
+    </div>
+
+    @if (saveMessage) {
+      <span class="save-message" [class.text-success]="!saveError" [class.text-danger]="saveError">
+        {{ saveMessage }}
+      </span>
+    }
+  </div>
+</form>

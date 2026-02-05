@@ -1,66 +1,94 @@
-import { Component, OnInit, ViewChild } from "@angular/core";
-import { CommonModule } from "@angular/common";
-import { ActivatedRoute, Router } from "@angular/router";
-import { NgbNavModule } from "@ng-bootstrap/ng-bootstrap";
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from "@angular/forms";
-import { AccountsService } from "../accounts.service";
-import { EntityType } from "../../_models/entity-type.model";
-import { FeesComponent } from "./sections/fees/fees.component";
-import { AccountDetailsComponent } from "./sections/account-details/account-details.component";
-import { AccountsBottomActionsComponent } from "../accounts-bottom-actions/accounts-bottom-actions.component";
-import { ApiComponent } from "./sections/api/api.component";
-import { StatusComponent } from "./sections/status/status.component";
+import { Component, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { ActivatedRoute, Router } from '@angular/router';
+import { NgbNavModule } from '@ng-bootstrap/ng-bootstrap';
+import { AccountsService } from '../accounts.service';
+import { AccountDetailResponse } from '../../_models/account-detail.model';
+import { AccountType } from '../../_models/account-type';
+import { GeneralComponent } from './sections/general/general.component';
+import { ApiComponent } from './sections/api/api.component';
+import { FeesComponent } from './sections/fees/fees.component';
+import { StatusComponent } from './sections/status/status.component';
 
 @Component({
-  selector: "account",
-  imports: [ReactiveFormsModule, CommonModule, NgbNavModule, AccountDetailsComponent, AccountsBottomActionsComponent],
-  templateUrl: "./account.component.html",
-  styleUrl: "./account.component.scss",
+  selector: 'account',
+  standalone: true,
+  imports: [
+    CommonModule,
+    NgbNavModule,
+    GeneralComponent,
+    ApiComponent,
+    FeesComponent,
+    StatusComponent,
+  ],
+  templateUrl: './account.component.html',
+  styleUrl: './account.component.scss',
 })
 export class AccountComponent implements OnInit {
-  @ViewChild(AccountDetailsComponent) accountDetails: AccountDetailsComponent;
-  @ViewChild(ApiComponent) accountApi: ApiComponent;
-  @ViewChild(FeesComponent) accountFees: FeesComponent;
-  @ViewChild(StatusComponent) accountStatus: StatusComponent;
+  accountDetail: AccountDetailResponse | null = null;
+  accountTypes: AccountType[] = [];
+  activeTab = 'general';
+  loading = true;
+  error: string | null = null;
 
-  public accountDetailsForm: FormGroup;
-  public accountApiForm: FormGroup;
-  public accountFeesForm: FormGroup;
-  public accountStatusForm: FormGroup;
+  private accountId: number | null = null;
 
-  public activeTab = "details";
-  accountId: number;
+  constructor(
+    private route: ActivatedRoute,
+    private router: Router,
+    private accountsService: AccountsService
+  ) {}
 
-  accountForm: FormGroup;
-  accountTypes: EntityType[] = [];
+  ngOnInit(): void {
+    const idParam = this.route.snapshot.paramMap.get('id');
+    if (idParam) {
+      this.accountId = parseInt(idParam, 10);
+      this.loadAccountDetail();
+      this.loadAccountTypes();
+    } else {
+      // No ID — redirect back to accounts list
+      this.router.navigate(['/accounts']);
+    }
+  }
 
-  constructor(private route: ActivatedRoute, private fb: FormBuilder, private router: Router, private accountsService: AccountsService) {}
+  loadAccountDetail(): void {
+    if (!this.accountId) return;
 
-  ngOnInit(): void {}
+    this.loading = true;
+    this.error = null;
 
-  //=============================================================
-  // Try with no existing accounts to create a new one
-  //=============================================================
-  public handleSave(activeTab: string, isNewAccount: boolean): void {
-    const newAccount = this.accountDetails.accountDetailsForm.form.value;
-    this.accountsService.saveAccount(newAccount).subscribe((res) => {
-      console.log('attempted save:::');
-      console.log(res);
+    this.accountsService.getAccountDetail(this.accountId).subscribe({
+      next: (res) => {
+        if (res.responseCode === 200) {
+          this.accountDetail = res.responseData;
+        } else {
+          this.error = res.responseMessage || 'Failed to load account';
+        }
+        this.loading = false;
+      },
+      error: (err) => {
+        this.error = 'Failed to load account details';
+        this.loading = false;
+        console.error('Account detail load error:', err);
+      },
     });
   }
 
-  public handleCancel(event: any) {
-    console.log("handle cancel:::");
-    console.log("cancel event ==> ", event);
+  loadAccountTypes(): void {
+    this.accountsService.getAccountTypes().subscribe({
+      next: (res) => {
+        this.accountTypes = res.responseData || [];
+      },
+    });
   }
 
-  public handleDelete(event: any) {
-    console.log("handle delete:::");
-    console.log("delete event ==> event");
+  /** Called by child components after a successful save */
+  onAccountUpdated(): void {
+    this.loadAccountDetail();
   }
 
-  public setActiveTab(tabId: string) {
-    this.activeTab = tabId;
-    console.log("selected tab:::", this.activeTab);
+  /** Navigate back to accounts list */
+  goBack(): void {
+    this.router.navigate(['/accounts']);
   }
 }

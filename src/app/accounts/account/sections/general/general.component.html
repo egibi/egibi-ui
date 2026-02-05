@@ -1,0 +1,117 @@
+<form [formGroup]="form" (ngSubmit)="onSave()">
+  <div class="row g-4">
+    <!-- Left column: Editable fields -->
+    <div class="col-lg-8">
+      <div class="row g-3">
+        <div class="col-md-6">
+          <label class="form-label">Account Name</label>
+          <input type="text" class="form-control" formControlName="name" placeholder="e.g., My Binance Trading" />
+          @if (form.controls['name'].invalid && form.controls['name'].touched) {
+            <div class="form-text text-danger">Name is required</div>
+          }
+        </div>
+
+        <div class="col-md-6">
+          <label class="form-label">Account Type</label>
+          <select class="form-select" formControlName="accountTypeId">
+            <option [ngValue]="null">No type selected</option>
+            @for (type of accountTypes; track type.id) {
+              <option [ngValue]="type.id">{{ type.name }}</option>
+            }
+          </select>
+        </div>
+
+        <div class="col-12">
+          <label class="form-label">Description</label>
+          <textarea class="form-control" formControlName="description" rows="2"
+            placeholder="Brief description of this account..."></textarea>
+        </div>
+
+        <div class="col-12">
+          <label class="form-label">Notes</label>
+          <textarea class="form-control" formControlName="notes" rows="3"
+            placeholder="Internal notes, reminders, etc."></textarea>
+        </div>
+
+        <div class="col-12">
+          <div class="form-check form-switch">
+            <input class="form-check-input" type="checkbox" formControlName="isActive" id="isActiveToggle" />
+            <label class="form-check-label" for="isActiveToggle">Account is active</label>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right column: Read-only metadata -->
+    <div class="col-lg-4">
+      <div class="metadata-card">
+        <h6 class="metadata-title">Account Info</h6>
+
+        <div class="metadata-row">
+          <span class="metadata-label">ID</span>
+          <span class="metadata-value">{{ account?.id }}</span>
+        </div>
+
+        @if (account?.connectionName) {
+          <div class="metadata-row">
+            <span class="metadata-label">Service</span>
+            <span class="metadata-value">
+              @if (account?.connectionColor) {
+                <span class="service-dot" [style.background-color]="account?.connectionColor"></span>
+              }
+              {{ account?.connectionName }}
+            </span>
+          </div>
+
+          <div class="metadata-row">
+            <span class="metadata-label">Category</span>
+            <span class="metadata-value">{{ account?.connectionCategory | titlecase }}</span>
+          </div>
+        }
+
+        <div class="metadata-row">
+          <span class="metadata-label">Created</span>
+          <span class="metadata-value">{{ account?.createdAt | date:'mediumDate' }}</span>
+        </div>
+
+        @if (account?.lastModifiedAt) {
+          <div class="metadata-row">
+            <span class="metadata-label">Last Modified</span>
+            <span class="metadata-value">{{ account?.lastModifiedAt | date:'medium' }}</span>
+          </div>
+        }
+
+        @if (account?.connectionWebsite) {
+          <div class="metadata-row">
+            <span class="metadata-label">Website</span>
+            <a [href]="account?.connectionWebsite" target="_blank" rel="noopener" class="metadata-link">
+              {{ account?.connectionWebsite | slice:8:40 }}
+              @if ((account?.connectionWebsite || '').length > 48) { ... }
+            </a>
+          </div>
+        }
+      </div>
+    </div>
+  </div>
+
+  <!-- Save / Cancel Bar -->
+  <div class="action-bar mt-4">
+    <div class="d-flex align-items-center gap-2">
+      <button type="submit" class="btn btn-primary" [disabled]="!hasChanges || form.invalid || saving">
+        @if (saving) {
+          <span class="spinner-border spinner-border-sm me-1" role="status"></span>
+        }
+        Save Changes
+      </button>
+      <button type="button" class="btn btn-outline-secondary" [disabled]="!hasChanges" (click)="onCancel()">
+        Cancel
+      </button>
+    </div>
+
+    @if (saveMessage) {
+      <span class="save-message" [class.text-success]="!saveError" [class.text-danger]="saveError">
+        {{ saveMessage }}
+      </span>
+    }
+  </div>
+</form>

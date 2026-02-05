@@ -1,0 +1,36 @@
+.tab-content-wrapper {
+  padding: 1.5rem;
+}
+
+.badge-success {
+  background-color: hsl(var(--egibi-success));
+  color: hsl(var(--egibi-success-foreground));
+}
+
+.badge-secondary {
+  background-color: hsl(var(--egibi-muted));
+  color: hsl(var(--egibi-muted-foreground));
+}
+
+:host ::ng-deep .nav-tabs {
+  border-bottom: 1px solid hsl(var(--egibi-border));
+
+  .nav-link {
+    color: hsl(var(--egibi-muted-foreground));
+    border: none;
+    padding: 0.75rem 1rem;
+    font-weight: 500;
+    font-size: 0.875rem;
+
+    &:hover {
+      color: hsl(var(--egibi-foreground));
+      border-bottom: 2px solid hsl(var(--egibi-muted));
+    }
+
+    &.active {
+      color: hsl(var(--egibi-primary));
+      border-bottom: 2px solid hsl(var(--egibi-primary));
+      background: transparent;
+    }
+  }
+}

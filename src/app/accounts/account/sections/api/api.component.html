@@ -1,1 +1,173 @@
-<p>api works!</p>
+@if (!hasConnection) {
+  <div class="empty-state">
+    <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none"
+      stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+      <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+      <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+    </svg>
+    <p>This account has no linked service. API credentials are managed through service connections.</p>
+  </div>
+} @else {
+  <div class="row g-4">
+    <!-- Base URL -->
+    <div class="col-12">
+      <label class="form-label">Base URL</label>
+      <input type="text" class="form-control" [formControl]="$any(credentialForm.controls['baseUrl'])"
+        [readonly]="!editMode" placeholder="https://api.example.com" />
+      <div class="form-text">The API endpoint for this service connection</div>
+    </div>
+
+    <!-- Current Credentials (read-only view) -->
+    @if (!editMode) {
+      <div class="col-12">
+        <div class="credential-summary">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <h6 class="section-title mb-0">Stored Credentials</h6>
+            <button class="btn btn-outline-primary btn-sm" (click)="enterEditMode()">
+              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="me-1">
+                <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z" />
+              </svg>
+              Update Credentials
+            </button>
+          </div>
+
+          @if (account?.credentials?.hasCredentials) {
+            <div class="credential-grid">
+              @if (account?.credentials?.maskedApiKey) {
+                <div class="credential-item">
+                  <span class="credential-label">API Key</span>
+                  <code class="credential-value">{{ account?.credentials?.maskedApiKey }}</code>
+                </div>
+              }
+              @if (account?.credentials?.maskedApiSecret) {
+                <div class="credential-item">
+                  <span class="credential-label">API Secret</span>
+                  <code class="credential-value">{{ account?.credentials?.maskedApiSecret }}</code>
+                </div>
+              }
+              @if (account?.credentials?.hasPassphrase) {
+                <div class="credential-item">
+                  <span class="credential-label">Passphrase</span>
+                  <code class="credential-value">••••••••</code>
+                </div>
+              }
+              @if (account?.credentials?.hasUsername) {
+                <div class="credential-item">
+                  <span class="credential-label">Username</span>
+                  <code class="credential-value">••••••••</code>
+                </div>
+              }
+              @if (account?.credentials?.label) {
+                <div class="credential-item">
+                  <span class="credential-label">Label</span>
+                  <span class="credential-value">{{ account?.credentials?.label }}</span>
+                </div>
+              }
+              @if (account?.credentials?.permissions) {
+                <div class="credential-item">
+                  <span class="credential-label">Permissions</span>
+                  <span class="credential-value">{{ account?.credentials?.permissions }}</span>
+                </div>
+              }
+              @if (account?.credentials?.lastUsedAt) {
+                <div class="credential-item">
+                  <span class="credential-label">Last Used</span>
+                  <span class="credential-value">{{ account?.credentials?.lastUsedAt | date:'medium' }}</span>
+                </div>
+              }
+            </div>
+          } @else {
+            <p class="text-muted mb-0">No credentials stored. Click "Update Credentials" to add them.</p>
+          }
+        </div>
+      </div>
+    }
+
+    <!-- Edit Mode -->
+    @if (editMode) {
+      <div class="col-12">
+        <form [formGroup]="credentialForm" (ngSubmit)="onSave()">
+          <div class="edit-section">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <h6 class="section-title mb-0">Update Credentials</h6>
+              <span class="form-text">Enter new values to update. Leave blank to keep existing.</span>
+            </div>
+
+            <div class="row g-3">
+              @if (isFieldRequired('api_key') || account?.credentials?.maskedApiKey) {
+                <div class="col-md-6">
+                  <label class="form-label">API Key</label>
+                  <input type="text" class="form-control" formControlName="apiKey"
+                    placeholder="Enter new API key..." autocomplete="off" />
+                </div>
+              }
+
+              @if (isFieldRequired('api_secret') || account?.credentials?.maskedApiSecret) {
+                <div class="col-md-6">
+                  <label class="form-label">API Secret</label>
+                  <input type="password" class="form-control" formControlName="apiSecret"
+                    placeholder="Enter new API secret..." autocomplete="off" />
+                </div>
+              }
+
+              @if (isFieldRequired('passphrase') || account?.credentials?.hasPassphrase) {
+                <div class="col-md-6">
+                  <label class="form-label">Passphrase</label>
+                  <input type="password" class="form-control" formControlName="passphrase"
+                    placeholder="Enter passphrase..." autocomplete="off" />
+                </div>
+              }
+
+              @if (isFieldRequired('username') || account?.credentials?.hasUsername) {
+                <div class="col-md-6">
+                  <label class="form-label">Username</label>
+                  <input type="text" class="form-control" formControlName="username"
+                    placeholder="Enter username..." autocomplete="off" />
+                </div>
+              }
+
+              @if (isFieldRequired('password')) {
+                <div class="col-md-6">
+                  <label class="form-label">Password</label>
+                  <input type="password" class="form-control" formControlName="password"
+                    placeholder="Enter password..." autocomplete="off" />
+                </div>
+              }
+
+              <div class="col-md-6">
+                <label class="form-label">Label</label>
+                <input type="text" class="form-control" formControlName="label"
+                  placeholder="e.g., My Trading Key" />
+              </div>
+
+              <div class="col-md-6">
+                <label class="form-label">Permissions</label>
+                <input type="text" class="form-control" formControlName="permissions"
+                  placeholder="e.g., read, trade" />
+              </div>
+            </div>
+
+            <!-- Save / Cancel -->
+            <div class="action-bar mt-4">
+              <div class="d-flex align-items-center gap-2">
+                <button type="submit" class="btn btn-primary" [disabled]="saving">
+                  @if (saving) {
+                    <span class="spinner-border spinner-border-sm me-1" role="status"></span>
+                  }
+                  Save Credentials
+                </button>
+                <button type="button" class="btn btn-outline-secondary" (click)="cancelEdit()">Cancel</button>
+              </div>
+              @if (saveMessage) {
+                <span class="save-message" [class.text-success]="!saveError" [class.text-danger]="saveError">
+                  {{ saveMessage }}
+                </span>
+              }
+            </div>
+          </div>
+        </form>
+      </div>
+    }
+  </div>
+}
