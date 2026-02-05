@@ -12,13 +12,17 @@ import { TableColumn, SortConfig } from "./egibi-table.models";
 export class EgibiTableComponent implements OnInit {
   @Input() data: any[] = [];
   @Input() columns: TableColumn[] = [];
+  @Input() defaultSort: SortConfig | null = null;
   @Output() rowClicked = new EventEmitter<any>();
 
   sortConfig: SortConfig = { key: "", direction: null };
   sortedData: any[] = [];
 
   ngOnInit() {
-    this.sortedData = [...this.data];
+    if (this.defaultSort) {
+      this.sortConfig = { ...this.defaultSort };
+    }
+    this.applySort();
   }
 
   ngOnChanges() {

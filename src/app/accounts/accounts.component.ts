@@ -5,7 +5,7 @@ import { FormsModule } from '@angular/forms';
 import { EgibiTableComponent } from '../_components/egibi-table/egibi-table.component';
 import { Account, CreateAccountRequest } from '../_models/account.model';
 import { AccountsService } from './accounts.service';
-import { TableColumn } from '../_components/egibi-table/egibi-table.models';
+import { TableColumn, SortConfig } from '../_components/egibi-table/egibi-table.models';
 import { NgbGlobalModalService, ModalResult } from '../_services/ngb-global-modal.service';
 import { AddAccountModalComponent } from './add-account-modal/add-account-modal.component';
 import { AccountType } from '../_models/account-type';
@@ -51,12 +51,13 @@ export class AccountsComponent implements OnInit {
   }
 
   tableColumns: TableColumn[] = [
-    { key: 'id', label: 'ID', sortable: true },
     { key: 'name', label: 'Name', sortable: true },
     { key: 'connectionName', label: 'Service', sortable: true },
     { key: 'accountTypeName', label: 'Type', sortable: true },
     { key: 'description', label: 'Description', sortable: true },
   ];
+
+  defaultSort: SortConfig = { key: 'name', direction: 'asc' };
 
   public addNewAccount(): void {
     this.modalService
