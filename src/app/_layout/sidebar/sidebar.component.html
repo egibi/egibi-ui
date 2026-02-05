@@ -65,6 +65,7 @@
             [ngbTooltip]="isCollapsed ? item.label : null"
             placement="right"
             container="body"
+            triggers="hover"
             (click)="isMobile && close()"
           >
             <span class="sidebar-icon">
@@ -214,7 +215,7 @@
     <!-- Environment Indicator -->
     <div class="env-indicator" [class.collapsed]="isCollapsed" [class.env-prod]="envService.isProduction()">
       @if (isCollapsed) {
-        <span class="env-dot" [ngbTooltip]="envService.environment().name" placement="right" container="body"></span>
+        <span class="env-dot" [ngbTooltip]="envService.environment().name" placement="right" container="body" triggers="hover"></span>
       } @else {
         <span class="env-tag">{{ envService.environment().tag }}</span>
         <span class="env-name">{{ envService.environment().name }}</span>
