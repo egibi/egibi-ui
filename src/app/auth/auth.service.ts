@@ -25,6 +25,9 @@ export class AuthService {
   private _loading = signal<boolean>(false);
   private _initialized = signal<boolean>(false);
 
+  /** Promise that resolves when initial session restore (including token refresh) is complete */
+  readonly whenInitialized: Promise<void>;
+
   /** Current user profile (null if not authenticated) */
   user = this._user.asReadonly();
 
@@ -46,8 +49,8 @@ export class AuthService {
     private http: HttpClient,
     private router: Router
   ) {
-    // Try to restore session from sessionStorage
-    this.restoreSession();
+    // Restore session and wait for refresh to complete before marking initialized
+    this.whenInitialized = this.restoreSession();
   }
 
   // =============================================
@@ -131,11 +134,11 @@ export class AuthService {
    */
   private startAuthorizationFlow(): void {
     const codeVerifier = this.generateCodeVerifier();
-    sessionStorage.setItem('oidc_code_verifier', codeVerifier);
+    localStorage.setItem('oidc_code_verifier', codeVerifier);
 
     this.generateCodeChallenge(codeVerifier).then(codeChallenge => {
       const state = this.generateRandomString(32);
-      sessionStorage.setItem('oidc_state', state);
+      localStorage.setItem('oidc_state', state);
 
       const params = new URLSearchParams({
         client_id: this.clientId,
@@ -160,21 +163,21 @@ export class AuthService {
     this._loading.set(true);
 
     // Validate state to prevent CSRF
-    const expectedState = sessionStorage.getItem('oidc_state');
+    const expectedState = localStorage.getItem('oidc_state');
     if (state !== expectedState) {
       this._loading.set(false);
       throw new Error('Invalid state parameter. Possible CSRF attack.');
     }
 
-    const codeVerifier = sessionStorage.getItem('oidc_code_verifier');
+    const codeVerifier = localStorage.getItem('oidc_code_verifier');
     if (!codeVerifier) {
       this._loading.set(false);
       throw new Error('Missing PKCE code verifier.');
     }
 
     // Clean up
-    sessionStorage.removeItem('oidc_state');
-    sessionStorage.removeItem('oidc_code_verifier');
+    localStorage.removeItem('oidc_state');
+    localStorage.removeItem('oidc_code_verifier');
 
     try {
       // Exchange auth code for tokens
@@ -200,8 +203,8 @@ export class AuthService {
       this._initialized.set(true);
 
       // Navigate to the originally requested page, or home
-      const returnUrl = sessionStorage.getItem('auth_return_url') || '/';
-      sessionStorage.removeItem('auth_return_url');
+      const returnUrl = localStorage.getItem('auth_return_url') || '/';
+      localStorage.removeItem('auth_return_url');
       this.router.navigateByUrl(returnUrl);
     } catch (err) {
       this._loading.set(false);
@@ -233,7 +236,6 @@ export class AuthService {
       this.setTokens(tokenResponse);
       return true;
     } catch {
-      this.clearSession();
       return false;
     }
   }
@@ -269,7 +271,7 @@ export class AuthService {
       })
     );
     this._user.set(profile);
-    sessionStorage.setItem('oidc_user', JSON.stringify(profile));
+    localStorage.setItem('oidc_user', JSON.stringify(profile));
   }
 
   // =============================================
@@ -278,11 +280,11 @@ export class AuthService {
 
   private setTokens(response: OidcTokenResponse): void {
     this._accessToken.set(response.access_token);
-    sessionStorage.setItem('oidc_access_token', response.access_token);
+    localStorage.setItem('oidc_access_token', response.access_token);
 
     if (response.refresh_token) {
       this._refreshToken.set(response.refresh_token);
-      sessionStorage.setItem('oidc_refresh_token', response.refresh_token);
+      localStorage.setItem('oidc_refresh_token', response.refresh_token);
     }
 
     // Schedule token refresh before expiry
@@ -292,37 +294,37 @@ export class AuthService {
     }
   }
 
-  private restoreSession(): void {
-    const accessToken = sessionStorage.getItem('oidc_access_token');
-    const refreshToken = sessionStorage.getItem('oidc_refresh_token');
-    const userJson = sessionStorage.getItem('oidc_user');
+  private async restoreSession(): Promise<void> {
+    const accessToken = localStorage.getItem('oidc_access_token');
+    const refreshToken = localStorage.getItem('oidc_refresh_token');
+    const userJson = localStorage.getItem('oidc_user');
 
     if (accessToken && userJson) {
       this._accessToken.set(accessToken);
       this._refreshToken.set(refreshToken);
       this._user.set(JSON.parse(userJson));
-      this._initialized.set(true);
 
-      // Try a silent refresh to make sure the token is still valid
-      this.refreshAccessToken().then(success => {
-        if (!success && refreshToken) {
-          this.clearSession();
-        }
-      });
-    } else {
-      this._initialized.set(true);
+      // Try to refresh the token silently.
+      // If it succeeds, we get a fresh access token.
+      // If it fails, keep the existing session — the access token may still be valid.
+      // The interceptor will handle actual 401s and trigger logout if truly expired.
+      if (refreshToken) {
+        await this.refreshAccessToken();
+      }
     }
+
+    this._initialized.set(true);
   }
 
   private clearSession(): void {
     this._accessToken.set(null);
     this._refreshToken.set(null);
     this._user.set(null);
-    sessionStorage.removeItem('oidc_access_token');
-    sessionStorage.removeItem('oidc_refresh_token');
-    sessionStorage.removeItem('oidc_user');
-    sessionStorage.removeItem('oidc_code_verifier');
-    sessionStorage.removeItem('oidc_state');
+    localStorage.removeItem('oidc_access_token');
+    localStorage.removeItem('oidc_refresh_token');
+    localStorage.removeItem('oidc_user');
+    localStorage.removeItem('oidc_code_verifier');
+    localStorage.removeItem('oidc_state');
   }
 
   // =============================================
