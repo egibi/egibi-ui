@@ -523,7 +523,7 @@ docker compose ps             # Check service status
               'BacktesterService — Manages backtests and their execution state',
               'DataProviderService — CRUD for data provider configurations',
               'ConnectionsService — Service catalog operations (list, create, update, delete exchange/broker/data provider definitions)',
-              'AccountsService — Trading account CRUD and create-account flow with credential submission',
+              'AccountsService — Trading account CRUD, create-account flow with credential submission, account detail retrieval, credential/fee updates, connection testing',
               'TestingService — API testing and diagnostics',
               'StorageService — Disk monitoring, QuestDB partition archival/restore, OIDC cleanup, PostgreSQL backup'
             ]
@@ -642,6 +642,82 @@ docker compose ps             # Check service status
             ]
           }
         ]
+      },
+      {
+        id: 'account-detail-page',
+        title: 'Account Detail Page',
+        content: [
+          {
+            type: 'text',
+            value: 'The Account Detail page (/accounts/:id) provides a comprehensive tabbed interface for viewing and managing a single account. The parent AccountComponent loads account data and passes it down to tab section components via @Input bindings.'
+          },
+          {
+            type: 'heading',
+            value: 'General Tab (GeneralComponent)'
+          },
+          {
+            type: 'list',
+            items: [
+              'Editable fields — Account name, description, notes, account type (dropdown), active toggle',
+              'Read-only metadata sidebar — Account ID, service name with brand color dot, category, created date, last modified date, service website link',
+              'Reactive form with dirty tracking — Save and Cancel buttons only enabled when form has changes',
+              'Calls PUT /Accounts/update-account on save'
+            ]
+          },
+          {
+            type: 'heading',
+            value: 'API Tab (ApiComponent)'
+          },
+          {
+            type: 'list',
+            items: [
+              'Base URL field — editable endpoint URL for the service connection',
+              'Stored credentials read-only view — displays masked API key, masked API secret, passphrase indicator, username indicator, label, permissions, last used timestamp',
+              'Edit mode — clears sensitive fields for re-entry, dynamically shows fields based on requiredFields from the Connection template',
+              'Password-toggle visibility for secret fields, autocomplete disabled',
+              'Calls PUT /Accounts/update-credentials on save — only non-empty fields are sent for re-encryption'
+            ]
+          },
+          {
+            type: 'heading',
+            value: 'Fees Tab (FeesComponent)'
+          },
+          {
+            type: 'list',
+            items: [
+              'Fee structure form — maker fee %, taker fee %, fee schedule type (flat, tiered, volume-based), notes',
+              'Fee schedule type selector with radio-style options',
+              'Reactive form with dirty tracking and cancel/reset support',
+              'Calls PUT /Accounts/update-fees on save — creates or updates the AccountFeeStructureDetails record'
+            ]
+          },
+          {
+            type: 'heading',
+            value: 'Status Tab (StatusComponent)'
+          },
+          {
+            type: 'list',
+            items: [
+              'Connection details display — service name with brand color dot, base URL, credential status badge (Configured / Not configured)',
+              'Test Connection button — sends POST /Accounts/test-connection to validate API connectivity',
+              'Test results panel — shows success/failure status, HTTP status code, response time in ms, message, and timestamp',
+              'Disabled state when no base URL is configured (prompts user to set it in the API tab)'
+            ]
+          },
+          {
+            type: 'heading',
+            value: 'Architecture'
+          },
+          {
+            type: 'list',
+            items: [
+              'AccountComponent (parent) loads AccountDetailResponse from GET /Accounts/get-account-detail and passes it to all child tab components',
+              'Each tab component receives [account] as @Input and emits (saved) event to trigger parent reload',
+              'ngbNav (ng-bootstrap) manages tab navigation with lazy-rendered content panels',
+              'Status badge in page header shows Active/Inactive state'
+            ]
+          }
+        ]
       }
     ],
 
@@ -679,7 +755,7 @@ docker compose ps             # Check service status
             type: 'list',
             items: [
               'GET /Environment/get-environment — Returns current environment name and tag',
-              'Accounts — CRUD operations for trading accounts, POST /Accounts/create-account creates account linked to a service catalog Connection with encrypted credentials',
+              'Accounts — CRUD operations for trading accounts, POST /Accounts/create-account creates account linked to a service catalog Connection with encrypted credentials, GET /Accounts/get-account-detail returns full account with connection metadata + credential summary + fees, PUT /Accounts/update-account updates general properties, PUT /Accounts/update-credentials re-encrypts credential fields, PUT /Accounts/update-fees creates or updates fee structure, POST /Accounts/test-connection validates API connectivity',
               'Strategies — CRUD for trading strategy definitions',
               'Backtests — Create, execute, and review backtest results',
               'DataManager — Data provider and import management',
@@ -1021,7 +1097,8 @@ dotnet ef migrations list`
               { column: 'AccountUser', type: 'Entity (legacy)', purpose: 'Original user entity — will merge into AppUser' },
               { column: 'Account', type: 'Entity', purpose: 'Trading accounts linked to a Connection (service) via ConnectionId FK, AppUser via AppUserId FK, and AccountType' },
               { column: 'AccountType', type: 'Reference', purpose: 'Account classification types' },
-              { column: 'AccountDetails', type: 'Entity', purpose: 'Extended account info (URL, user reference)' }
+              { column: 'AccountDetails', type: 'Entity', purpose: 'Extended account info (URL, user reference)' },
+              { column: 'AccountFeeStructureDetails', type: 'Entity', purpose: 'Per-account fee structure — maker/taker fee %, fee schedule type (flat/tiered/volume), linked to Account via AccountId FK' }
             ]
           },
           {
@@ -1363,6 +1440,11 @@ dotnet ef migrations list`
             type: 'status',
             variant: 'done',
             value: 'EF Core Migrations — Proper migration history for schema versioning via Add-Migration / Update-Database, replacing manual CreateTablesAsync()'
+          },
+          {
+            type: 'status',
+            variant: 'done',
+            value: 'Account Detail Page — Tabbed account management UI (/accounts/:id) with General (editable properties + metadata sidebar), API (base URL + credential read/edit with masked display), Fees (maker/taker % + schedule type), and Status (connection testing with response metrics) tabs'
           }
         ]
       },
@@ -1426,5 +1508,5 @@ dotnet ef migrations list`
   }
 
   // Last updated timestamp
-  lastUpdated = 'February 4, 2026';
+  lastUpdated = 'February 5, 2026';
 }
