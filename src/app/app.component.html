@@ -5,12 +5,8 @@
 } @else {
   <div class="app-shell" [class.sidebar-collapsed]="sidebarCollapsed">
     <!-- Sidebar -->
-    <app-sidebar 
-      [isOpen]="sidebarOpen" 
-      (closeSidebar)="closeSidebar()"
-      (collapsedChange)="onSidebarCollapsedChange($event)">
-    </app-sidebar>
-    
+    <app-sidebar [isOpen]="sidebarOpen" (closeSidebar)="closeSidebar()" (collapsedChange)="onSidebarCollapsedChange($event)"> </app-sidebar>
+
     <!-- Main Content Area -->
     <div class="app-main">
       <!-- Top Header -->
@@ -18,70 +14,60 @@
         <div class="header-left">
           <!-- Mobile Toggle Button -->
           <button class="header-btn d-lg-none" (click)="toggleSidebar()" aria-label="Toggle sidebar">
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" 
-                 fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" 
-                 stroke-linejoin="round">
-              <line x1="4" x2="20" y1="12" y2="12"/>
-              <line x1="4" x2="20" y1="6" y2="6"/>
-              <line x1="4" x2="20" y1="18" y2="18"/>
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="4" x2="20" y1="12" y2="12" />
+              <line x1="4" x2="20" y1="6" y2="6" />
+              <line x1="4" x2="20" y1="18" y2="18" />
             </svg>
           </button>
-          
+
           <!-- Breadcrumbs -->
           <app-breadcrumb></app-breadcrumb>
         </div>
-        
+
         <div class="header-right">
           <!-- Search -->
           <div class="header-search d-none d-md-flex">
-            <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" 
-                 fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" 
-                 stroke-linejoin="round">
-              <circle cx="11" cy="11" r="8"/>
-              <path d="m21 21-4.3-4.3"/>
+            <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="11" cy="11" r="8" />
+              <path d="m21 21-4.3-4.3" />
             </svg>
-            <input type="text" class="search-input" placeholder="Search...">
+            <input type="text" class="search-input" placeholder="Search..." />
             <kbd class="search-kbd d-none d-lg-inline">⌘K</kbd>
           </div>
-          
+
           <!-- Theme Toggle -->
           <button class="header-btn theme-toggle" (click)="toggleTheme()" [attr.aria-label]="isDarkMode ? 'Switch to light mode' : 'Switch to dark mode'">
             @if (!isDarkMode) {
-              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" 
-                   fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" 
-                   stroke-linejoin="round">
-                <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/>
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z" />
               </svg>
             } @else {
-              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" 
-                   fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" 
-                   stroke-linejoin="round">
-                <circle cx="12" cy="12" r="4"/>
-                <path d="M12 2v2"/>
-                <path d="M12 20v2"/>
-                <path d="m4.93 4.93 1.41 1.41"/>
-                <path d="m17.66 17.66 1.41 1.41"/>
-                <path d="M2 12h2"/>
-                <path d="M20 12h2"/>
-                <path d="m6.34 17.66-1.41 1.41"/>
-                <path d="m19.07 4.93-1.41 1.41"/>
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="4" />
+                <path d="M12 2v2" />
+                <path d="M12 20v2" />
+                <path d="m4.93 4.93 1.41 1.41" />
+                <path d="m17.66 17.66 1.41 1.41" />
+                <path d="M2 12h2" />
+                <path d="M20 12h2" />
+                <path d="m6.34 17.66-1.41 1.41" />
+                <path d="m19.07 4.93-1.41 1.41" />
               </svg>
             }
           </button>
-          
+
           <!-- Notifications -->
           <button class="header-btn has-indicator" aria-label="Notifications">
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" 
-                 fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" 
-                 stroke-linejoin="round">
-              <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/>
-              <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/>
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9" />
+              <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0" />
             </svg>
             <span class="indicator">3</span>
           </button>
-          
+
           <!-- User Menu -->
-          <div class="user-menu-container">
+          <div class="user-menu-container" (mouseleave)="userMenuOpen = false">
             <button class="header-btn user-btn" (click)="toggleUserMenu()" aria-label="User menu">
               <div class="user-avatar">
                 <span>{{ userInitials() }}</span>
@@ -91,16 +77,15 @@
             @if (userMenuOpen) {
               <div class="user-dropdown" (click)="userMenuOpen = false">
                 <div class="user-dropdown-header">
-                  <span class="user-dropdown-name">{{ auth.user()?.name || 'User' }}</span>
+                  <span class="user-dropdown-name">{{ auth.user()?.name || "User" }}</span>
                   <span class="user-dropdown-email">{{ auth.user()?.email }}</span>
                 </div>
                 <div class="user-dropdown-divider"></div>
                 <button class="user-dropdown-item" (click)="logout()">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
-                       fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
-                    <polyline points="16 17 21 12 16 7"/>
-                    <line x1="21" x2="9" y1="12" y2="12"/>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+                    <polyline points="16 17 21 12 16 7" />
+                    <line x1="21" x2="9" y1="12" y2="12" />
                   </svg>
                   Sign out
                 </button>
@@ -109,7 +94,7 @@
           </div>
         </div>
       </header>
-      
+
       <!-- Page Content -->
       <main class="app-content">
         <router-outlet></router-outlet>

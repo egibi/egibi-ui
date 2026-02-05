@@ -283,7 +283,8 @@ $sidebar-transition: 0.2s ease;
 
 .user-dropdown {
   position: absolute;
-  top: calc(100% + 8px);
+  top: 100%;
+  padding-top: 8px;
   right: 0;
   width: 240px;
   background: hsl(var(--egibi-card));
