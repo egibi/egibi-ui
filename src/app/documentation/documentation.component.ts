@@ -528,13 +528,90 @@ docker compose ps             # Check service status
           {
             type: 'list',
             items: [
-              'StrategiesService — CRUD operations for trading strategies',
-              'BacktesterService — Manages backtests and their execution state',
+              'StrategiesService — CRUD operations for trading strategies, backtest execution, data verification, coverage queries, available symbols',
+              'BacktesterService — Legacy backtest management; new backtests run via StrategiesService',
               'DataProviderService — CRUD for data provider configurations',
               'ConnectionsService — Service catalog operations (list, create, update, delete exchange/broker/data provider definitions)',
               'AccountsService — Trading account CRUD, create-account flow with credential submission, account detail retrieval, credential/fee updates, connection testing',
               'TestingService — API testing and diagnostics',
               'StorageService — Disk monitoring, QuestDB partition archival/restore, OIDC cleanup, PostgreSQL backup'
+            ]
+          }
+        ]
+      },
+      {
+        id: 'strategies-ui',
+        title: 'Strategies & Backtesting UI',
+        content: [
+          {
+            type: 'text',
+            value: 'The Strategies module (/strategies) provides a complete workflow for creating, managing, and backtesting trading strategies. The module consists of several components working together: a strategies list grid, strategy detail page with integrated backtesting, and a visual strategy builder.'
+          },
+          {
+            type: 'heading',
+            value: 'Strategy List (/strategies)'
+          },
+          {
+            type: 'list',
+            items: [
+              'StrategiesGridComponent — AG Grid displaying all strategies with columns for name, description, symbol, interval, status, and backtest count',
+              'Grid actions — Edit (navigates to /strategies/:id), Delete with confirmation modal',
+              'New Strategy button — Navigates to /strategies/new which opens the strategy builder in create mode'
+            ]
+          },
+          {
+            type: 'heading',
+            value: 'Strategy Detail (/strategies/:id)'
+          },
+          {
+            type: 'list',
+            items: [
+              'StrategyDetailComponent — Parent container that loads strategy data and manages tab navigation',
+              'Strategy Builder tab — Visual form for editing the strategy configuration (data source, entry/exit rules, risk management)',
+              'Backtest Config tab — Configure and launch backtests with data verification pre-check',
+              'Backtest Results tab — View detailed results including equity curve, trade log, and performance metrics',
+              'Backtest History — Table of past backtests with summary stats, click to view full results'
+            ]
+          },
+          {
+            type: 'heading',
+            value: 'Strategy Builder (StrategyBuilderComponent)'
+          },
+          {
+            type: 'list',
+            items: [
+              'Data Source tab — Exchange account selector (optional for backtest-only), symbol input with QuestDB autocomplete, data source name, interval dropdown',
+              'Entry & Exit Rules tab — Visual condition builder with indicator dropdowns, period inputs, operator selectors; add/remove conditions dynamically',
+              'Risk Management tab — Stop-loss %, take-profit %, and position size % inputs with slider controls',
+              'Independent error handling — Each API call (exchange accounts, available symbols, data coverage) fails gracefully without blocking the entire form',
+              'Create/Update mode — Detected from route param (\"new\" vs numeric ID)'
+            ]
+          },
+          {
+            type: 'heading',
+            value: 'Backtest Configuration (BacktestConfigComponent)'
+          },
+          {
+            type: 'list',
+            items: [
+              'Date range picker — Start and end dates for the backtest period',
+              'Initial capital input — Starting portfolio value',
+              'Verify Data button — Calls POST /api/strategies/verify-data before running',
+              'Color-coded status badges — Green ✓ (fully covered), Blue ↓ (auto-fetch available), Yellow ⚠ (partial, no fetcher), Red ✗ (no data)',
+              'Run Backtest button — Disabled when status is NoData, enabled for all other statuses'
+            ]
+          },
+          {
+            type: 'heading',
+            value: 'Backtest Results (BacktestResultsComponent)'
+          },
+          {
+            type: 'list',
+            items: [
+              'Summary cards — Total return %, final capital, total trades, win rate, max drawdown, Sharpe ratio, profit factor',
+              'Equity curve chart — Highcharts time-series showing portfolio value over the backtest period',
+              'Trade log table — Entry/exit dates, prices, return %, PnL for each trade',
+              'Export capability — Download results as JSON'
             ]
           }
         ]
@@ -765,8 +842,8 @@ docker compose ps             # Check service status
             items: [
               'GET /Environment/get-environment — Returns current environment name and tag',
               'Accounts — CRUD operations for trading accounts, POST /Accounts/create-account creates account linked to a service catalog Connection with encrypted credentials, GET /Accounts/get-account-detail returns full account with connection metadata + credential summary + fees, PUT /Accounts/update-account updates general properties, PUT /Accounts/update-credentials re-encrypts credential fields, PUT /Accounts/update-fees creates or updates fee structure, POST /Accounts/test-connection validates API connectivity',
-              'Strategies — CRUD for trading strategy definitions',
-              'Backtests — Create, execute, and review backtest results',
+              'Strategies — RESTful CRUD at /api/strategies, integrated backtest execution via BacktestExecutionService + IMarketDataService, data verification, coverage queries',
+              'Backtests — Legacy CRUD at /Backtester; new backtests created via /api/strategies/{id}/backtest',
               'DataManager — Data provider and import management',
               'Connections — Service catalog management (CRUD for exchange/broker/data provider definitions with category, icon, color, requiredFields)',
               'Exchanges — Exchange metadata and fee structures',
@@ -910,6 +987,136 @@ MarketDataService.GetCandlesAsync()
         ]
       },
       {
+        id: 'strategy-system',
+        title: 'Strategy System & Backtesting',
+        content: [
+          {
+            type: 'text',
+            value: 'The strategy system supports two modes: simple (UI-created) strategies with visual indicator-based rules, and code-only strategies implementing the IStrategy interface. The backtesting engine uses IMarketDataService for data access, enabling automatic gap-filling from exchanges during backtest execution.'
+          },
+          {
+            type: 'heading',
+            value: 'Strategy Configuration (JSON Schema)'
+          },
+          {
+            type: 'text',
+            value: 'UI-created strategies store their configuration in the Strategy.RulesConfiguration JSONB column. The configuration includes data source settings (symbol, source, interval), entry/exit conditions with indicator comparisons, and risk management parameters.'
+          },
+          {
+            type: 'code',
+            value: `{
+  "symbol": "BTC-USD",
+  "source": "binance",
+  "interval": "1h",
+  "entryConditions": [
+    { "leftIndicator": "SMA", "leftPeriod": 10, "operator": "CROSSES_ABOVE", "rightIndicator": "SMA", "rightPeriod": 50 }
+  ],
+  "exitConditions": [
+    { "leftIndicator": "RSI", "leftPeriod": 14, "operator": "GREATER_THAN", "rightIndicator": "PRICE", "rightValue": 70 }
+  ],
+  "stopLossPct": 2.0,
+  "takeProfitPct": 5.0,
+  "positionSizePct": 10.0
+}`
+          },
+          {
+            type: 'heading',
+            value: 'Available Indicators'
+          },
+          {
+            type: 'list',
+            items: [
+              'PRICE — Raw closing price (no parameters)',
+              'SMA — Simple Moving Average (configurable period, default 20)',
+              'EMA — Exponential Moving Average (configurable period, default 20)',
+              'RSI — Relative Strength Index using Wilder smoothing (configurable period, default 14)',
+              'MACD — MACD Line (EMA12 - EMA26)',
+              'MACD_SIGNAL — MACD Signal Line (EMA9 of MACD)',
+              'MACD_HIST — MACD Histogram (MACD - Signal)',
+              'BBANDS_UPPER — Bollinger Upper Band (configurable period, default 20, 2σ)',
+              'BBANDS_MIDDLE — Bollinger Middle Band (SMA)',
+              'BBANDS_LOWER — Bollinger Lower Band'
+            ]
+          },
+          {
+            type: 'heading',
+            value: 'Condition Operators'
+          },
+          {
+            type: 'list',
+            items: [
+              'GREATER_THAN — Left value > right value',
+              'LESS_THAN — Left value < right value',
+              'CROSSES_ABOVE — Left crosses from below to above right (previous bar below, current bar above)',
+              'CROSSES_BELOW — Left crosses from above to below right',
+              'EQUALS — Left value equals right value (with floating point tolerance)'
+            ]
+          },
+          {
+            type: 'heading',
+            value: 'Backtest Execution Flow'
+          },
+          {
+            type: 'diagram',
+            value: `POST /api/strategies/{id}/backtest
+      │
+      ▼
+BacktestExecutionService.ExecuteAsync()
+      │
+      ├──► Load Strategy from PostgreSQL
+      │
+      ├──► Parse RulesConfiguration JSON
+      │
+      ├──► IMarketDataService.GetCandlesAsync()
+      │         ├── Check QuestDB cache
+      │         ├── Detect gaps
+      │         ├── BinanceFetcher auto-fills missing data
+      │         └── Return complete dataset
+      │
+      ├──► IndicatorCalculator
+      │         ├── SMA, EMA, RSI
+      │         ├── MACD (line, signal, histogram)
+      │         └── Bollinger Bands (upper, middle, lower)
+      │
+      ├──► SimpleBacktestEngine.Run()
+      │         ├── Evaluate entry conditions per bar
+      │         ├── Evaluate exit conditions per bar
+      │         ├── Apply stop-loss / take-profit
+      │         ├── Track positions and equity curve
+      │         └── Generate trade log
+      │
+      └──► Save to PostgreSQL
+                ├── Summary stats (denormalized columns)
+                └── Full ResultJson (equity curve + trades)`
+          },
+          {
+            type: 'heading',
+            value: 'Result Metrics'
+          },
+          {
+            type: 'list',
+            items: [
+              'Total Return % — (finalCapital - initialCapital) / initialCapital × 100',
+              'Total Trades — Number of completed round-trip trades',
+              'Win Rate — Percentage of profitable trades',
+              'Max Drawdown % — Largest peak-to-trough decline in equity',
+              'Sharpe Ratio — Risk-adjusted return (annualized)',
+              'Profit Factor — Gross profit / gross loss',
+              'Equity Curve — Array of { date, equity } for charting',
+              'Trade Log — Array of { entryDate, exitDate, entryPrice, exitPrice, returnPct, pnl }'
+            ]
+          },
+          {
+            type: 'heading',
+            value: 'Data Verification'
+          },
+          {
+            type: 'text',
+            value: 'Before running a backtest, the verify-data endpoint checks QuestDB for existing coverage and reports a status code. The UI displays color-coded badges: green (✓ FullyCovered), blue (↓ PartialWithFetch/FetchRequired — auto-download available), yellow (⚠ PartialCoverage — no fetcher, use what exists), red (✗ NoData — cannot run). Backtests are only blocked when status is NoData.'
+          }
+        ]
+      },
+      {
         id: 'entity-framework',
         title: 'Entity Framework Core',
         content: [
@@ -1037,7 +1244,7 @@ dotnet ef migrations list`
             items: [
               'AppUserService (authentication + user management)',
               'StorageService (disk monitoring, partition archival, OIDC cleanup, PostgreSQL backup)',
-              'DataManagerService, StrategiesService, BacktesterService',
+              'DataManagerService, StrategiesService, BacktesterService, BacktestExecutionService',
               'ExchangesService, MarketsService, ExchangeAccountsService',
               'AppConfigurationsService, AccountsService',
               'QuestDbService (legacy SDK), TestingService, GeoDateTimeDataService'
@@ -1149,8 +1356,9 @@ dotnet ef migrations list`
           {
             type: 'schema',
             rows: [
-              { column: 'Strategy', type: 'Entity', purpose: 'Trading strategy definitions' },
-              { column: 'Backtest', type: 'Entity', purpose: 'Backtest configurations and results' }
+              { column: 'Strategy', type: 'Entity', purpose: 'Trading strategy definitions — Name, Description, RulesConfiguration (JSONB with indicator conditions, risk params), StrategyClassName (for coded strategies), IsSimple flag, ExchangeAccountId FK, IsActive' },
+              { column: 'Backtest', type: 'Entity', purpose: 'Backtest runs — StrategyId FK, BacktestStatusId FK, StartDate, EndDate, InitialCapital, summary stats (FinalCapital, TotalReturnPct, TotalTrades, WinRate, MaxDrawdownPct, SharpeRatio), ResultJson (JSONB with equity curve + trade log)' },
+              { column: 'BacktestStatus', type: 'Reference', purpose: 'Backtest lifecycle states (Pending, Running, Completed, Failed)' }
             ]
           },
           {
@@ -1546,32 +1754,73 @@ dotnet ef migrations list`
       },
       {
         id: 'api-strategies',
-        title: 'Strategies',
+        title: 'Strategies & Backtesting',
         content: [
           {
             type: 'text',
-            value: 'Trading strategy definitions and execution.'
+            value: 'RESTful strategy management with integrated backtesting. The StrategiesController handles strategy CRUD, backtest execution via BacktestExecutionService, data verification, and coverage queries. Backtests are executed using IMarketDataService which auto-fetches missing candles from exchanges.'
+          },
+          {
+            type: 'heading',
+            value: 'Strategy CRUD'
           },
           {
             type: 'endpoint',
             endpoints: [
-              { method: 'GET', path: '/Strategies/get-strategies', description: 'List all strategies' },
-              { method: 'GET', path: '/Strategies/get-strategy', description: 'Get strategy by ID', params: 'strategyId (query)' },
-              { method: 'POST', path: '/Strategies/save-strategy', description: 'Create or update a strategy', params: 'Body: Strategy' },
-              { method: 'POST', path: '/Strategies/run-strategy', description: 'Execute a strategy', params: 'id (query)' },
-              { method: 'DELETE', path: '/Strategies/delete-strategy', description: 'Delete a single strategy', params: 'id (query)' },
-              { method: 'DELETE', path: '/Strategies/delete-strategies', description: 'Delete multiple strategies', params: 'strategyIds (query)' }
+              { method: 'GET', path: '/api/strategies', description: 'List all strategies with backtest counts' },
+              { method: 'GET', path: '/api/strategies/{id}', description: 'Get strategy by ID with configuration', params: 'id (route)' },
+              { method: 'POST', path: '/api/strategies', description: 'Create a new strategy', params: 'Body: { name, description, configuration }' },
+              { method: 'PUT', path: '/api/strategies/{id}', description: 'Update an existing strategy', params: 'Body: { name, description, configuration }' },
+              { method: 'DELETE', path: '/api/strategies/{id}', description: 'Delete strategy and all associated backtests', params: 'id (route)' }
+            ]
+          },
+          {
+            type: 'heading',
+            value: 'Backtest Execution'
+          },
+          {
+            type: 'endpoint',
+            endpoints: [
+              { method: 'POST', path: '/api/strategies/{id}/backtest', description: 'Run backtest — fetches candles via IMarketDataService (auto-fills gaps), runs SimpleBacktestEngine, saves results', params: 'Body: { name, startDate, endDate, initialCapital }' },
+              { method: 'GET', path: '/api/strategies/{id}/backtests', description: 'Get backtest history for a strategy (summary stats)', params: 'id (route)' },
+              { method: 'GET', path: '/api/strategies/backtests/{backtestId}', description: 'Get full backtest result including equity curve and trade log', params: 'backtestId (route)' }
+            ]
+          },
+          {
+            type: 'heading',
+            value: 'Data Verification'
+          },
+          {
+            type: 'endpoint',
+            endpoints: [
+              { method: 'POST', path: '/api/strategies/verify-data', description: 'Check data availability before running a backtest — returns coverage status and whether auto-fetch can fill gaps', params: 'Body: { symbol, source, interval, startDate, endDate }' },
+              { method: 'GET', path: '/api/strategies/data-coverage', description: 'Get all stored data coverage grouped by symbol/source/interval' },
+              { method: 'GET', path: '/api/strategies/available-symbols', description: 'List distinct symbols available in QuestDB' }
+            ]
+          },
+          {
+            type: 'heading',
+            value: 'Verification Status Codes'
+          },
+          {
+            type: 'list',
+            items: [
+              'FullyCovered — All requested data exists in QuestDB, backtest can run immediately',
+              'PartialWithFetch — Some data in QuestDB, gaps can be auto-fetched from exchange (e.g., Binance)',
+              'FetchRequired — No data in QuestDB but a fetcher is available for the source, full download needed',
+              'PartialCoverage — Some data exists but no fetcher available for the source, backtest will use available data only',
+              'NoData — No data and no fetcher available, backtest cannot run'
             ]
           }
         ]
       },
       {
         id: 'api-backtester',
-        title: 'Backtester',
+        title: 'Backtester (Legacy)',
         content: [
           {
             type: 'text',
-            value: 'Backtest management, execution, and historical data upload.'
+            value: 'Legacy backtest management endpoints. New backtests should be created via the Strategies controller (/api/strategies/{id}/backtest). These endpoints remain for backward compatibility with the standalone backtester grid.'
           },
           {
             type: 'endpoint',
@@ -1818,7 +2067,32 @@ dotnet ef migrations list`
             type: 'status',
             variant: 'done',
             value: 'Account Detail Page — Tabbed account management UI (/accounts/:id) with General (editable properties + metadata sidebar), API (base URL + credential read/edit with masked display), Fees (maker/taker % + schedule type), and Status (connection testing with response metrics) tabs'
-          }
+          },
+          {
+            type: 'status',
+            variant: 'done',
+            value: 'Strategy Builder — Visual strategy creation UI with tabbed configuration (Data Source, Entry & Exit Rules, Risk Management), indicator-based condition builder, QuestDB symbol autocomplete, independent error handling per API call'
+          },
+          {
+            type: 'status',
+            variant: 'done',
+            value: 'Backtest Engine — BacktestExecutionService with IMarketDataService integration (auto-fetches missing data from exchanges), SimpleBacktestEngine with indicator calculations (SMA, EMA, RSI, MACD, Bollinger Bands), condition evaluation with crossover detection, stop-loss/take-profit/position sizing'
+          },
+          {
+            type: 'status',
+            variant: 'done',
+            value: 'Backtest Results — Full result storage in PostgreSQL (summary stats + JSONB equity curve and trade log), backtest history grid per strategy, detailed result view with performance metrics'
+          },
+          {
+            type: 'status',
+            variant: 'done',
+            value: 'Data Verification — Pre-backtest data availability check via verify-data endpoint, color-coded UI status badges (FullyCovered, PartialWithFetch, FetchRequired, PartialCoverage, NoData), coverage and available-symbols queries'
+          },
+          {
+            type: 'status',
+            variant: 'done',
+            value: 'Strategies API — RESTful /api/strategies controller with full CRUD, integrated backtest execution (POST /{id}/backtest), backtest history, cascade delete (strategy + all backtests)'
+          }          
         ]
       },
       {
@@ -1881,5 +2155,5 @@ dotnet ef migrations list`
   }
 
   // Last updated timestamp
-  lastUpdated = 'February 5, 2026';
+  lastUpdated = 'February 6, 2026';
 }
