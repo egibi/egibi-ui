@@ -1,60 +1,45 @@
-import { Injectable, signal } from "@angular/core";
-import { HttpClient } from "@angular/common/http";
-import { Observable } from "rxjs";
-import { RequestResponse } from "../request-response";
-import { Backtest } from "./backtester.models";
-import { BacktestsGridItem } from "./backtests-grid/backtests-grid.models";
+import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { Observable } from 'rxjs';
+import { Backtest } from './backtester.models';
+import { RequestResponse } from '../_models/request-response.model';
+
 @Injectable({
-  providedIn: "root",
+  providedIn: 'root',
 })
 export class BacktesterService {
-  private apiBaseUrl: string = "https://localhost:7182/Backtester";
+  private readonly apiBaseUrl = 'https://localhost:7182/Backtester';
+  private currentBacktestsGridAction: string = '';
 
-  public selectedBacktestComponent = signal<Backtest>(new Backtest());
-
-  constructor(private http: HttpClient) {}
-
-  // ============================================================================================================
-  //  BACKTESTS GRID                                                                                            \\
-  // ============================================================================================================
-
-  public currentBacktestsGridAction = signal<string>("");
-  public setCurrentBacktestsGridAction(action: string): void {
-    this.currentBacktestsGridAction.update(() => action);
-  }
-  public getCurrentBacktestsGridAction(): string {
-    return this.currentBacktestsGridAction();
-  }
-
-  public setCurrentBacktestsGridRows(backtestGridItem: BacktestsGridItem[]) {}
-  public getCurrentBacktestsGridRows(): BacktestsGridItem[] {
-    return [];
-  }
-
-  //_____________________________________________________________________________________________________________
-  //____________________________________________________________________________________________________________//
-
-  public getDataSources(): Observable<RequestResponse> {
-    return this.http.get<RequestResponse>(`${this.apiBaseUrl}/get-data-sources`);
-  }
+  constructor(
+    private http: HttpClient,
+  ) {}
 
   public getBacktests(): Observable<RequestResponse> {
     return this.http.get<RequestResponse>(`${this.apiBaseUrl}/get-backtests`);
   }
 
-  public getSelectedBacktest(): Backtest {
-    return this.selectedBacktestComponent();
+  public getBacktest(id: number): Observable<RequestResponse> {
+    return this.http.get<RequestResponse>(`${this.apiBaseUrl}/get-backtest/${id}`);
   }
 
-  public setSelectedBacktest(backtest: Backtest): void {
-    this.selectedBacktestComponent.update(() => backtest);
+  public createBacktest(backtest: Backtest): Observable<RequestResponse> {
+    return this.http.post<RequestResponse>(`${this.apiBaseUrl}/create-backtest`, backtest);
   }
 
-  public saveBacktest(backtest: Backtest): Observable<RequestResponse> {
-    return this.http.post<RequestResponse>(`${this.apiBaseUrl}/save-backtest`, backtest);
+  public updateBacktest(backtest: Backtest): Observable<RequestResponse> {
+    return this.http.put<RequestResponse>(`${this.apiBaseUrl}/update-backtest`, backtest);
   }
 
-  public deleteBacktest(backtest: Backtest): Observable<RequestResponse> {
-    return this.http.delete<RequestResponse>(`${this.apiBaseUrl}/delete-backtest` + "?id=" + backtest.id);
+  public deleteBacktest(id: number): Observable<RequestResponse> {
+    return this.http.delete<RequestResponse>(`${this.apiBaseUrl}/delete-backtest/${id}`);
+  }
+
+  public getCurrentBacktestsGridAction(): string {
+    return this.currentBacktestsGridAction;
+  }
+
+  public setCurrentBacktestsGridAction(action: string): void {
+    this.currentBacktestsGridAction = action;
   }
 }

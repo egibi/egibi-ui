@@ -1,5 +1,5 @@
 import { Component, Input, Output, OnInit, EventEmitter, inject } from "@angular/core";
-import { Backtest } from "../backtester.models";
+import { Backtest, BacktestStatus } from "../backtester.models";
 import { BacktestsGridAction } from "./backtests-grid.models";
 import { AgGridModule } from "ag-grid-angular";
 import {
@@ -13,6 +13,7 @@ import {
   ClientSideRowModelModule,
   RowSelectionOptions,
   CellClickedEvent,
+  ICellRendererParams,
 } from "ag-grid-community";
 
 import { BacktestsGridActionsComponent } from "./backtests-grid-actions/backtests-grid-actions.component";
@@ -36,8 +37,7 @@ export class BacktestsGridComponent implements OnInit {
   public selectedRow: Backtest;
   public selectedRows: Backtest[] = [];
   public modules: Module[] = [ClientSideRowModelModule];
-  
-  // Use the theme service's computed signal
+
   public gridTheme = this.agGridTheme.theme;
 
   components = {
@@ -48,7 +48,7 @@ export class BacktestsGridComponent implements OnInit {
 
   constructor(private backtesterService: BacktesterService) {}
 
-  public getRowId: GetRowIdFunc = (row: GetRowIdParams<Backtest>) => row.data.id?.toString();
+  public getRowId: GetRowIdFunc = (row: GetRowIdParams<Backtest>) => row.data.id?.toString() ?? '';
 
   public rowSelection: RowSelectionOptions | "single" | "multiple" = {
     mode: "multiRow",
@@ -57,27 +57,34 @@ export class BacktestsGridComponent implements OnInit {
   public columnDefs: ColDef[] = [
     {
       headerName: "Name",
-      field: "name"
+      field: "name",
     },
     {
       headerName: "Description",
-      field: "description",    
+      field: "description",
+    },
+    {
+      headerName: "Strategy",
+      field: "strategyName",
     },
     {
       headerName: "Start",
-      field: "start"
+      field: "start",
+      valueFormatter: (params) => this.formatDate(params.value),
     },
     {
       headerName: "End",
-      field: "end"
+      field: "end",
+      valueFormatter: (params) => this.formatDate(params.value),
     },
     {
-      headerName: "Synced",
-      field: "synced"
-    },    
-    {
       headerName: "Status",
-      field: "status"
+      field: "status",
+      cellRenderer: (params: ICellRendererParams) => {
+        const status = params.value as BacktestStatus;
+        const badgeClass = this.getStatusBadgeClass(status);
+        return `<span class="badge ${badgeClass}">${status}</span>`;
+      },
     },
     {
       headerName: "Actions",
@@ -85,9 +92,10 @@ export class BacktestsGridComponent implements OnInit {
       cellRenderer: BacktestsGridActionsComponent,
       sortable: false,
       filter: false,
+      maxWidth: 120,
       onCellClicked: (event: CellClickedEvent) => {
         this.gridAction(event.data);
-      }
+      },
     },
   ];
 
@@ -105,7 +113,7 @@ export class BacktestsGridComponent implements OnInit {
 
   public onGridReady(grid: GridReadyEvent<Backtest>) {
     this.gridApi = grid.api;
-  }  
+  }
 
   public onSelectionChanged(event: SelectionChangedEvent) {
     this.selectedRows = this.gridApi.getSelectedRows();
@@ -115,9 +123,35 @@ export class BacktestsGridComponent implements OnInit {
     }
   }
 
-  public gridAction(rowData: Backtest): void {    
+  public gridAction(rowData: Backtest): void {
     let action = this.backtesterService.getCurrentBacktestsGridAction();
     let selectedAction: BacktestsGridAction = { name: action, backtest: rowData };
     this.actionSelect.emit(selectedAction);
-  }  
+  }
+
+  private formatDate(value: string): string {
+    if (!value) return '';
+    const d = new Date(value);
+    if (isNaN(d.getTime())) return value;
+    return d.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+  }
+
+  private getStatusBadgeClass(status: BacktestStatus): string {
+    switch (status) {
+      case BacktestStatus.Draft:
+        return 'bg-secondary';
+      case BacktestStatus.Ready:
+        return 'bg-info';
+      case BacktestStatus.Running:
+        return 'bg-primary';
+      case BacktestStatus.Completed:
+        return 'bg-success';
+      case BacktestStatus.Failed:
+        return 'bg-danger';
+      case BacktestStatus.Cancelled:
+        return 'bg-warning text-dark';
+      default:
+        return 'bg-secondary';
+    }
+  }
 }

@@ -1,0 +1,166 @@
+.strategy-builder {
+  .nav-tabs {
+    border-bottom-color: hsl(var(--egibi-border));
+
+    .nav-link {
+      color: hsl(var(--egibi-muted-foreground));
+      border: none;
+      padding: 0.5rem 1rem;
+      font-size: 0.875rem;
+      display: flex;
+      align-items: center;
+
+      &.active {
+        color: hsl(var(--egibi-primary));
+        border-bottom: 2px solid hsl(var(--egibi-primary));
+        background: transparent;
+      }
+
+      &:hover:not(.active) {
+        color: hsl(var(--egibi-foreground));
+        border-bottom: 2px solid hsl(var(--egibi-border));
+      }
+    }
+  }
+
+  .tab-content-area {
+    padding: 1rem 0;
+  }
+
+  // ── Coverage Info ──────────────────────────────────────
+  .coverage-info {
+    padding: 0.75rem 1rem;
+    background: hsla(var(--egibi-primary), 0.05);
+    border: 1px solid hsla(var(--egibi-primary), 0.15);
+    border-radius: 0.375rem;
+    font-size: 0.875rem;
+    color: hsl(var(--egibi-foreground));
+
+    svg {
+      color: hsl(var(--egibi-primary));
+    }
+  }
+
+  // ── Rules Section ──────────────────────────────────────
+  .rules-section {
+    padding: 1rem;
+    background: hsl(var(--egibi-card));
+    border: 1px solid hsl(var(--egibi-border));
+    border-radius: 0.5rem;
+  }
+
+  .rules-section-title {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: hsl(var(--egibi-foreground));
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .badge-entry, .badge-exit {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.125rem 0.5rem;
+    border-radius: 0.25rem;
+    font-size: 0.6875rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+  }
+
+  .badge-entry {
+    background: hsla(142, 71%, 45%, 0.12);
+    color: hsl(142, 71%, 40%);
+  }
+
+  .badge-exit {
+    background: hsla(0, 84%, 60%, 0.12);
+    color: hsl(0, 84%, 55%);
+  }
+
+  .logic-select {
+    width: auto;
+    min-width: 10rem;
+  }
+
+  .logic-divider {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.25rem 0;
+
+    .logic-label {
+      background: hsl(var(--egibi-muted));
+      color: hsl(var(--egibi-muted-foreground));
+      padding: 0.125rem 0.75rem;
+      border-radius: 1rem;
+      font-size: 0.6875rem;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+    }
+  }
+
+  // ── Condition Card ─────────────────────────────────────
+  .condition-card {
+    background: hsl(var(--egibi-background));
+    border: 1px solid hsl(var(--egibi-border));
+    border-radius: 0.375rem;
+    padding: 0.75rem;
+  }
+
+  .condition-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    align-items: flex-end;
+  }
+
+  .condition-field {
+    flex: 1;
+    min-width: 8rem;
+  }
+
+  .condition-field-sm {
+    flex: 0 0 5rem;
+    min-width: 5rem;
+  }
+
+  .condition-field-action {
+    flex: 0 0 auto;
+    min-width: auto;
+    padding-bottom: 0.125rem;
+  }
+
+  .condition-label {
+    display: block;
+    font-size: 0.6875rem;
+    font-weight: 500;
+    color: hsl(var(--egibi-muted-foreground));
+    margin-bottom: 0.25rem;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+  }
+
+  .condition-summary {
+    margin-top: 0.5rem;
+    padding-top: 0.5rem;
+    border-top: 1px dashed hsl(var(--egibi-border));
+    font-size: 0.8125rem;
+    color: hsl(var(--egibi-muted-foreground));
+    font-family: 'SF Mono', 'Fira Code', monospace;
+
+    .op {
+      color: hsl(var(--egibi-primary));
+      font-weight: 500;
+    }
+  }
+
+  // ── Footer ─────────────────────────────────────────────
+  .builder-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.5rem;
+    padding-top: 1rem;
+    border-top: 1px solid hsl(var(--egibi-border));
+  }
+}

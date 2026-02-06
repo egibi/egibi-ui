@@ -1,49 +1,77 @@
+// FILE: egibi-ui/src/app/strategies/strategies.component.ts
+
 import { Component, OnInit, ViewChild, inject, signal, WritableSignal, TemplateRef } from "@angular/core";
-import { StrategiesService } from "./strategies.service";
+import { Router } from "@angular/router";
+import { StrategiesService } from "../_services/strategies.service";
 import { CommonModule } from "@angular/common";
 import { StrategiesGridComponent } from "./strategies-grid/strategies-grid.component";
 import { AgGridModule } from "ag-grid-angular";
 import { ModalDismissReasons, NgbModal } from "@ng-bootstrap/ng-bootstrap";
 import { StrategiesGridService } from "./strategies-grid/strategies-grid.service";
 import { Strategy } from "../_models/strategy.model";
-import { StrategyComponent } from "./strategy/strategy.component";
 
 @Component({
   selector: "strategies",
-  imports: [CommonModule, AgGridModule, StrategiesGridComponent, StrategyComponent],
+  imports: [CommonModule, AgGridModule, StrategiesGridComponent],
   templateUrl: "./strategies.component.html",
   styleUrl: "./strategies.component.scss",
 })
 export class StrategiesComponent implements OnInit {
   @ViewChild(StrategiesGridComponent) strategiesGrid: StrategiesGridComponent;
-  @ViewChild(StrategyComponent) strategyComponent: StrategyComponent;
 
-  public selectedStrategy: Strategy;
-
+  public selectedStrategy: Strategy | null = null;
   public modalService = inject(NgbModal);
   closeResult: WritableSignal<string> = signal("");
   public rowData: Strategy[] = [];
 
-  constructor(private strategiesService: StrategiesService, private StrategiesGridService: StrategiesGridService) {}
+  constructor(
+    private strategiesService: StrategiesService,
+    private strategiesGridService: StrategiesGridService,
+    private router: Router
+  ) {}
 
   public ngOnInit(): void {
     this.getStrategies();
   }
 
   // ============================================================================================================
-  // MODAL
+  // NAVIGATION
   //_____________________________________________________________________________________________________________
-  public openModal(strategy: Strategy, content: TemplateRef<any>) {
+
+  public createNewStrategy() {
+    this.router.navigate(['/strategies', 'new']);
+  }
+
+  public onActionSelect(selectedAction: any, deleteModal: any) {
+    if (selectedAction.strategy) {
+      this.selectedStrategy = selectedAction.strategy;
+    }
+
+    switch (selectedAction.name) {
+      case "create":
+        this.createNewStrategy();
+        break;
+      case "edit":
+        if (selectedAction.strategy?.id) {
+          this.router.navigate(['/strategies', selectedAction.strategy.id]);
+        }
+        break;
+      case "delete":
+        this.openDeleteModal(selectedAction.strategy, deleteModal);
+        break;
+    }
+  }
+
+  // ============================================================================================================
+  // DELETE MODAL
+  //_____________________________________________________________________________________________________________
+
+  public openDeleteModal(strategy: Strategy, content: TemplateRef<any>) {
+    this.selectedStrategy = strategy;
     this.modalService.open(content).result.then(
       (result) => {
-        switch (result) {
-          case "create-save":
-          case "edit-save":
-            this.saveStrategy();
-            break;
-          case "delete-confirm":
-            this.deleteStrategy();
-            break;
+        if (result === 'delete-confirm') {
+          this.deleteStrategy();
         }
       },
       (reason) => {
@@ -63,43 +91,32 @@ export class StrategiesComponent implements OnInit {
     }
   }
 
-  public onActionSelect(selectedAction: any, createModal: any, editModal: any, deleteModal: any) {
-    this.strategiesService.setSelectedStrategy(selectedAction.strategy);
-    switch (selectedAction.name) {
-      case "create":
-        this.openModal(new Strategy(), createModal);
-        break;
-      case "edit":
-        this.openModal(selectedAction.connection, editModal);
-        break;
-      case "delete":
-        this.openModal(selectedAction.connection, deleteModal);
+  // ============================================================================================================
+  // DATA
+  //_____________________________________________________________________________________________________________
 
-        break;
+  private async getStrategies(): Promise<void> {
+    try {
+      const res = await this.strategiesService.getAll();
+      if (res?.responseCode === 200) {
+        this.rowData = res.responseData || [];
+        if (this.strategiesGrid) {
+          this.strategiesGrid.rowData = this.rowData;
+        }
+      }
+    } catch (err) {
+      console.error('Failed to load strategies', err);
     }
   }
-  // ************************************************************************************************************
 
-  private getStrategies(): void {
-    this.strategiesService.getStrategies().subscribe((res) => {
-      this.strategiesGrid.rowData = res.responseData;
-    });
-  }
+  private async deleteStrategy(): Promise<void> {
+    if (!this.selectedStrategy?.id) return;
 
-  private saveStrategy(): void {
-    let details = this.strategyComponent.strategyDetailsForm.value;
-
-    if (details.strategyId == "") details.strategyId = 0;
-
-    this.strategiesService.saveStrategy(details).subscribe((res) => {
-      this.getStrategies();
-    });
-  }
-
-  private deleteStrategy(): void {
-    let selectedStrategy = this.strategiesService.getSelectedStrategy();
-    this.strategiesService.deleteStrategy(selectedStrategy).subscribe((res) => {
-      this.getStrategies();
-    });
+    try {
+      await this.strategiesService.delete(this.selectedStrategy.id);
+      await this.getStrategies();
+    } catch (err) {
+      console.error('Failed to delete strategy', err);
+    }
   }
 }

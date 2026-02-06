@@ -1,0 +1,189 @@
+@if (result) {
+  <div class="backtest-results">
+    <!-- Warnings -->
+    @if (result.warnings.length > 0) {
+      <div class="alert alert-warning d-flex align-items-start gap-2 mb-3">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mt-1 flex-shrink-0">
+          <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"/>
+          <path d="M12 9v4"/><path d="M12 17h.01"/>
+        </svg>
+        <div>
+          @for (warning of result.warnings; track $index) {
+            <div>{{ warning }}</div>
+          }
+        </div>
+      </div>
+    }
+
+    <!-- ═══════════════════════════════════════════════════ -->
+    <!--  KEY METRICS ROW                                    -->
+    <!-- ═══════════════════════════════════════════════════ -->
+    <div class="metrics-grid mb-4">
+      <div class="metric-card">
+        <div class="metric-label">Total Return</div>
+        <div class="metric-value" [ngClass]="returnClass">
+          {{ result.totalReturnPct > 0 ? '+' : '' }}{{ result.totalReturnPct }}%
+        </div>
+        <div class="metric-sub">
+          ${{ result.initialCapital | number:'1.2-2' }} → ${{ result.finalCapital | number:'1.2-2' }}
+        </div>
+      </div>
+
+      <div class="metric-card">
+        <div class="metric-label">Win Rate</div>
+        <div class="metric-value">{{ result.winRate }}%</div>
+        <div class="metric-sub">{{ result.winningTrades }}W / {{ result.losingTrades }}L of {{ result.totalTrades }}</div>
+      </div>
+
+      <div class="metric-card">
+        <div class="metric-label">Profit Factor</div>
+        <div class="metric-value" [class.stat-positive]="result.profitFactor > 1"
+             [class.stat-negative]="result.profitFactor < 1">
+          {{ result.profitFactor }}
+        </div>
+        <div class="metric-sub">Win $ / Loss $</div>
+      </div>
+
+      <div class="metric-card">
+        <div class="metric-label">Max Drawdown</div>
+        <div class="metric-value stat-negative">-{{ result.maxDrawdownPct }}%</div>
+        <div class="metric-sub">Worst peak-to-trough</div>
+      </div>
+
+      <div class="metric-card">
+        <div class="metric-label">Sharpe Ratio</div>
+        <div class="metric-value" [class.stat-positive]="result.sharpeRatio > 1"
+             [class.stat-negative]="result.sharpeRatio < 0">
+          {{ result.sharpeRatio }}
+        </div>
+        <div class="metric-sub">Risk-adjusted return</div>
+      </div>
+
+      <div class="metric-card">
+        <div class="metric-label">Avg Hold Time</div>
+        <div class="metric-value">{{ formatDuration(result.averageHoldTime) }}</div>
+        <div class="metric-sub">{{ result.candlesProcessed | number }} candles processed</div>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════ -->
+    <!--  EQUITY CURVE                                       -->
+    <!-- ═══════════════════════════════════════════════════ -->
+    <div class="card mb-3">
+      <div class="card-header">
+        <h2 class="card-title">Equity Curve</h2>
+        <p class="card-description">
+          {{ result.symbol }} · {{ result.dataSource }} · {{ result.interval }} ·
+          {{ result.startDate | date:'mediumDate' }} — {{ result.endDate | date:'mediumDate' }} ·
+          Executed in {{ result.executionTimeMs }}ms
+        </p>
+      </div>
+      <div class="card-body p-0">
+        <div #equityChart></div>
+        <div #drawdownChart></div>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════ -->
+    <!--  VIEW TOGGLE                                        -->
+    <!-- ═══════════════════════════════════════════════════ -->
+    <ul class="nav nav-tabs mb-3">
+      <li class="nav-item">
+        <button class="nav-link" [class.active]="activeView === 'summary'" (click)="activeView = 'summary'">
+          Win/Loss Stats
+        </button>
+      </li>
+      <li class="nav-item">
+        <button class="nav-link" [class.active]="activeView === 'trades'" (click)="activeView = 'trades'">
+          Trade Log ({{ result.totalTrades }})
+        </button>
+      </li>
+    </ul>
+
+    <!-- ═══════════════════════════════════════════════════ -->
+    <!--  DETAILED STATS                                     -->
+    <!-- ═══════════════════════════════════════════════════ -->
+    @if (activeView === 'summary') {
+      <div class="card">
+        <div class="card-body">
+          <div class="row g-4">
+            <div class="col-md-6">
+              <table class="stats-table">
+                <tbody>
+                  <tr><td>Average Win</td><td class="stat-positive">+{{ result.averageWinPct }}%</td></tr>
+                  <tr><td>Largest Win</td><td class="stat-positive">+{{ result.largestWinPct }}%</td></tr>
+                  <tr><td>Winning Trades</td><td>{{ result.winningTrades }}</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="col-md-6">
+              <table class="stats-table">
+                <tbody>
+                  <tr><td>Average Loss</td><td class="stat-negative">{{ result.averageLossPct }}%</td></tr>
+                  <tr><td>Largest Loss</td><td class="stat-negative">{{ result.largestLossPct }}%</td></tr>
+                  <tr><td>Losing Trades</td><td>{{ result.losingTrades }}</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    }
+
+    <!-- ═══════════════════════════════════════════════════ -->
+    <!--  TRADE LOG                                          -->
+    <!-- ═══════════════════════════════════════════════════ -->
+    @if (activeView === 'trades') {
+      <div class="card">
+        <div class="card-body p-0">
+          <div class="table-responsive">
+            <table class="table table-sm mb-0">
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Side</th>
+                  <th>Entry</th>
+                  <th>Entry Price</th>
+                  <th>Exit</th>
+                  <th>Exit Price</th>
+                  <th>P&L</th>
+                  <th>P&L %</th>
+                  <th>Exit Reason</th>
+                  <th>Duration</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (trade of result.trades; track trade.tradeNumber) {
+                  <tr>
+                    <td>{{ trade.tradeNumber }}</td>
+                    <td>
+                      <span class="badge" [class.badge-long]="trade.side === 'LONG'"
+                            [class.badge-short]="trade.side === 'SHORT'">
+                        {{ trade.side }}
+                      </span>
+                    </td>
+                    <td>{{ trade.entryTime | date:'short' }}</td>
+                    <td>{{ trade.entryPrice | number:'1.2-6' }}</td>
+                    <td>{{ trade.exitTime | date:'short' }}</td>
+                    <td>{{ trade.exitPrice | number:'1.2-6' }}</td>
+                    <td [class.stat-positive]="trade.pnL > 0" [class.stat-negative]="trade.pnL < 0">
+                      {{ trade.pnL > 0 ? '+' : '' }}{{ trade.pnL | number:'1.2-2' }}
+                    </td>
+                    <td [class.stat-positive]="trade.pnLPct > 0" [class.stat-negative]="trade.pnLPct < 0">
+                      {{ trade.pnLPct > 0 ? '+' : '' }}{{ trade.pnLPct }}%
+                    </td>
+                    <td>
+                      <span class="badge badge-reason">{{ trade.exitReason }}</span>
+                    </td>
+                    <td>{{ formatDuration(trade.holdDuration) }}</td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    }
+  </div>
+}

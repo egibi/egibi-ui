@@ -1,0 +1,364 @@
+@if (loading) {
+  <div class="d-flex justify-content-center py-5">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Loading...</span>
+    </div>
+  </div>
+} @else {
+  <div class="strategy-builder">
+    <!-- Strategy Name & Description -->
+    <div class="mb-4">
+      <div class="row g-3">
+        <div class="col-md-6">
+          <label class="form-label">Strategy Name <span class="text-danger">*</span></label>
+          <input type="text" class="form-control" [(ngModel)]="name"
+                 placeholder="e.g., Golden Cross BTC" maxlength="200">
+        </div>
+        <div class="col-md-6">
+          <label class="form-label">Description</label>
+          <input type="text" class="form-control" [(ngModel)]="description"
+                 placeholder="Brief description of this strategy" maxlength="1000">
+        </div>
+      </div>
+    </div>
+
+    <!-- Tab Navigation -->
+    <ul class="nav nav-tabs mb-3">
+      <li class="nav-item">
+        <button class="nav-link" [class.active]="activeTab === 'data'"
+                (click)="activeTab = 'data'">
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="me-1">
+            <ellipse cx="12" cy="5" rx="9" ry="3"/>
+            <path d="M3 5V19A9 3 0 0 0 21 19V5"/>
+            <path d="M3 12A9 3 0 0 0 21 12"/>
+          </svg>
+          Data Source
+        </button>
+      </li>
+      <li class="nav-item">
+        <button class="nav-link" [class.active]="activeTab === 'rules'"
+                (click)="activeTab = 'rules'">
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="me-1">
+            <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>
+          </svg>
+          Entry &amp; Exit Rules
+        </button>
+      </li>
+      <li class="nav-item">
+        <button class="nav-link" [class.active]="activeTab === 'risk'"
+                (click)="activeTab = 'risk'">
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="me-1">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10"/>
+          </svg>
+          Risk Management
+        </button>
+      </li>
+    </ul>
+
+    <!-- ═══════════════════════════════════════════════════ -->
+    <!--  DATA SOURCE TAB                                   -->
+    <!-- ═══════════════════════════════════════════════════ -->
+    @if (activeTab === 'data') {
+      <div class="tab-content-area">
+        <div class="row g-3">
+          <!-- Exchange Account -->
+          <div class="col-md-6">
+            <label class="form-label">Exchange Account</label>
+            <select class="form-select" [(ngModel)]="config.exchangeAccountId">
+              <option [ngValue]="undefined">— No account (backtest only) —</option>
+              @for (account of exchangeAccounts; track account.id) {
+                <option [ngValue]="account.id">
+                  {{ account.exchange?.name || 'Exchange' }} — {{ account.name || account.accountIdentifier }}
+                </option>
+              }
+            </select>
+            <div class="form-text">Optional. Required for live trading, not for backtesting.</div>
+          </div>
+
+          <!-- Symbol -->
+          <div class="col-md-6">
+            <label class="form-label">Symbol <span class="text-danger">*</span></label>
+            @if (availableSymbols.length > 0) {
+              <select class="form-select" [(ngModel)]="config.symbol" (ngModelChange)="onSymbolChange()">
+                <option value="">— Select symbol —</option>
+                @for (symbol of availableSymbols; track symbol) {
+                  <option [value]="symbol">{{ symbol }}</option>
+                }
+              </select>
+            } @else {
+              <input type="text" class="form-control" [(ngModel)]="config.symbol"
+                     placeholder="e.g., BTC-USD" (ngModelChange)="onSymbolChange()">
+              <div class="form-text text-warning">No data in QuestDB yet. Enter a symbol manually or import data first.</div>
+            }
+          </div>
+
+          <!-- Data Source -->
+          <div class="col-md-6">
+            <label class="form-label">Data Source <span class="text-danger">*</span></label>
+            @if (filteredSources.length > 0) {
+              <select class="form-select" [(ngModel)]="config.dataSource">
+                <option value="">— Select data source —</option>
+                @for (group of getUniqueSourcesForSymbol(); track group.source) {
+                  <option [value]="group.source">{{ group.source }}</option>
+                }
+              </select>
+            } @else {
+              <input type="text" class="form-control" [(ngModel)]="config.dataSource"
+                     placeholder="e.g., binance, coinbase">
+              @if (config.symbol) {
+                <div class="form-text text-warning">No data found for {{ config.symbol }}. Import data via Data Manager first.</div>
+              }
+            }
+          </div>
+
+          <!-- Interval -->
+          <div class="col-md-6">
+            <label class="form-label">Interval <span class="text-danger">*</span></label>
+            <select class="form-select" [(ngModel)]="config.interval">
+              @for (interval of intervals; track interval.value) {
+                <option [value]="interval.value">{{ interval.label }}</option>
+              }
+            </select>
+          </div>
+        </div>
+
+        <!-- Data Coverage Info -->
+        @if (getSelectedCoverage(); as coverage) {
+          <div class="coverage-info mt-3">
+            <div class="d-flex align-items-center gap-2">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"/>
+                <path d="M12 16v-4"/>
+                <path d="M12 8h.01"/>
+              </svg>
+              <span>
+                <strong>{{ coverage.candleCount | number }}</strong> candles available from
+                <strong>{{ coverage.fromDate | date:'mediumDate' }}</strong> to
+                <strong>{{ coverage.toDate | date:'mediumDate' }}</strong>
+              </span>
+            </div>
+          </div>
+        }
+      </div>
+    }
+
+    <!-- ═══════════════════════════════════════════════════ -->
+    <!--  ENTRY & EXIT RULES TAB                            -->
+    <!-- ═══════════════════════════════════════════════════ -->
+    @if (activeTab === 'rules') {
+      <div class="tab-content-area">
+        <!-- ENTRY CONDITIONS -->
+        <div class="rules-section mb-4">
+          <div class="d-flex align-items-center justify-content-between mb-2">
+            <h6 class="rules-section-title mb-0">
+              <span class="badge-entry">ENTRY</span>
+              When to open a position
+            </h6>
+            <div class="d-flex align-items-center gap-2">
+              <span class="form-text mb-0">Logic:</span>
+              <select class="form-select form-select-sm logic-select" [(ngModel)]="config.entryLogic">
+                <option value="AND">ALL conditions (AND)</option>
+                <option value="OR">ANY condition (OR)</option>
+              </select>
+            </div>
+          </div>
+
+          @for (condition of config.entryConditions; track $index; let i = $index) {
+            @if (i > 0) {
+              <div class="logic-divider">
+                <span class="logic-label">{{ config.entryLogic }}</span>
+              </div>
+            }
+            <ng-container *ngTemplateOutlet="conditionRow; context: { condition: condition, index: i, type: 'entry' }">
+            </ng-container>
+          }
+
+          <button class="btn btn-sm btn-outline-primary mt-2" (click)="addCondition('entry')">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="me-1">
+              <path d="M5 12h14"/><path d="M12 5v14"/>
+            </svg>
+            Add Entry Condition
+          </button>
+        </div>
+
+        <!-- EXIT CONDITIONS -->
+        <div class="rules-section">
+          <div class="d-flex align-items-center justify-content-between mb-2">
+            <h6 class="rules-section-title mb-0">
+              <span class="badge-exit">EXIT</span>
+              When to close a position
+            </h6>
+            <div class="d-flex align-items-center gap-2">
+              <span class="form-text mb-0">Logic:</span>
+              <select class="form-select form-select-sm logic-select" [(ngModel)]="config.exitLogic">
+                <option value="AND">ALL conditions (AND)</option>
+                <option value="OR">ANY condition (OR)</option>
+              </select>
+            </div>
+          </div>
+
+          @for (condition of config.exitConditions; track $index; let i = $index) {
+            @if (i > 0) {
+              <div class="logic-divider">
+                <span class="logic-label">{{ config.exitLogic }}</span>
+              </div>
+            }
+            <ng-container *ngTemplateOutlet="conditionRow; context: { condition: condition, index: i, type: 'exit' }">
+            </ng-container>
+          }
+
+          <button class="btn btn-sm btn-outline-primary mt-2" (click)="addCondition('exit')">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="me-1">
+              <path d="M5 12h14"/><path d="M12 5v14"/>
+            </svg>
+            Add Exit Condition
+          </button>
+        </div>
+      </div>
+    }
+
+    <!-- ═══════════════════════════════════════════════════ -->
+    <!--  RISK MANAGEMENT TAB                               -->
+    <!-- ═══════════════════════════════════════════════════ -->
+    @if (activeTab === 'risk') {
+      <div class="tab-content-area">
+        <div class="row g-3">
+          <div class="col-md-4">
+            <label class="form-label">Position Size (%)</label>
+            <input type="number" class="form-control" [(ngModel)]="config.positionSizePct"
+                   min="1" max="100" step="1">
+            <div class="form-text">Percentage of available capital per trade.</div>
+          </div>
+          <div class="col-md-4">
+            <label class="form-label">Stop Loss (%)</label>
+            <input type="number" class="form-control" [(ngModel)]="config.stopLossPct"
+                   min="0" max="100" step="0.1" placeholder="Optional">
+            <div class="form-text">Auto-exit if price moves against position by this %.</div>
+          </div>
+          <div class="col-md-4">
+            <label class="form-label">Take Profit (%)</label>
+            <input type="number" class="form-control" [(ngModel)]="config.takeProfitPct"
+                   min="0" max="1000" step="0.1" placeholder="Optional">
+            <div class="form-text">Auto-exit when profit reaches this %.</div>
+          </div>
+          <div class="col-md-4">
+            <div class="form-check mt-3">
+              <input class="form-check-input" type="checkbox" id="allowShort" [(ngModel)]="config.allowShort">
+              <label class="form-check-label" for="allowShort">Allow Short Selling</label>
+            </div>
+            <div class="form-text">Enable short positions when exit signals trigger without an open position.</div>
+          </div>
+        </div>
+      </div>
+    }
+
+    <!-- ═══════════════════════════════════════════════════ -->
+    <!--  FOOTER ACTIONS                                     -->
+    <!-- ═══════════════════════════════════════════════════ -->
+    <div class="builder-footer mt-4">
+      <button class="btn btn-outline-secondary" (click)="cancel()" [disabled]="saving">Cancel</button>
+      <button class="btn btn-primary" (click)="save()" [disabled]="saving">
+        @if (saving) {
+          <span class="spinner-border spinner-border-sm me-1" role="status"></span>
+        }
+        {{ strategyId ? 'Update Strategy' : 'Create Strategy' }}
+      </button>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <!--  CONDITION ROW TEMPLATE                                -->
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <ng-template #conditionRow let-condition="condition" let-index="index" let-type="type">
+    <div class="condition-card">
+      <div class="condition-row">
+        <!-- Indicator -->
+        <div class="condition-field">
+          <label class="condition-label">Indicator</label>
+          <select class="form-select form-select-sm" [(ngModel)]="condition.indicator"
+                  (ngModelChange)="onIndicatorChange(condition)">
+            @for (ind of indicators; track ind.value) {
+              <option [value]="ind.value">{{ ind.label }}</option>
+            }
+          </select>
+        </div>
+
+        <!-- Period (if applicable) -->
+        @if (indicatorHasParameter(condition.indicator)) {
+          <div class="condition-field condition-field-sm">
+            <label class="condition-label">Period</label>
+            <input type="number" class="form-control form-control-sm" [(ngModel)]="condition.period"
+                   min="1" max="500">
+          </div>
+        }
+
+        <!-- Operator -->
+        <div class="condition-field">
+          <label class="condition-label">Operator</label>
+          <select class="form-select form-select-sm" [(ngModel)]="condition.operator">
+            @for (op of operators; track op.value) {
+              <option [value]="op.value">{{ op.label }}</option>
+            }
+          </select>
+        </div>
+
+        <!-- Compare Type -->
+        <div class="condition-field">
+          <label class="condition-label">Compare To</label>
+          <select class="form-select form-select-sm" [(ngModel)]="condition.compareType"
+                  (ngModelChange)="onCompareTypeChange(condition)">
+            <option value="VALUE">Fixed Value</option>
+            <option value="INDICATOR">Another Indicator</option>
+          </select>
+        </div>
+
+        <!-- Compare Value OR Compare Indicator -->
+        @if (condition.compareType === 'VALUE') {
+          <div class="condition-field condition-field-sm">
+            <label class="condition-label">Value</label>
+            <input type="number" class="form-control form-control-sm" [(ngModel)]="condition.compareValue"
+                   step="any">
+          </div>
+        } @else {
+          <div class="condition-field">
+            <label class="condition-label">Indicator</label>
+            <select class="form-select form-select-sm" [(ngModel)]="condition.compareIndicator">
+              @for (ind of indicators; track ind.value) {
+                <option [value]="ind.value">{{ ind.label }}</option>
+              }
+            </select>
+          </div>
+          @if (indicatorHasParameter(condition.compareIndicator || '')) {
+            <div class="condition-field condition-field-sm">
+              <label class="condition-label">Period</label>
+              <input type="number" class="form-control form-control-sm" [(ngModel)]="condition.comparePeriod"
+                     min="1" max="500">
+            </div>
+          }
+        }
+
+        <!-- Remove Button -->
+        <div class="condition-field condition-field-action">
+          <button class="btn btn-sm btn-outline-danger" (click)="removeCondition(type, index)"
+                  title="Remove condition">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/>
+              <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Human-readable summary -->
+      <div class="condition-summary">
+        {{ condition.indicator }}@if (indicatorHasParameter(condition.indicator)) {({{ condition.period }})}
+        <span class="op">{{ condition.operator | lowercase }}</span>
+        @if (condition.compareType === 'VALUE') {
+          {{ condition.compareValue }}
+        } @else {
+          {{ condition.compareIndicator }}@if (indicatorHasParameter(condition.compareIndicator || '')) {({{ condition.comparePeriod }})}
+        }
+      </div>
+    </div>
+  </ng-template>
+}

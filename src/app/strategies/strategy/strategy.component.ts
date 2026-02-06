@@ -1,5 +1,6 @@
+// FILE: egibi-ui/src/app/strategies/strategy/strategy.component.ts
+
 import { Component, OnInit } from "@angular/core";
-import { StrategiesService } from "../strategies.service";
 import { FormBuilder, FormGroup, FormControl, ReactiveFormsModule, FormsModule } from "@angular/forms";
 import { CommonModule } from "@angular/common";
 
@@ -12,7 +13,7 @@ import { CommonModule } from "@angular/common";
 export class StrategyComponent implements OnInit {
   public strategyDetailsForm: FormGroup;
 
-  constructor(private fb: FormBuilder, private strategiesService: StrategiesService) {
+  constructor(private fb: FormBuilder) {
     this.strategyDetailsForm = this.fb.group({
       strategyId: [""],
       name: [""],
@@ -22,6 +23,7 @@ export class StrategyComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.strategyDetailsForm.patchValue(this.strategiesService.getSelectedStrategy());
+    // Form is initialized with empty values for create mode.
+    // Parent component can patch values for edit mode if needed.
   }
 }

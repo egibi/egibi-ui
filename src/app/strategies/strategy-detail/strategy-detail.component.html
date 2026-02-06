@@ -1,0 +1,272 @@
+@if (loading) {
+  <div class="d-flex justify-content-center align-items-center py-5">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Loading...</span>
+    </div>
+  </div>
+} @else {
+  <div class="space-y-6">
+    <!-- ═══════════════════════════════════════════════════ -->
+    <!--  PAGE HEADER                                        -->
+    <!-- ═══════════════════════════════════════════════════ -->
+    <div class="page-header">
+      <div class="page-header-content">
+        <div class="d-flex align-items-center gap-2 mb-1">
+          <button class="btn btn-sm btn-ghost" routerLink="/strategies">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                 stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="m15 18-6-6 6-6"/>
+            </svg>
+          </button>
+          <h1 class="page-title mb-0">
+            {{ isNewStrategy ? 'Create Strategy' : strategy?.name || 'Strategy' }}
+          </h1>
+          @if (strategy?.isActive) {
+            <span class="badge-active">ACTIVE</span>
+          }
+        </div>
+        @if (!isNewStrategy && strategy?.description) {
+          <p class="page-subtitle">{{ strategy?.description }}</p>
+        }
+      </div>
+
+      @if (!isNewStrategy && strategy) {
+        <div class="page-header-actions">
+          <button class="btn btn-outline-primary btn-sm" (click)="activeTab = 'backtests'; startNewBacktest()">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
+                 stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="me-1">
+              <polygon points="5 3 19 12 5 21 5 3"/>
+            </svg>
+            Run Backtest
+          </button>
+          <button class="btn btn-outline-danger btn-sm" (click)="openDeleteModal(deleteModal)">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
+                 stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="me-1">
+              <path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/>
+              <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/>
+            </svg>
+            Delete
+          </button>
+        </div>
+      }
+    </div>
+
+
+    <!-- ═══════════════════════════════════════════════════ -->
+    <!--  TAB NAVIGATION (only for existing strategies)      -->
+    <!-- ═══════════════════════════════════════════════════ -->
+    @if (!isNewStrategy && strategy) {
+      <div class="tab-nav">
+        <button class="tab-btn" [class.active]="activeTab === 'builder'" (click)="activeTab = 'builder'">
+          <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none"
+               stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>
+          </svg>
+          Configuration
+        </button>
+        <button class="tab-btn" [class.active]="activeTab === 'backtests'" (click)="activeTab = 'backtests'">
+          <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none"
+               stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 3v18h18"/>
+            <path d="m19 9-5 5-4-4-3 3"/>
+          </svg>
+          Backtests
+          @if (backtestHistory.length > 0) {
+            <span class="tab-badge">{{ backtestHistory.length }}</span>
+          }
+        </button>
+      </div>
+    }
+
+
+    <!-- ═══════════════════════════════════════════════════ -->
+    <!--  CONFIGURATION TAB (Strategy Builder)               -->
+    <!-- ═══════════════════════════════════════════════════ -->
+    @if (activeTab === 'builder' || isNewStrategy) {
+      <div class="card">
+        <div class="card-header">
+          <h2 class="card-title">{{ isNewStrategy ? 'Strategy Configuration' : 'Edit Configuration' }}</h2>
+          <p class="card-description">
+            {{ isNewStrategy ? 'Define your data source, entry/exit rules, and risk parameters' : 'Modify the strategy settings and save changes' }}
+          </p>
+        </div>
+        <div class="card-body">
+          <strategy-builder
+            [strategyId]="strategyId"
+            (saved)="onStrategySaved($event)"
+            (cancelled)="onStrategyCancelled()">
+          </strategy-builder>
+        </div>
+      </div>
+    }
+
+
+    <!-- ═══════════════════════════════════════════════════ -->
+    <!--  BACKTESTS TAB                                      -->
+    <!-- ═══════════════════════════════════════════════════ -->
+    @if (activeTab === 'backtests' && !isNewStrategy && strategy) {
+
+      <!-- Backtest Setup Panel -->
+      @if (showBacktestConfig) {
+        <div class="card">
+          <div class="card-header">
+            <h2 class="card-title">Run Backtest</h2>
+            <p class="card-description">Configure the date range and parameters for backtesting <strong>{{ strategy.name }}</strong></p>
+          </div>
+          <div class="card-body">
+            <backtest-config
+              [strategyId]="strategyId!"
+              [symbol]="strategy.configuration?.symbol || ''"
+              [dataSource]="strategy.configuration?.dataSource || ''"
+              [interval]="strategy.configuration?.interval || '1h'"
+              (completed)="onBacktestCompleted($event)"
+              (cancelled)="onBacktestCancelled()">
+            </backtest-config>
+          </div>
+        </div>
+      }
+
+      <!-- Backtest Results -->
+      @if (backtestResult) {
+        <div class="card">
+          <div class="card-header">
+            <div class="d-flex align-items-center justify-content-between w-100">
+              <div>
+                <h2 class="card-title">Backtest Results</h2>
+                <p class="card-description">
+                  {{ backtestResult.symbol }} · {{ backtestResult.dataSource }} · {{ backtestResult.interval }}
+                </p>
+              </div>
+              <button class="btn btn-sm btn-outline-secondary" (click)="backtestResult = null">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
+                     stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M18 6 6 18"/><path d="m6 6 12 12"/>
+                </svg>
+                Close
+              </button>
+            </div>
+          </div>
+          <div class="card-body">
+            <backtest-results [result]="backtestResult"></backtest-results>
+          </div>
+        </div>
+      }
+
+      <!-- Backtest History -->
+      <div class="card">
+        <div class="card-header">
+          <div class="d-flex align-items-center justify-content-between w-100">
+            <div>
+              <h2 class="card-title">Backtest History</h2>
+              <p class="card-description">Previous backtest runs for this strategy</p>
+            </div>
+            @if (!showBacktestConfig) {
+              <button class="btn btn-sm btn-primary" (click)="startNewBacktest()">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
+                     stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="me-1">
+                  <path d="M5 12h14"/><path d="M12 5v14"/>
+                </svg>
+                New Backtest
+              </button>
+            }
+          </div>
+        </div>
+        <div class="card-body">
+          @if (loadingBacktests) {
+            <div class="d-flex justify-content-center py-4">
+              <div class="spinner-border spinner-border-sm text-primary" role="status">
+                <span class="visually-hidden">Loading...</span>
+              </div>
+            </div>
+          } @else if (backtestHistory.length === 0) {
+            <div class="empty-state">
+              <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none"
+                   stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M3 3v18h18"/>
+                <path d="m19 9-5 5-4-4-3 3"/>
+              </svg>
+              <p class="empty-title">No backtests yet</p>
+              <p class="empty-description">Run your first backtest to see how this strategy performs on historical data.</p>
+              <button class="btn btn-primary btn-sm" (click)="startNewBacktest()">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
+                     stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="me-1">
+                  <polygon points="5 3 19 12 5 21 5 3"/>
+                </svg>
+                Run First Backtest
+              </button>
+            </div>
+          } @else {
+            <div class="table-responsive">
+              <table class="table table-sm mb-0 backtests-table">
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>Status</th>
+                    <th>Period</th>
+                    <th>Capital</th>
+                    <th>Return</th>
+                    <th>Trades</th>
+                    <th>Win Rate</th>
+                    <th>Drawdown</th>
+                    <th>Sharpe</th>
+                    <th>Ran</th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @for (bt of backtestHistory; track bt.id) {
+                    <tr class="backtest-row" (click)="viewBacktestDetail(bt.id)">
+                      <td class="bt-name">{{ bt.name }}</td>
+                      <td>
+                        <span class="badge badge-status" [class.badge-completed]="bt.status === 'Completed'"
+                              [class.badge-failed]="bt.status === 'Failed'" [class.badge-pending]="bt.status === 'Pending'">
+                          {{ bt.status }}
+                        </span>
+                      </td>
+                      <td>{{ bt.startDate | date:'shortDate' }} — {{ bt.endDate | date:'shortDate' }}</td>
+                      <td>${{ bt.initialCapital | number:'1.0-0' }}</td>
+                      <td [ngClass]="getReturnClass(bt.totalReturnPct)">
+                        {{ formatReturn(bt.totalReturnPct) }}
+                      </td>
+                      <td>{{ bt.totalTrades ?? '—' }}</td>
+                      <td>{{ bt.winRate != null ? bt.winRate + '%' : '—' }}</td>
+                      <td class="stat-negative">{{ bt.maxDrawdownPct != null ? '-' + bt.maxDrawdownPct + '%' : '—' }}</td>
+                      <td>{{ bt.sharpeRatio ?? '—' }}</td>
+                      <td>{{ bt.executedAt | date:'short' }}</td>
+                      <td>
+                        <button class="btn btn-sm btn-ghost" title="View details">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
+                               stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="m9 18 6-6-6-6"/>
+                          </svg>
+                        </button>
+                      </td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            </div>
+          }
+        </div>
+      </div>
+    }
+  </div>
+}
+
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!--  DELETE MODAL                                          -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<ng-template #deleteModal let-modal>
+  <div class="modal-header">
+    <h4 class="modal-title">Delete Strategy</h4>
+    <button type="button" class="btn-close" (click)="modal.dismiss()"></button>
+  </div>
+  <div class="modal-body">
+    <p>Are you sure you want to delete <strong>{{ strategy?.name }}</strong>? This will also delete all associated backtest results. This action cannot be undone.</p>
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-outline-secondary" (click)="modal.dismiss()">Cancel</button>
+    <button type="button" class="btn btn-danger" (click)="modal.close('delete-confirm')">Delete Strategy</button>
+  </div>
+</ng-template>

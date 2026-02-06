@@ -1,0 +1,139 @@
+.backtest-results {
+  // ── Metrics Grid ─────────────────────────────────────
+  .metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
+    gap: 0.75rem;
+  }
+
+  .metric-card {
+    background: hsl(var(--egibi-card));
+    border: 1px solid hsl(var(--egibi-border));
+    border-radius: 0.5rem;
+    padding: 0.875rem 1rem;
+    text-align: center;
+  }
+
+  .metric-label {
+    font-size: 0.6875rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: hsl(var(--egibi-muted-foreground));
+    margin-bottom: 0.25rem;
+  }
+
+  .metric-value {
+    font-size: 1.375rem;
+    font-weight: 700;
+    color: hsl(var(--egibi-foreground));
+    line-height: 1.2;
+  }
+
+  .metric-sub {
+    font-size: 0.75rem;
+    color: hsl(var(--egibi-muted-foreground));
+    margin-top: 0.125rem;
+  }
+
+  // ── Stat Colors ──────────────────────────────────────
+  .stat-positive {
+    color: #22c55e !important;
+  }
+
+  .stat-negative {
+    color: #ef4444 !important;
+  }
+
+  // ── Stats Table ──────────────────────────────────────
+  .stats-table {
+    width: 100%;
+
+    td {
+      padding: 0.5rem 0;
+      border-bottom: 1px solid hsl(var(--egibi-border));
+      font-size: 0.875rem;
+
+      &:first-child {
+        color: hsl(var(--egibi-muted-foreground));
+      }
+
+      &:last-child {
+        text-align: right;
+        font-weight: 600;
+        font-family: 'SF Mono', 'Fira Code', monospace;
+      }
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+  }
+
+  // ── Nav Tabs ─────────────────────────────────────────
+  .nav-tabs {
+    border-bottom-color: hsl(var(--egibi-border));
+
+    .nav-link {
+      color: hsl(var(--egibi-muted-foreground));
+      border: none;
+      font-size: 0.875rem;
+
+      &.active {
+        color: hsl(var(--egibi-primary));
+        border-bottom: 2px solid hsl(var(--egibi-primary));
+        background: transparent;
+      }
+    }
+  }
+
+  // ── Trade Log Table ──────────────────────────────────
+  .table {
+    font-size: 0.8125rem;
+
+    th {
+      background: hsl(var(--egibi-muted));
+      color: hsl(var(--egibi-muted-foreground));
+      font-weight: 600;
+      font-size: 0.6875rem;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+      border-bottom: 1px solid hsl(var(--egibi-border));
+      padding: 0.5rem 0.75rem;
+      white-space: nowrap;
+    }
+
+    td {
+      padding: 0.5rem 0.75rem;
+      border-bottom: 1px solid hsl(var(--egibi-border));
+      color: hsl(var(--egibi-foreground));
+      vertical-align: middle;
+      white-space: nowrap;
+    }
+  }
+
+  // ── Badges ───────────────────────────────────────────
+  .badge {
+    font-size: 0.625rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    padding: 0.15rem 0.5rem;
+    border-radius: 0.25rem;
+  }
+
+  .badge-long {
+    background: hsla(142, 71%, 45%, 0.12);
+    color: hsl(142, 71%, 40%);
+  }
+
+  .badge-short {
+    background: hsla(0, 84%, 60%, 0.12);
+    color: hsl(0, 84%, 55%);
+  }
+
+  .badge-reason {
+    background: hsl(var(--egibi-muted));
+    color: hsl(var(--egibi-muted-foreground));
+    font-size: 0.625rem;
+  }
+}

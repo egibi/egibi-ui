@@ -10,6 +10,7 @@ import { AuthCallbackComponent } from "./auth/callback/auth-callback.component";
 
 // App pages (protected)
 import { StrategiesComponent } from "./strategies/strategies.component";
+import { StrategyDetailComponent } from "./strategies/strategy-detail/strategy-detail.component";
 import { HomeComponent } from "./home/home.component";
 import { BacktesterComponent } from "./backtester/backtester.component";
 import { ApiTesterComponent } from "./api-tester/api-tester.component";
@@ -129,6 +130,11 @@ export const routes: Routes = [
   {
     path: "strategies",
     component: StrategiesComponent,
+    canActivate: [authGuard],
+  },
+  {
+    path: "strategies/:id",
+    component: StrategyDetailComponent,
     canActivate: [authGuard],
   },
   {

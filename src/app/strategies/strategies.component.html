@@ -6,7 +6,7 @@
       <p class="page-subtitle">Create and manage your trading strategies</p>
     </div>
     <div class="page-header-actions">
-      <button class="btn btn-primary" (click)="onActionSelect({ name: 'create' }, createModal, editModal, deleteModal)">
+      <button class="btn btn-primary" (click)="createNewStrategy()">
         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M5 12h14"/>
           <path d="M12 5v14"/>
@@ -20,43 +20,13 @@
   <div class="card">
     <div class="card-header">
       <h2 class="card-title">Your Strategies</h2>
-      <p class="card-description">View, edit, and manage your trading strategies</p>
+      <p class="card-description">Click any row to view, edit, and run backtests</p>
     </div>
     <div class="card-body">
-      <strategies-grid [strategies]="rowData" (actionSelect)="onActionSelect($event, createModal, editModal, deleteModal)"></strategies-grid>
+      <strategies-grid [strategies]="rowData" (actionSelect)="onActionSelect($event, deleteModal)"></strategies-grid>
     </div>
   </div>
 </div>
-
-<!-- CREATE STRATEGY MODAL -->
-<ng-template #createModal let-modal>
-  <div class="modal-header">
-    <h4 class="modal-title">Create Strategy</h4>
-    <button type="button" class="btn-close" (click)="modal.dismiss('create-cancel')"></button>
-  </div>
-  <div class="modal-body">
-    <strategy #strategyComponent></strategy>
-  </div>
-  <div class="modal-footer">
-    <button type="button" class="btn btn-outline-secondary" (click)="modal.dismiss('create-cancel')">Cancel</button>
-    <button type="button" class="btn btn-primary" (click)="modal.close('create-save')">Save Strategy</button>
-  </div>
-</ng-template>
-
-<!-- EDIT STRATEGY MODAL -->
-<ng-template #editModal let-modal>
-  <div class="modal-header">
-    <h4 class="modal-title">Edit Strategy</h4>
-    <button type="button" class="btn-close" (click)="modal.dismiss('edit-cancel')"></button>
-  </div>
-  <div class="modal-body">
-    <strategy #strategyComponent></strategy>
-  </div>
-  <div class="modal-footer">
-    <button type="button" class="btn btn-outline-secondary" (click)="modal.dismiss('edit-cancel')">Cancel</button>
-    <button type="button" class="btn btn-primary" (click)="modal.close('edit-save')">Save Changes</button>
-  </div>
-</ng-template>
 
 <!-- DELETE STRATEGY MODAL -->
 <ng-template #deleteModal let-modal>
@@ -65,7 +35,7 @@
     <button type="button" class="btn-close" (click)="modal.dismiss('delete-cancel')"></button>
   </div>
   <div class="modal-body">
-    <p>Are you sure you want to delete this strategy? This action cannot be undone.</p>
+    <p>Are you sure you want to delete <strong>{{ selectedStrategy?.name }}</strong>? This action cannot be undone.</p>
   </div>
   <div class="modal-footer">
     <button type="button" class="btn btn-outline-secondary" (click)="modal.dismiss('delete-cancel')">Cancel</button>

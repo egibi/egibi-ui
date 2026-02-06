@@ -1,124 +1,170 @@
-import { Component, OnInit, ViewChild, inject, signal, WritableSignal, TemplateRef } from "@angular/core";
-import { CommonModule } from "@angular/common";
-import { ActivatedRoute, RouterModule, Router } from "@angular/router";
-import { AgGridModule } from "ag-grid-angular";
-import { ModalDismissReasons, NgbModal } from "@ng-bootstrap/ng-bootstrap";
-import { FormBuilder, FormGroup, FormControl, ReactiveFormsModule, FormsModule } from "@angular/forms";
-import { BacktesterService } from "./backtester.service";
-import { SelectOption } from "../_models/select-option.model";
-import { BacktestsGridComponent } from "./backtests-grid/backtests-grid.component";
-import { Backtest } from "./backtester.models";
-import { BacktestsGridItemComponent } from "./backtests-grid/backtests-grid-item/backtests-grid-item.component";
+import { Component, OnInit, ViewChild } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { NgbModal, NgbModalModule } from '@ng-bootstrap/ng-bootstrap';
+import { BacktestsGridComponent } from './backtests-grid/backtests-grid.component';
+import { BacktestsGridItemComponent } from './backtests-grid/backtests-grid-item/backtests-grid-item.component';
+import { BacktesterService } from './backtester.service';
+import { Backtest, BacktestStatus } from './backtester.models';
+import { BacktestsGridAction } from './backtests-grid/backtests-grid.models';
+import { Strategy } from '../_models/strategy.model';
+import { StrategiesService } from '../_services/strategies.service';
+import { ToastService } from '../_services/toast.service';
 
 @Component({
-  selector: "backtester",
+  selector: 'backtester',
   standalone: true,
-  imports: [CommonModule, RouterModule, AgGridModule, ReactiveFormsModule, FormsModule, BacktestsGridComponent, BacktestsGridItemComponent],
-  templateUrl: "./backtester.component.html",
-  styleUrl: "./backtester.component.scss",
+  imports: [
+    CommonModule,
+    NgbModalModule,
+    BacktestsGridComponent,
+    BacktestsGridItemComponent,
+  ],
+  templateUrl: './backtester.component.html',
+  styleUrl: './backtester.component.scss',
 })
 export class BacktesterComponent implements OnInit {
-  @ViewChild(BacktestsGridComponent) backtestsGrid: BacktestsGridComponent;
-  @ViewChild(BacktestsGridItemComponent) backtestsGridItem: BacktestsGridItemComponent;
+  @ViewChild('backtestsGridItem') backtestsGridItem: BacktestsGridItemComponent;
 
-  public selectedBacktest: Backtest;
-  public modalService = inject(NgbModal);
-
-  closeResult: WritableSignal<string> = signal("");
   public rowData: Backtest[] = [];
-  public dataSources: SelectOption[] = [];
+  public strategies: Strategy[] = [];
+  public selectedBacktest: Backtest | null = null;
 
-  constructor(private fb: FormBuilder, private router: Router, private route: ActivatedRoute, private backtesterService: BacktesterService) {}
+  constructor(
+    private backtesterService: BacktesterService,
+    private strategiesService: StrategiesService,
+    private modalService: NgbModal,
+    private toastService: ToastService,
+  ) {}
 
-  ngOnInit(): void {
-    this.getBacktests();
+  public ngOnInit(): void {
+    this.loadBacktests();
+    this.loadStrategies();
+  }
 
-    this.backtesterService.getDataSources().subscribe((res) => {
-      this.dataSources = res.responseData;
+  private loadBacktests(): void {
+    this.backtesterService.getBacktests().subscribe({
+      next: (response) => {
+        this.rowData = response.responseData as Backtest[] || [];
+      },
+      error: (err) => {
+        this.toastService.showError('Failed to load backtests');
+        console.error('Error loading backtests:', err);
+      }
     });
   }
 
-  // ============================================================================================================
-  // MODAL
-  //_____________________________________________________________________________________________________________
-  public openModal(backtest: Backtest, content: TemplateRef<any>) {
-    this.modalService.open(content).result.then(
+  private async loadStrategies(): Promise<void> {
+    try {
+      const response = await this.strategiesService.getAll();
+      this.strategies = response.responseData as Strategy[] || [];
+    } catch (err) {
+      console.error('Error loading strategies:', err);
+    }
+  }
+
+  public openCreateModal(createModal: any): void {
+    this.selectedBacktest = null;
+    const modalRef = this.modalService.open(createModal, { size: 'lg', centered: true });
+
+    modalRef.result.then(
       (result) => {
-        switch (result) {
-          case "create-save":
-          case "edit-save":
-            this.saveBacktest();
-            break;
-          case "delete-confirm":
-            this.deleteBacktest();
-            break;
+        if (result === 'create-save') {
+          this.createBacktest();
         }
       },
-      (reason) => {
-        this.closeResult.set(`Dismissed ${this.getModalDismissedReason(reason)}`);
-      }
+      () => {} // dismissed
     );
   }
 
-  private getModalDismissedReason(reason: any): string {
-    switch (reason) {
-      case ModalDismissReasons.ESC:
-        return "by pressing ESC";
-      case ModalDismissReasons.BACKDROP_CLICK:
-        return "by clicking on a backdrop";
-      default:
-        return `with: ${reason}`;
+  public createBacktest(): void {
+    if (!this.backtestsGridItem || !this.backtestsGridItem.isValid()) {
+      return;
     }
-  }
 
-  public onActionSelect(selectedAction: any, createModal: any, editModal: any, deleteModal: any) {
-    this.backtesterService.setSelectedBacktest(selectedAction.backtest);
-    let id = this.backtesterService.getSelectedBacktest().id;
+    const backtest = this.backtestsGridItem.getValue() as Backtest;
 
-    switch (selectedAction.name) {
-      case "create":
-        this.openModal(new Backtest(), createModal);
-        break;
-      case "edit":
-        this.openModal(selectedAction.connection, editModal);
-        break;
-      case "view":
-        this.navigateToChildRoute("backtest", id);
-        break;
-      case "delete":
-        this.openModal(selectedAction.connection, deleteModal);
-
-        break;
-    }
-  }
-  // ************************************************************************************************************
-
-  private getBacktests(): void {
-    this.backtesterService.getBacktests().subscribe((res) => {
-      this.backtestsGrid.rowData = res.responseData;      
+    this.backtesterService.createBacktest(backtest).subscribe({
+      next: (response) => {
+        this.toastService.showSuccess('Backtest created successfully');
+        this.loadBacktests();
+      },
+      error: (err) => {
+        this.toastService.showError('Failed to create backtest');
+        console.error('Error creating backtest:', err);
+      }
     });
   }
 
-  private saveBacktest(): void {
-    // let details = this.backtestComponent.backtestDetailsForm.value;
+  public onActionSelect(event: BacktestsGridAction, createModal: any, editModal: any, deleteModal: any): void {
+    this.selectedBacktest = event.backtest;
 
-    // if (details.backtestID == "") details.backtestID = 0;
+    switch (event.name) {
+      case 'edit':
+        this.openEditModal(editModal);
+        break;
+      case 'delete':
+        this.openDeleteModal(deleteModal);
+        break;
+    }
+  }
 
-    // this.backtesterService.saveBacktest(details).subscribe((res) => {
-    //   this.getBacktests();
-    // });
+  private openEditModal(editModal: any): void {
+    const modalRef = this.modalService.open(editModal, { size: 'lg', centered: true });
 
-    console.log('save backtest....');
+    modalRef.result.then(
+      (result) => {
+        if (result === 'edit-save') {
+          this.editBacktest();
+        }
+      },
+      () => {}
+    );
+  }
+
+  private editBacktest(): void {
+    if (!this.backtestsGridItem || !this.backtestsGridItem.isValid()) {
+      return;
+    }
+
+    const backtest = this.backtestsGridItem.getValue() as Backtest;
+
+    this.backtesterService.updateBacktest(backtest).subscribe({
+      next: () => {
+        this.toastService.showSuccess('Backtest updated successfully');
+        this.loadBacktests();
+      },
+      error: (err) => {
+        this.toastService.showError('Failed to update backtest');
+        console.error('Error updating backtest:', err);
+      }
+    });
+  }
+
+  private openDeleteModal(deleteModal: any): void {
+    const modalRef = this.modalService.open(deleteModal, { centered: true });
+
+    modalRef.result.then(
+      (result) => {
+        if (result === 'delete-confirm') {
+          this.deleteBacktest();
+        }
+      },
+      () => {}
+    );
   }
 
   private deleteBacktest(): void {
-    let selectedBacktest = this.backtesterService.getSelectedBacktest();
-    this.backtesterService.deleteBacktest(selectedBacktest).subscribe((res) => {
-      this.getBacktests();
-    });
-  }
+    if (!this.selectedBacktest?.id) return;
 
-  private navigateToChildRoute(childPath: string, backtestID: string): void {    
-    this.router.navigate([`backtester/${childPath}`, backtestID]);
+    this.backtesterService.deleteBacktest(this.selectedBacktest.id).subscribe({
+      next: () => {
+        this.toastService.showSuccess('Backtest deleted');
+        this.loadBacktests();
+      },
+      error: (err) => {
+        this.toastService.showError('Failed to delete backtest');
+        console.error('Error deleting backtest:', err);
+      }
+    });
   }
 }

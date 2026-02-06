@@ -1,16 +1,144 @@
-<form [formGroup]="backtestsGridItemForm">
-    <label for="name">Name</label>
-    <input class="form-control" type="text" id="name" formControlName="name">
+<form [formGroup]="form">
+  <!-- Name -->
+  <div class="mb-3">
+    <label for="backtestName" class="form-label">Name</label>
+    <input
+      type="text"
+      id="backtestName"
+      class="form-control"
+      formControlName="name"
+      placeholder="Enter backtest name"
+      [class.is-invalid]="form.get('name')?.touched && form.get('name')?.invalid"
+    />
+    @if (form.get('name')?.touched && form.get('name')?.hasError('required')) {
+      <div class="invalid-feedback">Name is required.</div>
+    }
+    @if (form.get('name')?.hasError('maxlength')) {
+      <div class="invalid-feedback">Name must be 100 characters or fewer.</div>
+    }
+  </div>
 
-    <label for="description">Description</label>
-    <input class="form-control" type="text" id="description" formControlName="description" />
+  <!-- Description -->
+  <div class="mb-3">
+    <label for="backtestDescription" class="form-label">Description</label>
+    <textarea
+      id="backtestDescription"
+      class="form-control"
+      formControlName="description"
+      placeholder="Describe the backtest objective"
+      rows="3"
+      [class.is-invalid]="form.get('description')?.touched && form.get('description')?.invalid"
+    ></textarea>
+    @if (form.get('description')?.hasError('maxlength')) {
+      <div class="invalid-feedback">Description must be 500 characters or fewer.</div>
+    }
+  </div>
 
-    <label for="start">Start</label>
-    <input class="form-control" type="datetime" id="start" formControlName="start" [readonly]="true">
+  <!-- Date Range Row -->
+  <div class="row mb-3">
+    <!-- Start Date -->
+    <div class="col-md-6">
+      <label for="startDate" class="form-label">Start Date</label>
+      <div class="input-group">
+        <input
+          id="startDate"
+          class="form-control"
+          formControlName="startDate"
+          placeholder="yyyy-mm-dd"
+          ngbDatepicker
+          #startPicker="ngbDatepicker"
+          [class.is-invalid]="form.get('startDate')?.touched && form.get('startDate')?.invalid"
+          (click)="startPicker.toggle()"
+          readonly
+        />
+        <button class="btn btn-outline-secondary" type="button" (click)="startPicker.toggle()">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+            <line x1="16" y1="2" x2="16" y2="6"/>
+            <line x1="8" y1="2" x2="8" y2="6"/>
+            <line x1="3" y1="10" x2="21" y2="10"/>
+          </svg>
+        </button>
+        @if (form.get('startDate')?.touched && form.get('startDate')?.hasError('required')) {
+          <div class="invalid-feedback">Start date is required.</div>
+        }
+      </div>
+    </div>
 
-    <label for="end">End</label>
-    <input class="form-control" type="datetime" id="end" formControlName="end" [readonly]="true">
+    <!-- End Date -->
+    <div class="col-md-6">
+      <label for="endDate" class="form-label">End Date</label>
+      <div class="input-group">
+        <input
+          id="endDate"
+          class="form-control"
+          formControlName="endDate"
+          placeholder="yyyy-mm-dd"
+          ngbDatepicker
+          #endPicker="ngbDatepicker"
+          [class.is-invalid]="form.get('endDate')?.touched && form.get('endDate')?.invalid"
+          (click)="endPicker.toggle()"
+          readonly
+        />
+        <button class="btn btn-outline-secondary" type="button" (click)="endPicker.toggle()">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+            <line x1="16" y1="2" x2="16" y2="6"/>
+            <line x1="8" y1="2" x2="8" y2="6"/>
+            <line x1="3" y1="10" x2="21" y2="10"/>
+          </svg>
+        </button>
+        @if (form.get('endDate')?.touched && form.get('endDate')?.hasError('required')) {
+          <div class="invalid-feedback">End date is required.</div>
+        }
+      </div>
+    </div>
+  </div>
 
-    <label for="status">Status</label>
-    <input class="form-control" type="text" id="status" formControlName="status" [readonly]="true">
+  <!-- Strategy -->
+  <div class="mb-3">
+    <label for="strategyId" class="form-label">Strategy</label>
+    <select
+      id="strategyId"
+      class="form-select"
+      formControlName="strategyId"
+      [class.is-invalid]="form.get('strategyId')?.touched && form.get('strategyId')?.invalid"
+    >
+      <option [ngValue]="null" disabled>Select a strategy</option>
+      @for (strategy of strategies; track strategy.id) {
+        <option [ngValue]="strategy.id">{{ strategy.name }}</option>
+      }
+    </select>
+    @if (form.get('strategyId')?.touched && form.get('strategyId')?.hasError('required')) {
+      <div class="invalid-feedback">Strategy is required.</div>
+    }
+    @if (strategies.length === 0) {
+      <div class="form-text text-warning">
+        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="me-1">
+          <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/>
+          <line x1="12" y1="9" x2="12" y2="13"/>
+          <line x1="12" y1="17" x2="12.01" y2="17"/>
+        </svg>
+        No strategies available. Create a strategy first.
+      </div>
+    }
+  </div>
+
+  <!-- Status -->
+  <div class="mb-3">
+    <label for="status" class="form-label">Status</label>
+    <select
+      id="status"
+      class="form-select"
+      formControlName="status"
+      [class.is-invalid]="form.get('status')?.touched && form.get('status')?.invalid"
+    >
+      @for (status of statuses; track status) {
+        <option [ngValue]="status">{{ status }}</option>
+      }
+    </select>
+    @if (form.get('status')?.touched && form.get('status')?.hasError('required')) {
+      <div class="invalid-feedback">Status is required.</div>
+    }
+  </div>
 </form>

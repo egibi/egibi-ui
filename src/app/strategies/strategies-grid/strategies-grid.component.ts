@@ -1,4 +1,5 @@
 import { Component, Input, Output, OnInit, EventEmitter, inject } from "@angular/core";
+import { Router } from "@angular/router";
 import { Strategy } from "../../_models/strategy.model";
 import { AgGridModule } from "ag-grid-angular";
 import {
@@ -12,6 +13,8 @@ import {
   ClientSideRowModelModule,
   RowSelectionOptions,
   CellClickedEvent,
+  ValueFormatterParams,
+  RowClickedEvent,
 } from "ag-grid-community";
 
 import { StrategiesGridActionsComponent } from "./strategies-grid-actions/strategies-grid-actions.component";
@@ -31,6 +34,7 @@ export class StrategiesGridComponent implements OnInit {
   @Output() actionSelect = new EventEmitter<StrategiesGridAction>();
 
   private agGridTheme = inject(AgGridThemeService);
+  private router = inject(Router);
   
   public gridApi: GridApi<Strategy>;
   public selectedRow: Strategy;
@@ -58,14 +62,50 @@ export class StrategiesGridComponent implements OnInit {
     {
       headerName: "Name",
       field: "name",
+      minWidth: 180,
     },
     {
       headerName: "Description",
       field: "description",
+      minWidth: 200,
     },
     {
-      headerName: "Instance Name",
-      field: "instanceName",
+      headerName: "Exchange",
+      field: "exchangeName",
+      minWidth: 120,
+      valueFormatter: (params: ValueFormatterParams) => params.value || '—',
+    },
+    {
+      headerName: "Type",
+      field: "isSimple",
+      minWidth: 100,
+      valueFormatter: (params: ValueFormatterParams) => params.value ? 'Rule-Based' : 'Code',
+    },
+    {
+      headerName: "Backtests",
+      field: "backtestCount",
+      minWidth: 100,
+      valueFormatter: (params: ValueFormatterParams) => params.value ?? 0,
+    },
+    {
+      headerName: "Status",
+      field: "isActive",
+      minWidth: 90,
+      cellRenderer: (params: any) => {
+        const active = params.value;
+        return active
+          ? '<span style="background:hsla(142,71%,45%,0.12);color:hsl(142,71%,40%);padding:2px 8px;border-radius:4px;font-size:11px;font-weight:700;">ACTIVE</span>'
+          : '<span style="background:hsla(0,0%,50%,0.1);color:hsl(0,0%,50%);padding:2px 8px;border-radius:4px;font-size:11px;font-weight:700;">INACTIVE</span>';
+      },
+    },
+    {
+      headerName: "Created",
+      field: "createdAt",
+      minWidth: 120,
+      valueFormatter: (params: ValueFormatterParams) => {
+        if (!params.value) return '';
+        return new Date(params.value).toLocaleDateString();
+      },
     },
     {
       headerName: "Actions",
@@ -73,6 +113,8 @@ export class StrategiesGridComponent implements OnInit {
       cellRenderer: StrategiesGridActionsComponent,
       sortable: false,
       filter: false,
+      minWidth: 140,
+      maxWidth: 160,
       onCellClicked: (event: CellClickedEvent) => {
         this.gridAction(event.data);
       }
@@ -93,6 +135,16 @@ export class StrategiesGridComponent implements OnInit {
 
   public onGridReady(grid: GridReadyEvent<Strategy>) {
     this.gridApi = grid.api;
+  }
+
+  public onCellClicked(event: CellClickedEvent<Strategy>) {
+    // Don't navigate if clicking the actions column
+    const column = event.colDef?.field as string;
+    if (column === 'actions') return;
+
+    if (event.data?.id) {
+      this.router.navigate(['/strategies', event.data.id]);
+    }
   }
 
   public onSelectionChanged(event: SelectionChangedEvent) {
