@@ -78,35 +78,95 @@
                 </span>
               </div>
 
-              <div class="provider-details">
-                <div class="detail-row">
-                  <span class="detail-label">API Key</span>
-                  <span class="detail-value font-monospace">{{ fundingSource.maskedApiKey || 'Not set' }}</span>
-                </div>
-                @if (fundingSource.credentialLabel) {
+              <!-- ========== PLAID-LINKED DETAILS ========== -->
+              @if (isPlaidSource && plaidDetails) {
+                <div class="provider-details">
                   <div class="detail-row">
-                    <span class="detail-label">Key Label</span>
-                    <span class="detail-value">{{ fundingSource.credentialLabel }}</span>
+                    <span class="detail-label">Institution</span>
+                    <span class="detail-value">{{ plaidDetails.institutionName }}</span>
                   </div>
-                }
-                <div class="detail-row">
-                  <span class="detail-label">Base URL</span>
-                  <span class="detail-value font-monospace small">{{ fundingSource.baseUrl }}</span>
-                </div>
-                <div class="detail-row">
-                  <span class="detail-label">Connected</span>
-                  <span class="detail-value">{{ fundingSource.createdAt | date:'mediumDate' }}</span>
-                </div>
-                @if (fundingSource.credentialLastUsedAt) {
                   <div class="detail-row">
-                    <span class="detail-label">Last Used</span>
-                    <span class="detail-value">{{ fundingSource.credentialLastUsedAt | date:'medium' }}</span>
+                    <span class="detail-label">Account</span>
+                    <span class="detail-value">
+                      {{ plaidDetails.accountSubtype || plaidDetails.accountType | titlecase }}
+                      @if (plaidDetails.mask) {
+                        <span class="font-monospace"> •••{{ plaidDetails.mask }}</span>
+                      }
+                    </span>
                   </div>
-                }
-              </div>
+                  <div class="detail-row">
+                    <span class="detail-label">Available Balance</span>
+                    <span class="detail-value fw-semibold">
+                      {{ formatCurrency(plaidDetails.availableBalance, plaidDetails.isoCurrencyCode) }}
+                    </span>
+                  </div>
+                  <div class="detail-row">
+                    <span class="detail-label">Current Balance</span>
+                    <span class="detail-value">
+                      {{ formatCurrency(plaidDetails.currentBalance, plaidDetails.isoCurrencyCode) }}
+                    </span>
+                  </div>
+                  <div class="detail-row">
+                    <span class="detail-label">Connected</span>
+                    <span class="detail-value">{{ fundingSource.createdAt | date:'mediumDate' }}</span>
+                  </div>
+                  @if (plaidDetails.balanceLastUpdatedAt) {
+                    <div class="detail-row">
+                      <span class="detail-label">Balance Updated</span>
+                      <span class="detail-value">{{ plaidDetails.balanceLastUpdatedAt | date:'medium' }}</span>
+                    </div>
+                  }
+                  @if (plaidDetails.lastSyncedAt) {
+                    <div class="detail-row">
+                      <span class="detail-label">Last Synced</span>
+                      <span class="detail-value">{{ plaidDetails.lastSyncedAt | date:'medium' }}</span>
+                    </div>
+                  }
+                </div>
+              }
+
+              <!-- ========== API KEY DETAILS ========== -->
+              @if (!isPlaidSource) {
+                <div class="provider-details">
+                  <div class="detail-row">
+                    <span class="detail-label">API Key</span>
+                    <span class="detail-value font-monospace">{{ fundingSource.maskedApiKey || 'Not set' }}</span>
+                  </div>
+                  @if (fundingSource.credentialLabel) {
+                    <div class="detail-row">
+                      <span class="detail-label">Key Label</span>
+                      <span class="detail-value">{{ fundingSource.credentialLabel }}</span>
+                    </div>
+                  }
+                  <div class="detail-row">
+                    <span class="detail-label">Base URL</span>
+                    <span class="detail-value font-monospace small">{{ fundingSource.baseUrl }}</span>
+                  </div>
+                  <div class="detail-row">
+                    <span class="detail-label">Connected</span>
+                    <span class="detail-value">{{ fundingSource.createdAt | date:'mediumDate' }}</span>
+                  </div>
+                  @if (fundingSource.credentialLastUsedAt) {
+                    <div class="detail-row">
+                      <span class="detail-label">Last Used</span>
+                      <span class="detail-value">{{ fundingSource.credentialLastUsedAt | date:'medium' }}</span>
+                    </div>
+                  }
+                </div>
+              }
             </div>
           </div>
           <div class="card-footer d-flex justify-content-end gap-2">
+            @if (isPlaidSource) {
+              <button class="btn btn-outline-secondary btn-sm" (click)="refreshBalances()" [disabled]="refreshingBalances">
+                @if (refreshingBalances) {
+                  <span class="spinner-border spinner-border-sm me-1"></span>
+                } @else {
+                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"/><path d="M16 16h5v5"/></svg>
+                }
+                Refresh Balances
+              </button>
+            }
             <button class="btn btn-outline-danger btn-sm" (click)="removeFunding()">Remove</button>
           </div>
         </div>
@@ -138,9 +198,60 @@
                   <span>Free domestic &amp; international wires</span>
                 </div>
               }
+              @if (fundingSource.providerName === 'Plaid') {
+                <div class="info-item">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                  <span>256-bit encryption, SOC2 certified</span>
+                </div>
+                <div class="info-item">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+                  <span>Real-time balance &amp; transaction data</span>
+                </div>
+                <div class="info-item">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m16 3 4 4-4 4"/><path d="M20 7H4"/><path d="m8 21-4-4 4-4"/><path d="M4 17h16"/></svg>
+                  <span>ACH account &amp; routing numbers</span>
+                </div>
+                <div class="info-item">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><polyline points="16 11 18 13 22 9"/></svg>
+                  <span>Account holder identity verification</span>
+                </div>
+                <div class="info-item">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="14" x="2" y="3" rx="2"/><path d="M2 9h20"/></svg>
+                  <span>12,000+ supported US institutions</span>
+                </div>
+              }
             </div>
           </div>
         </div>
+
+        <!-- Plaid Products Card -->
+        @if (isPlaidSource) {
+          <div class="card mt-3">
+            <div class="card-header">
+              <h2 class="card-title">Enabled Products</h2>
+            </div>
+            <div class="card-body">
+              <div class="info-list">
+                <div class="info-item">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                  <span>Auth — account &amp; routing numbers</span>
+                </div>
+                <div class="info-item">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                  <span>Balance — real-time account balances</span>
+                </div>
+                <div class="info-item">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                  <span>Transactions — transaction history</span>
+                </div>
+                <div class="info-item">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                  <span>Identity — account holder verification</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        }
       </div>
     </div>
   }

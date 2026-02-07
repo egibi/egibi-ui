@@ -103,6 +103,28 @@
       overflow: hidden;
       text-overflow: ellipsis;
     }
+
+    .badge-plaid,
+    .badge-api {
+      display: inline-block;
+      font-size: 0.65rem;
+      font-weight: 600;
+      padding: 0.15rem 0.4rem;
+      border-radius: 3px;
+      margin-top: 0.25rem;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+    }
+
+    .badge-plaid {
+      background: hsl(160, 100%, 40%, 0.1);
+      color: hsl(160, 100%, 32%);
+    }
+
+    .badge-api {
+      background: hsl(var(--egibi-muted) / 0.5);
+      color: hsl(var(--egibi-muted-foreground));
+    }
   }
 
   .card-arrow {
@@ -111,7 +133,7 @@
   }
 }
 
-// Signup guide (step 2)
+// Signup guide (step 2a)
 .signup-guide {
   .guide-question {
     h6 {
@@ -186,6 +208,190 @@
   }
 }
 
+// Plaid Link step (step 2b)
+.plaid-link-step {
+  .plaid-intro {
+    text-align: center;
+    padding: 1rem 0;
+
+    .plaid-icon-large {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 72px;
+      height: 72px;
+      border-radius: 50%;
+      background: hsl(160, 100%, 40%, 0.08);
+      color: hsl(160, 100%, 32%);
+      margin-bottom: 1rem;
+    }
+
+    h5 {
+      font-weight: 700;
+    }
+
+    p {
+      max-width: 440px;
+      margin: 0 auto;
+      font-size: 0.9rem;
+    }
+  }
+
+  .plaid-features {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem;
+    margin-top: 1.5rem;
+
+    .feature-item {
+      display: flex;
+      gap: 0.6rem;
+      padding: 0.75rem;
+      border-radius: var(--egibi-radius);
+      background: hsl(var(--egibi-muted) / 0.3);
+
+      svg {
+        flex-shrink: 0;
+        margin-top: 0.1rem;
+        color: hsl(160, 100%, 32%);
+      }
+
+      div {
+        display: flex;
+        flex-direction: column;
+        gap: 0.1rem;
+
+        strong {
+          font-size: 0.82rem;
+          font-weight: 600;
+        }
+
+        span {
+          font-size: 0.75rem;
+          color: hsl(var(--egibi-muted-foreground));
+        }
+      }
+    }
+  }
+}
+
+// Plaid account selection (step 3b)
+.plaid-select-account {
+  .institution-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.875rem 1rem;
+    border: 1px solid hsl(var(--egibi-border));
+    border-radius: var(--egibi-radius);
+    background: hsl(var(--egibi-card));
+
+    .institution-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: var(--egibi-radius);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      .icon-letter {
+        color: #fff;
+        font-weight: 700;
+        font-size: 1rem;
+      }
+    }
+
+    .institution-info {
+      .institution-name {
+        font-weight: 600;
+        font-size: 0.95rem;
+      }
+
+      .institution-status {
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
+      }
+    }
+  }
+
+  .plaid-account-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+  }
+
+  .plaid-account-card {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem 1rem;
+    border: 1px solid hsl(var(--egibi-border));
+    border-radius: var(--egibi-radius);
+    background: hsl(var(--egibi-card));
+    cursor: pointer;
+    transition: all 0.15s ease;
+    width: 100%;
+    text-align: left;
+
+    &:hover {
+      border-color: hsl(var(--egibi-primary));
+      background: hsl(var(--egibi-accent));
+    }
+
+    &.selected {
+      border-color: hsl(var(--egibi-primary));
+      background: hsl(var(--egibi-primary) / 0.05);
+    }
+
+    .account-radio {
+      flex-shrink: 0;
+
+      .radio-outer {
+        width: 18px;
+        height: 18px;
+        border-radius: 50%;
+        border: 2px solid hsl(var(--egibi-border));
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: border-color 0.15s ease;
+      }
+
+      .radio-inner {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background: hsl(var(--egibi-primary));
+      }
+    }
+
+    &.selected .radio-outer {
+      border-color: hsl(var(--egibi-primary));
+    }
+
+    .account-details {
+      flex: 1;
+
+      .account-name {
+        font-weight: 600;
+        font-size: 0.875rem;
+      }
+
+      .account-meta {
+        display: flex;
+        gap: 0.5rem;
+        font-size: 0.8rem;
+        color: hsl(var(--egibi-muted-foreground));
+
+        .account-mask {
+          font-family: var(--bs-font-monospace);
+        }
+      }
+    }
+  }
+}
+
 // Signup banner (step 3)
 .signup-banner {
   display: flex;
@@ -212,7 +418,7 @@
   }
 }
 
-// Credentials form (step 3)
+// Credentials form (step 3a)
 .credentials-form {
   .form-section {
     margin-bottom: 1.25rem;
@@ -228,6 +434,21 @@
       color: hsl(var(--egibi-muted-foreground));
       margin-bottom: 0.75rem;
     }
+  }
+}
+
+// Shared form-section for plaid account selection too
+.form-section {
+  .section-label {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: hsl(var(--egibi-muted-foreground));
+    margin-bottom: 0.75rem;
   }
 }
 

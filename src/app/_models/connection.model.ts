@@ -17,6 +17,9 @@ export class Connection extends EntityBase {
   requiredFields: string = '[]';  // JSON array of required credential field keys
   sortOrder: number = 0;
 
+  /** How this service connects: "api_key", "plaid_link", "oauth" */
+  linkMethod: string = 'api_key';
+
   /** Parse requiredFields JSON to string array */
   get requiredFieldsList(): string[] {
     try {
