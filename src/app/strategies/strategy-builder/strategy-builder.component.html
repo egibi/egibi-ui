@@ -61,18 +61,18 @@
     @if (activeTab === 'data') {
       <div class="tab-content-area">
         <div class="row g-3">
-          <!-- Exchange Account -->
+          <!-- Account -->
           <div class="col-md-6">
-            <label class="form-label">Exchange Account</label>
-            <select class="form-select" [(ngModel)]="config.exchangeAccountId">
+            <label class="form-label">Account</label>
+            <select class="form-select" [(ngModel)]="config.accountId">
               <option [ngValue]="undefined">— No account (backtest only) —</option>
-              @for (account of exchangeAccounts; track account.id) {
+              @for (account of accounts; track account.id) {
                 <option [ngValue]="account.id">
-                  {{ account.exchange?.name || 'Exchange' }} — {{ account.name || account.accountIdentifier }}
+                  {{ account.connectionName || 'Connection' }} — {{ account.name || account.accountIdentifier }}
                 </option>
               }
             </select>
-            <div class="form-text">Optional. Required for live trading, not for backtesting.</div>
+            <div class="form-text">Optional. Required for live execution, not for backtesting.</div>
           </div>
 
           <!-- Symbol -->

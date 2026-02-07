@@ -2,7 +2,7 @@ import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { StrategiesService } from '../../_services/strategies.service';
-import { ExchangeAccountsService } from '../../_services/exchange-accounts.service';
+import { AccountsService } from '../../accounts/accounts.service';
 import { ToastService } from '../../_services/toast.service';
 import {
   StrategyConfiguration,
@@ -31,7 +31,7 @@ export class StrategyBuilderComponent implements OnInit {
   description = '';
 
   config: StrategyConfiguration = {
-    exchangeAccountId: undefined,
+    accountId: undefined,
     symbol: '',
     interval: '1h',
     dataSource: '',
@@ -46,7 +46,7 @@ export class StrategyBuilderComponent implements OnInit {
   };
 
   // ── Dropdown Data ────────────────────────────────────────
-  exchangeAccounts: any[] = [];
+  accounts: any[] = [];
   availableSymbols: string[] = [];
   dataCoverage: DataCoverage[] = [];
   filteredSources: DataCoverage[] = [];
@@ -63,21 +63,26 @@ export class StrategyBuilderComponent implements OnInit {
 
   constructor(
     private strategiesService: StrategiesService,
-    private exchangeAccountsService: ExchangeAccountsService,
+    private accountsService: AccountsService,
     private toastService: ToastService
   ) {}
 
   async ngOnInit() {
     this.loading = true;
 
-    // Load exchange accounts (non-critical — backtest-only strategies don't need one)
+    // Load accounts (non-critical — backtest-only strategies don't need one)
     try {
-      const accountsRes = await this.exchangeAccountsService.getAll();
+      const accountsRes: any = await new Promise((resolve, reject) => {
+        this.accountsService.getAccounts().subscribe({
+          next: (res) => resolve(res),
+          error: (err) => reject(err)
+        });
+      });
       if (accountsRes?.responseCode === 200) {
-        this.exchangeAccounts = accountsRes.responseData || [];
+        this.accounts = accountsRes.responseData || [];
       }
     } catch (err) {
-      console.warn('Could not load exchange accounts:', err);
+      console.warn('Could not load accounts:', err);
     }
 
     // Load available symbols from QuestDB (non-critical — user can type manually)

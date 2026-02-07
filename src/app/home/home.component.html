@@ -1,9 +1,24 @@
 <div class="space-y-6">
+  <!-- Setup Wizard -->
+  @if (showWizard) {
+    <setup-wizard (closed)="onWizardClosed()"></setup-wizard>
+  }
+
   <!-- Page Header -->
   <div class="page-header">
     <div class="page-header-content">
       <h1 class="page-title">Dashboard</h1>
       <p class="page-subtitle">Welcome back! Here's an overview of your portfolio.</p>
+    </div>
+    <div class="page-header-actions">
+      <button class="btn btn-outline-primary btn-sm" (click)="launchSetupWizard()">
+        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/>
+          <circle cx="12" cy="12" r="3"/>
+        </svg>
+        Setup Wizard
+      </button>
     </div>
   </div>
 
@@ -71,7 +86,7 @@
       </div>
       <div class="stat-value">23</div>
       <div class="stat-change">
-        <span class="text-muted">Across 5 exchanges</span>
+        <span class="text-muted">Across 5 accounts</span>
       </div>
     </div>
   </div>

@@ -1,5 +1,18 @@
 // Dashboard-specific styles
 
+// Page header with actions
+.page-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+
+  .page-header-actions {
+    flex-shrink: 0;
+    padding-top: 0.25rem;
+  }
+}
+
 // Make stat cards have consistent height in the grid
 .stat-card {
   height: 100%;

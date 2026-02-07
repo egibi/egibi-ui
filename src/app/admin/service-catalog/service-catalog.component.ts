@@ -40,13 +40,15 @@ export class ServiceCatalogComponent implements OnInit {
     this.loadConnections();
   }
 
-  loadConnections(): void {
+loadConnections(): void {
     this.loading = true;
     this.connectionsService.getConnections().subscribe({
       next: (res: any) => {
-        this.connections = (res.responseData || []).sort(
-          (a: Connection, b: Connection) => (a.sortOrder || 0) - (b.sortOrder || 0)
-        );
+        const raw: any[] = res.responseData || [];
+        this.connections = raw
+          .filter((c: any) => c.name?.trim())
+          .map((c: any) => Object.assign(new Connection(), c))
+          .sort((a: Connection, b: Connection) => (a.sortOrder || 0) - (b.sortOrder || 0));
         this.loading = false;
       },
       error: () => {

@@ -1,15 +1,15 @@
-<div class="container-fluid p-4">
+<div class="space-y-6">
   <!-- Page Header -->
-  <div class="d-flex justify-content-between align-items-center mb-4">
-    <div>
+  <div class="page-header">
+    <div class="page-header-content">
       <h1 class="page-title">Backtester</h1>
-      <p class="page-description">Create, manage, and run backtests against your strategies</p>
+      <p class="page-subtitle">Create, manage, and run backtests against your strategies</p>
     </div>
-    <div>
+    <div class="page-header-actions">
       <button class="btn btn-primary" (click)="openCreateModal(createModal)">
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="me-2">
-          <line x1="12" y1="5" x2="12" y2="19"/>
-          <line x1="5" y1="12" x2="19" y2="12"/>
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M5 12h14"/>
+          <path d="M12 5v14"/>
         </svg>
         New Backtest
       </button>

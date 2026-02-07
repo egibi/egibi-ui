@@ -1,16 +1,20 @@
-import { Component } from "@angular/core";
+import { Component, OnInit, inject } from "@angular/core";
 import { CommonModule } from "@angular/common";
 import { RouterModule } from "@angular/router";
 import { HighchartsTimeSeriesComponent, TimeSeriesData } from "../_charts/highcharts-time-series/highcharts-time-series.component";
+import { SetupWizardComponent } from "../setup-wizard/setup-wizard.component";
+import { SetupWizardService } from "../setup-wizard/setup-wizard.service";
 
 @Component({
   selector: "home",
   standalone: true,
-  imports: [CommonModule, RouterModule, HighchartsTimeSeriesComponent],
+  imports: [CommonModule, RouterModule, HighchartsTimeSeriesComponent, SetupWizardComponent],
   templateUrl: "./home.component.html",
   styleUrl: "./home.component.scss",
 })
-export class HomeComponent {
+export class HomeComponent implements OnInit {
+  private wizardService = inject(SetupWizardService);
+  showWizard = false;
   // Sample portfolio performance data
   portfolioSeries: TimeSeriesData[] = [
     {
@@ -40,6 +44,27 @@ export class HomeComponent {
   ];
 
   constructor() {}
+
+  ngOnInit(): void {
+    // Check if the setup wizard should be shown
+    if (this.wizardService.shouldShow()) {
+      setTimeout(() => {
+        this.showWizard = true;
+        this.wizardService.show();
+      }, 500);
+    }
+  }
+
+  onWizardClosed(): void {
+    this.showWizard = false;
+  }
+
+  /** Manually trigger the wizard (e.g., from a button) */
+  launchSetupWizard(): void {
+    this.wizardService.reset();
+    this.showWizard = true;
+    this.wizardService.show();
+  }
 
   private generatePortfolioData(): [number, number][] {
     const data: [number, number][] = [];

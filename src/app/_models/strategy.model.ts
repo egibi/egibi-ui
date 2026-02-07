@@ -3,7 +3,7 @@
 // ═══════════════════════════════════════════════════════════
 
 export interface StrategyConfiguration {
-  exchangeAccountId?: number;
+  accountId?: number;
   symbol: string;
   interval: string;
   dataSource: string;
@@ -37,8 +37,9 @@ export interface Strategy {
   description?: string;
   isSimple: boolean;
   isActive: boolean;
-  exchangeAccountId?: number;
-  exchangeName?: string;
+  accountId?: number;
+  accountName?: string;
+  connectionName?: string;
   strategyClassName?: string;
   createdAt: string;
   updatedAt?: string;

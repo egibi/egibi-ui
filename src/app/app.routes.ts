@@ -19,10 +19,8 @@ import { DataManagerComponent } from "./data-manager/data-manager.component";
 import { DataProviderComponent } from "./data-manager/data-provider/data-provider.component";
 import { ServiceConfigurationsComponent } from "./service-configurations/service-configurations.component";
 import { AdminComponent } from "./admin/admin.component";
-import { ExchangesComponent } from "./exchanges/exchanges.component";
 import { MarketsComponent } from "./markets/markets.component";
 import { AccountingComponent } from "./accounting/accounting.component";
-import { ExchangeComponent } from "./exchanges/exchange/exchange.component";
 import { AccountsComponent } from "./accounts/accounts.component";
 import { AccountComponent } from "./accounts/account/account.component";
 import { AppConfigurationComponent } from "./app-configuration/app-configuration.component";
@@ -95,21 +93,6 @@ export const routes: Routes = [
   {
     path: "account/create",
     component: AccountComponent,
-    canActivate: [authGuard],
-  },
-  {
-    path: "exchanges",
-    component: ExchangesComponent,
-    canActivate: [authGuard],
-  },
-  {
-    path: "exchanges/exchange/:id",
-    component: ExchangeComponent,
-    canActivate: [authGuard],
-  },
-  {
-    path: "exchanges/exchange",
-    component: ExchangeComponent,
     canActivate: [authGuard],
   },
   {

@@ -1,0 +1,407 @@
+<!-- Overlay Backdrop -->
+<div class="wizard-overlay" (click)="dismiss()">
+  <div class="wizard-container" (click)="$event.stopPropagation()">
+
+    <!-- Close Button -->
+    <button class="wizard-close" (click)="dismiss()" title="Skip setup">
+      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M18 6 6 18" /><path d="m6 6 12 12" />
+      </svg>
+    </button>
+
+    <!-- Progress Bar -->
+    <div class="wizard-progress">
+      <div class="wizard-progress-fill" [style.width.%]="getStepProgress()"></div>
+    </div>
+
+    <!-- Step Indicators -->
+    <div class="wizard-steps-nav">
+      @for (step of steps; track step; let i = $index) {
+        <button
+          class="step-indicator"
+          [class.active]="currentStep() === i"
+          [class.completed]="currentStep() > i"
+          [class.disabled]="i > getMaxReachableStep()"
+          (click)="goToStep(i)"
+          [disabled]="i > getMaxReachableStep()">
+          <span class="step-dot">
+            @if (currentStep() > i) {
+              <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="20 6 9 17 4 12" />
+              </svg>
+            } @else {
+              {{ i + 1 }}
+            }
+          </span>
+          <span class="step-label d-none d-md-inline">{{ step }}</span>
+        </button>
+        @if (i < steps.length - 1) {
+          <div class="step-connector" [class.completed]="currentStep() > i"></div>
+        }
+      }
+    </div>
+
+    <!-- Step Content -->
+    <div class="wizard-body" [class.slide-out-left]="animating() && slideDirection() === 'left'"
+      [class.slide-out-right]="animating() && slideDirection() === 'right'">
+
+      <!-- ============================== -->
+      <!-- STEP 0: WELCOME -->
+      <!-- ============================== -->
+      @if (currentStep() === 0) {
+        <div class="step-content welcome-step">
+          <div class="welcome-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="56" height="56" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+              <path d="m9 12 2 2 4-4" />
+            </svg>
+          </div>
+          <h2 class="step-title">Welcome to Egibi</h2>
+          <p class="step-description">
+            Let's get your trading platform set up. We'll walk through a few quick steps to configure
+            which markets, exchanges, and data sources you want to work with.
+          </p>
+          <div class="welcome-features">
+            <div class="feature-item">
+              <div class="feature-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M3 3v18h18" /><path d="m19 9-5 5-4-4-3 3" />
+                </svg>
+              </div>
+              <div>
+                <strong>Choose Your Markets</strong>
+                <span>Select which asset classes you want to trade</span>
+              </div>
+            </div>
+            <div class="feature-item">
+              <div class="feature-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="2" y="7" width="20" height="14" rx="2" ry="2" />
+                  <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16" />
+                </svg>
+              </div>
+              <div>
+                <strong>Connect Exchanges</strong>
+                <span>Pick the exchanges and brokers you use</span>
+              </div>
+            </div>
+            <div class="feature-item">
+              <div class="feature-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <ellipse cx="12" cy="5" rx="9" ry="3" />
+                  <path d="M3 5v14a9 3 0 0 0 18 0V5" />
+                  <path d="M3 12a9 3 0 0 0 18 0" />
+                </svg>
+              </div>
+              <div>
+                <strong>Data Sources</strong>
+                <span>Set up where your market data comes from</span>
+              </div>
+            </div>
+          </div>
+          <p class="step-hint">You can always change these settings later in the Admin section.</p>
+        </div>
+      }
+
+      <!-- ============================== -->
+      <!-- STEP 1: MARKETS -->
+      <!-- ============================== -->
+      @if (currentStep() === 1) {
+        <div class="step-content">
+          <h2 class="step-title">Select Your Markets</h2>
+          <p class="step-description">Choose which asset classes you'd like to trade and analyze.</p>
+
+          <div class="cards-grid">
+            @for (market of markets(); track market.id) {
+              <button
+                class="selection-card"
+                [class.selected]="market.enabled"
+                (click)="toggleMarket(market)">
+                <div class="card-check">
+                  @if (market.enabled) {
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                      stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                      <polyline points="20 6 9 17 4 12" />
+                    </svg>
+                  }
+                </div>
+                <div class="card-icon">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                    @switch (market.icon) {
+                      @case ('bitcoin') {
+                        <circle cx="12" cy="12" r="10" />
+                        <path d="M9.5 8h3.5a2 2 0 0 1 0 4h-4" />
+                        <path d="M9.5 12h4a2 2 0 0 1 0 4H9" />
+                        <path d="M11 7v1" /><path d="M11 16v1" />
+                        <path d="M13 7v1" /><path d="M13 16v1" />
+                      }
+                      @case ('trending-up') {
+                        <polyline points="22 7 13.5 15.5 8.5 10.5 2 17" />
+                        <polyline points="16 7 22 7 22 13" />
+                      }
+                      @case ('globe') {
+                        <circle cx="12" cy="12" r="10" />
+                        <path d="M2 12h20" />
+                        <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
+                      }
+                      @case ('diamond') {
+                        <path d="M2.7 10.3a2.41 2.41 0 0 0 0 3.41l7.59 7.59a2.41 2.41 0 0 0 3.41 0l7.59-7.59a2.41 2.41 0 0 0 0-3.41l-7.59-7.59a2.41 2.41 0 0 0-3.41 0z" />
+                      }
+                    }
+                  </svg>
+                </div>
+                <div class="card-label">{{ market.name }}</div>
+                <div class="card-desc">{{ market.description }}</div>
+              </button>
+            }
+          </div>
+
+          @if (enabledMarkets().length === 0) {
+            <p class="selection-hint">Select at least one market to continue.</p>
+          }
+        </div>
+      }
+
+      <!-- ============================== -->
+      <!-- STEP 2: EXCHANGES -->
+      <!-- ============================== -->
+      @if (currentStep() === 2) {
+        <div class="step-content">
+          <h2 class="step-title">Select Exchanges & Brokers</h2>
+          <p class="step-description">Pick which exchanges you want to connect. You can add API credentials later.</p>
+
+          @if (enabledMarkets().length === 0) {
+            <div class="empty-state">
+              <p>Go back and select at least one market first.</p>
+            </div>
+          } @else {
+            <div class="exchange-groups">
+              @for (group of getExchangesByMarket(); track group.market.id) {
+                <div class="exchange-group">
+                  <div class="group-header">
+                    <h6 class="group-title">{{ group.market.name }}</h6>
+                    <button class="btn-select-all" (click)="selectAllExchanges(group.market.id)">
+                      @if (allExchangesEnabled(group.market.id)) {
+                        Deselect All
+                      } @else {
+                        Select All
+                      }
+                    </button>
+                  </div>
+                  <div class="exchange-list">
+                    @for (exchange of group.exchanges; track exchange.id) {
+                      <button
+                        class="exchange-item"
+                        [class.selected]="exchange.enabled"
+                        (click)="toggleExchange(exchange)">
+                        <div class="exchange-icon" [style.background-color]="exchange.color">
+                          <span class="icon-letter">{{ exchange.name.charAt(0) }}</span>
+                        </div>
+                        <div class="exchange-info">
+                          <div class="exchange-name">{{ exchange.name }}</div>
+                          <div class="exchange-desc">{{ exchange.description }}</div>
+                        </div>
+                        <div class="exchange-check">
+                          @if (exchange.enabled) {
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
+                              fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
+                              stroke-linejoin="round">
+                              <polyline points="20 6 9 17 4 12" />
+                            </svg>
+                          }
+                        </div>
+                      </button>
+                    }
+                  </div>
+                </div>
+              }
+            </div>
+          }
+        </div>
+      }
+
+      <!-- ============================== -->
+      <!-- STEP 3: DATA SOURCES -->
+      <!-- ============================== -->
+      @if (currentStep() === 3) {
+        <div class="step-content">
+          <h2 class="step-title">Configure Data Sources</h2>
+          <p class="step-description">Choose where your market data will come from. Exchange APIs are auto-linked to your selected exchanges.</p>
+
+          <div class="datasource-groups">
+            @for (group of getDataSourcesByType(); track group.type) {
+              <div class="datasource-group">
+                <h6 class="group-title">{{ group.label }}</h6>
+                <div class="datasource-list">
+                  @for (ds of group.sources; track ds.id) {
+                    <button
+                      class="datasource-item"
+                      [class.selected]="ds.enabled"
+                      [class.auto-linked]="ds.type === 'exchange_api'"
+                      (click)="toggleDataSource(ds)">
+                      <div class="ds-icon" [ngClass]="'ds-type-' + ds.type">
+                        @switch (ds.type) {
+                          @case ('exchange_api') {
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
+                              fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                              stroke-linejoin="round">
+                              <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
+                              <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
+                            </svg>
+                          }
+                          @case ('third_party') {
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
+                              fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                              stroke-linejoin="round">
+                              <ellipse cx="12" cy="5" rx="9" ry="3" />
+                              <path d="M3 5v14a9 3 0 0 0 18 0V5" />
+                              <path d="M3 12a9 3 0 0 0 18 0" />
+                            </svg>
+                          }
+                          @case ('file_upload') {
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
+                              fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                              stroke-linejoin="round">
+                              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                              <polyline points="17 8 12 3 7 8" />
+                              <line x1="12" x2="12" y1="3" y2="15" />
+                            </svg>
+                          }
+                        }
+                      </div>
+                      <div class="ds-info">
+                        <div class="ds-name">
+                          {{ ds.name }}
+                          @if (ds.type === 'exchange_api') {
+                            <span class="auto-badge">Auto</span>
+                          }
+                        </div>
+                        <div class="ds-desc">{{ ds.description }}</div>
+                      </div>
+                      <div class="ds-check">
+                        @if (ds.enabled) {
+                          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
+                            fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
+                            stroke-linejoin="round">
+                            <polyline points="20 6 9 17 4 12" />
+                          </svg>
+                        }
+                      </div>
+                    </button>
+                  }
+                </div>
+              </div>
+            }
+          </div>
+        </div>
+      }
+
+      <!-- ============================== -->
+      <!-- STEP 4: COMPLETE -->
+      <!-- ============================== -->
+      @if (currentStep() === 4) {
+        <div class="step-content complete-step">
+          <div class="complete-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="56" height="56" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+              <polyline points="22 4 12 14.01 9 11.01" />
+            </svg>
+          </div>
+          <h2 class="step-title">You're All Set!</h2>
+          <p class="step-description">Here's a summary of your setup:</p>
+
+          <div class="summary-grid">
+            <div class="summary-card">
+              <div class="summary-number">{{ enabledMarkets().length }}</div>
+              <div class="summary-label">Markets</div>
+              <div class="summary-items">
+                @for (m of enabledMarkets(); track m.id) {
+                  <span class="summary-tag">{{ m.name }}</span>
+                }
+              </div>
+            </div>
+            <div class="summary-card">
+              <div class="summary-number">{{ enabledExchanges().length }}</div>
+              <div class="summary-label">Exchanges</div>
+              <div class="summary-items">
+                @for (e of enabledExchanges(); track e.id) {
+                  <span class="summary-tag">{{ e.name }}</span>
+                }
+                @if (enabledExchanges().length === 0) {
+                  <span class="summary-tag muted">None selected</span>
+                }
+              </div>
+            </div>
+            <div class="summary-card">
+              <div class="summary-number">{{ enabledDataSources().length }}</div>
+              <div class="summary-label">Data Sources</div>
+              <div class="summary-items">
+                @for (d of enabledDataSources(); track d.id) {
+                  <span class="summary-tag">{{ d.name }}</span>
+                }
+                @if (enabledDataSources().length === 0) {
+                  <span class="summary-tag muted">None selected</span>
+                }
+              </div>
+            </div>
+          </div>
+
+          <p class="step-hint">
+            You can modify these anytime from the Admin &rarr; Service Catalog section.
+          </p>
+        </div>
+      }
+    </div>
+
+    <!-- Footer -->
+    <div class="wizard-footer">
+      <div class="footer-left">
+        <button class="btn-skip" (click)="dismiss()">
+          Skip for now
+        </button>
+      </div>
+      <div class="footer-right">
+        @if (currentStep() > 0) {
+          <button class="btn-back" (click)="back()" [disabled]="saving()">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="m15 18-6-6 6-6" />
+            </svg>
+            Back
+          </button>
+        }
+        @if (currentStep() < totalSteps - 1) {
+          <button class="btn-next" (click)="next()" [disabled]="!canGoNext()">
+            {{ currentStep() === 0 ? 'Get Started' : 'Next' }}
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="m9 18 6-6-6-6" />
+            </svg>
+          </button>
+        } @else {
+          <button class="btn-finish" (click)="finish()" [disabled]="saving()">
+            @if (saving()) {
+              <span class="spinner-sm"></span>
+              Saving...
+            } @else {
+              Finish Setup
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="20 6 9 17 4 12" />
+              </svg>
+            }
+          </button>
+        }
+      </div>
+    </div>
+
+  </div>
+</div>

@@ -15,6 +15,7 @@ import {
   CellClickedEvent,
   ValueFormatterParams,
   RowClickedEvent,
+  PaginationModule,
 } from "ag-grid-community";
 
 import { StrategiesGridActionsComponent } from "./strategies-grid-actions/strategies-grid-actions.component";
@@ -39,7 +40,7 @@ export class StrategiesGridComponent implements OnInit {
   public gridApi: GridApi<Strategy>;
   public selectedRow: Strategy;
   public selectedRows: Strategy[] = [];
-  public modules: Module[] = [ClientSideRowModelModule];
+  public modules: Module[] = [ClientSideRowModelModule, PaginationModule];
   
   // Use the theme service's computed signal
   public gridTheme = this.agGridTheme.theme;
@@ -70,8 +71,8 @@ export class StrategiesGridComponent implements OnInit {
       minWidth: 200,
     },
     {
-      headerName: "Exchange",
-      field: "exchangeName",
+      headerName: "Account",
+      field: "connectionName",
       minWidth: 120,
       valueFormatter: (params: ValueFormatterParams) => params.value || '—',
     },
@@ -128,6 +129,11 @@ export class StrategiesGridComponent implements OnInit {
     flex: 1,
     minWidth: 100,
   };
+
+  // Pagination
+  public pagination = true;
+  public paginationPageSize = 20;
+  public paginationPageSizeSelector = [10, 20, 50, 100];
 
   public ngOnInit(): void {
     this.rowData = this.strategies;

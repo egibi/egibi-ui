@@ -14,6 +14,7 @@ import {
   RowSelectionOptions,
   CellClickedEvent,
   ICellRendererParams,
+  PaginationModule,
 } from "ag-grid-community";
 
 import { BacktestsGridActionsComponent } from "./backtests-grid-actions/backtests-grid-actions.component";
@@ -36,7 +37,7 @@ export class BacktestsGridComponent implements OnInit {
   public gridApi: GridApi<Backtest>;
   public selectedRow: Backtest;
   public selectedRows: Backtest[] = [];
-  public modules: Module[] = [ClientSideRowModelModule];
+  public modules: Module[] = [ClientSideRowModelModule, PaginationModule];
 
   public gridTheme = this.agGridTheme.theme;
 
@@ -58,28 +59,34 @@ export class BacktestsGridComponent implements OnInit {
     {
       headerName: "Name",
       field: "name",
+      minWidth: 180,
     },
     {
       headerName: "Description",
       field: "description",
+      minWidth: 200,
     },
     {
       headerName: "Strategy",
       field: "strategyName",
+      minWidth: 150,
     },
     {
       headerName: "Start",
       field: "start",
+      minWidth: 120,
       valueFormatter: (params) => this.formatDate(params.value),
     },
     {
       headerName: "End",
       field: "end",
+      minWidth: 120,
       valueFormatter: (params) => this.formatDate(params.value),
     },
     {
       headerName: "Status",
       field: "status",
+      minWidth: 100,
       cellRenderer: (params: ICellRendererParams) => {
         const status = params.value as BacktestStatus;
         const badgeClass = this.getStatusBadgeClass(status);
@@ -92,7 +99,8 @@ export class BacktestsGridComponent implements OnInit {
       cellRenderer: BacktestsGridActionsComponent,
       sortable: false,
       filter: false,
-      maxWidth: 120,
+      minWidth: 140,
+      maxWidth: 160,
       onCellClicked: (event: CellClickedEvent) => {
         this.gridAction(event.data);
       },
@@ -106,6 +114,11 @@ export class BacktestsGridComponent implements OnInit {
     flex: 1,
     minWidth: 100,
   };
+
+  // Pagination
+  public pagination = true;
+  public paginationPageSize = 20;
+  public paginationPageSizeSelector = [10, 20, 50, 100];
 
   public ngOnInit(): void {
     this.rowData = this.backtests;

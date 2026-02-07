@@ -4,12 +4,11 @@ import { NgbNavModule } from "@ng-bootstrap/ng-bootstrap";
 import { FormBuilder, ReactiveFormsModule, FormsModule } from "@angular/forms";
 import { FeesComponent } from "./tabs/fees/fees.component";
 import { EntityTypesComponent } from "./tabs/entity-types/entity-types.component";
-import { ExchangesComponent } from "../exchanges/exchanges.component";
 
 
 @Component({
   selector: "service-configurations",
-  imports: [ReactiveFormsModule, FormsModule, NgbNavModule, FeesComponent, EntityTypesComponent, ExchangesComponent],
+  imports: [ReactiveFormsModule, FormsModule, NgbNavModule, FeesComponent, EntityTypesComponent],
   templateUrl: "./service-configurations.component.html",
   styleUrl: "./service-configurations.component.scss",
 })

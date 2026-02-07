@@ -1,4 +1,5 @@
-:host{
-    display:block;
-    height:100vh;
+:host {
+  display: block;
+  height: calc(100vh - 340px);
+  min-height: 400px;
 }

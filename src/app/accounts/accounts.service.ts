@@ -42,7 +42,7 @@ export class AccountsService {
     return this.http.put<RequestResponse>(`${this.apiBaseUrl}/update-fees`, request);
   }
 
-  /** Test connectivity to the account's exchange API */
+  /** Test connectivity to the account's API */
   public testConnection(accountId: number): Observable<RequestResponse> {
     return this.http.post<RequestResponse>(`${this.apiBaseUrl}/test-connection?accountId=${accountId}`, {});
   }

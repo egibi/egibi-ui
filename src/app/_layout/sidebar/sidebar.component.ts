@@ -46,12 +46,11 @@ export class SidebarComponent {
       title: 'Portfolio',
       items: [
         { label: 'Accounts', route: '/accounts', icon: 'wallet' },
-        { label: 'Exchanges', route: '/exchanges', icon: 'exchange' },
         { label: 'Markets', route: '/markets', icon: 'chart' }
       ]
     },
     {
-      title: 'Trading',
+      title: 'Automation',
       items: [
         { label: 'Strategies', route: '/strategies', icon: 'zap' },
         { label: 'Backtester', route: '/backtester', icon: 'clock' }
