@@ -1,0 +1,121 @@
+// Funding page styles
+
+// Empty state
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem 2rem;
+  text-align: center;
+
+  .empty-icon {
+    color: var(--egibi-muted-foreground);
+    margin-bottom: 1rem;
+    opacity: 0.5;
+  }
+
+  h5 {
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+  }
+}
+
+// Funding provider card
+.funding-provider-card {
+  .provider-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding-bottom: 1.25rem;
+    margin-bottom: 1.25rem;
+    border-bottom: 1px solid hsl(var(--egibi-border));
+
+    .provider-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: var(--egibi-radius);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+
+      .icon-letter {
+        color: #fff;
+        font-weight: 700;
+        font-size: 1.25rem;
+      }
+    }
+
+    .provider-info {
+      flex: 1;
+      min-width: 0;
+
+      .provider-name {
+        font-weight: 600;
+        font-size: 1.1rem;
+      }
+
+      .provider-account-name {
+        font-size: 0.85rem;
+      }
+    }
+
+    .badge {
+      font-size: 0.75rem;
+      padding: 0.35em 0.65em;
+    }
+  }
+
+  .provider-details {
+    .detail-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.5rem 0;
+
+      &:not(:last-child) {
+        border-bottom: 1px solid hsl(var(--egibi-border) / 0.5);
+      }
+
+      .detail-label {
+        font-size: 0.85rem;
+        color: hsl(var(--egibi-muted-foreground));
+        font-weight: 500;
+      }
+
+      .detail-value {
+        font-size: 0.85rem;
+        color: hsl(var(--egibi-foreground));
+      }
+    }
+  }
+}
+
+// Info sidebar
+.info-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.875rem;
+
+  .info-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    font-size: 0.85rem;
+    color: hsl(var(--egibi-foreground));
+
+    svg {
+      flex-shrink: 0;
+      margin-top: 0.1rem;
+      color: hsl(var(--egibi-primary));
+    }
+  }
+}
+
+// Card footer
+.card-footer {
+  background: transparent;
+  border-top: 1px solid hsl(var(--egibi-border));
+  padding: 0.75rem 1.25rem;
+}

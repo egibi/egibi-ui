@@ -1,0 +1,214 @@
+<!-- Modal Header -->
+<div class="modal-header">
+  <div class="d-flex align-items-center gap-2">
+    @if (step !== 'pick-provider') {
+      <button class="btn btn-link btn-sm p-0 back-btn" (click)="goBack()">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></svg>
+      </button>
+    }
+    <h5 class="modal-title mb-0">
+      @if (step === 'pick-provider') {
+        Set Up Funding
+      } @else if (selectedProvider) {
+        <span class="service-dot" [style.background-color]="selectedProvider.color"></span>
+        {{ selectedProvider.name }}
+      }
+    </h5>
+  </div>
+  <button type="button" class="btn-close" (click)="dismiss()"></button>
+</div>
+
+<!-- Step Progress -->
+<div class="step-progress">
+  <div class="step-bar">
+    <div class="step-fill" [style.width.%]="(stepNumber / 3) * 100"></div>
+  </div>
+  <div class="step-label text-muted small">Step {{ stepNumber }} of 3</div>
+</div>
+
+<!-- Modal Body -->
+<div class="modal-body">
+
+  <!-- ============================== -->
+  <!-- STEP 1: CHOOSE PROVIDER        -->
+  <!-- ============================== -->
+  @if (step === 'pick-provider') {
+    <p class="text-muted mb-3">Choose a banking provider to use as your primary funding source.</p>
+
+    @if (providers.length === 0) {
+      <div class="text-center py-4 text-muted">
+        No funding providers available. Contact your administrator.
+      </div>
+    }
+
+    <div class="provider-cards">
+      @for (provider of providers; track provider.connectionId) {
+        <button class="provider-card" (click)="selectProvider(provider)">
+          <div class="card-icon" [style.background-color]="provider.color || '#6C757D'">
+            <span class="icon-letter">{{ provider.name.charAt(0).toUpperCase() }}</span>
+          </div>
+          <div class="card-info">
+            <div class="card-name">{{ provider.name }}</div>
+            @if (provider.description) {
+              <div class="card-desc">{{ provider.description }}</div>
+            }
+          </div>
+          <svg class="card-arrow" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+        </button>
+      }
+    </div>
+  }
+
+  <!-- ============================== -->
+  <!-- STEP 2: SIGNUP GUIDE           -->
+  <!-- ============================== -->
+  @if (step === 'signup-guide') {
+    <div class="signup-guide">
+      <p class="text-muted mb-4">
+        To connect {{ selectedProvider?.name }}, you'll need an API key from your {{ selectedProvider?.name }} account.
+      </p>
+
+      <div class="guide-question">
+        <h6 class="mb-3">Do you already have a {{ selectedProvider?.name }} account?</h6>
+
+        <div class="guide-options">
+          <!-- Yes, I have an account -->
+          <button class="guide-option" (click)="proceedToCredentials(true)">
+            <div class="option-icon option-yes">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+            </div>
+            <div class="option-info">
+              <div class="option-title">Yes, I have an account</div>
+              <div class="option-desc">I have a {{ selectedProvider?.name }} account and need to enter my API key</div>
+            </div>
+            <svg class="option-arrow" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+          </button>
+
+          <!-- No, I need to sign up -->
+          <button class="guide-option" (click)="proceedToCredentials(false)">
+            <div class="option-icon option-new">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
+            </div>
+            <div class="option-info">
+              <div class="option-title">No, I need to sign up</div>
+              <div class="option-desc">Open {{ selectedProvider?.name }}'s signup page, then come back to enter your API key</div>
+            </div>
+            <svg class="option-arrow" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- ============================== -->
+  <!-- STEP 3: ENTER CREDENTIALS      -->
+  <!-- ============================== -->
+  @if (step === 'enter-credentials') {
+    <div class="credentials-form">
+
+      <!-- Signup reminder banner (if they just signed up) -->
+      @if (!hasExistingAccount) {
+        <div class="signup-banner">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+          <div>
+            <strong>Just signed up?</strong>
+            After creating your {{ selectedProvider?.name }} account, generate an API key from your dashboard.
+            @if (apiDocsUrl) {
+              <a href="javascript:void(0)" (click)="openApiDocs()">View API key instructions →</a>
+            }
+          </div>
+        </div>
+      }
+
+      <!-- Account Name -->
+      <div class="form-section">
+        <div class="section-label">Account Details</div>
+        <div class="mb-3">
+          <label class="form-label">Account Name <span class="text-danger">*</span></label>
+          <input
+            type="text"
+            class="form-control form-control-sm"
+            [(ngModel)]="accountName"
+            placeholder="e.g., My Mercury Funding Account"
+          >
+        </div>
+      </div>
+
+      <!-- Credential Fields -->
+      <div class="form-section">
+        <div class="section-label">
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+          API Credentials
+        </div>
+        <p class="text-muted small mb-3">Your credentials are encrypted before storage and never exposed in plaintext.</p>
+
+        @for (field of requiredFields; track field) {
+          <div class="mb-3">
+            <label class="form-label">
+              {{ fieldLabels[field] || field }}
+              <span class="text-danger">*</span>
+            </label>
+            <div class="input-group input-group-sm">
+              <input
+                [type]="isSecretField(field) && !showSecrets[field] ? 'password' : 'text'"
+                class="form-control"
+                [(ngModel)]="credentials[field]"
+                [placeholder]="'Enter ' + (fieldLabels[field] || field).toLowerCase()"
+                autocomplete="off"
+              >
+              @if (isSecretField(field)) {
+                <button
+                  class="btn btn-outline-secondary"
+                  type="button"
+                  (click)="toggleVisibility(field)"
+                  [title]="showSecrets[field] ? 'Hide' : 'Show'">
+                  @if (showSecrets[field]) {
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" x2="23" y1="1" y2="23"/></svg>
+                  } @else {
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                  }
+                </button>
+              }
+            </div>
+          </div>
+        }
+
+        <div class="mb-3">
+          <label class="form-label">Credential Label</label>
+          <input
+            type="text"
+            class="form-control form-control-sm"
+            [(ngModel)]="credentialLabel"
+            placeholder="e.g., My Mercury API Key (optional)"
+          >
+        </div>
+      </div>
+
+      <!-- Security Notice -->
+      <div class="security-notice">
+        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        <span>Credentials are encrypted with AES-256-GCM using your personal encryption key</span>
+      </div>
+    </div>
+  }
+</div>
+
+<!-- Modal Footer -->
+<div class="modal-footer">
+  @if (step === 'pick-provider') {
+    <button class="btn btn-outline-secondary btn-sm" (click)="dismiss()">Cancel</button>
+  } @else if (step === 'signup-guide') {
+    <button class="btn btn-outline-secondary btn-sm" (click)="goBack()">Back</button>
+  } @else {
+    <button class="btn btn-outline-secondary btn-sm" (click)="goBack()">Back</button>
+    <button
+      class="btn btn-primary btn-sm"
+      (click)="save()"
+      [disabled]="!canSave || saving">
+      @if (saving) {
+        <span class="spinner-border spinner-border-sm me-1"></span>
+      }
+      Connect Funding Source
+    </button>
+  }
+</div>

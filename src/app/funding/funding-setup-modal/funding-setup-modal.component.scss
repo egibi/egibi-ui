@@ -1,0 +1,250 @@
+// Funding setup modal styles
+
+// Step progress bar
+.step-progress {
+  padding: 0.75rem 1.25rem;
+  border-bottom: 1px solid hsl(var(--egibi-border));
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+
+  .step-bar {
+    flex: 1;
+    height: 4px;
+    border-radius: 2px;
+    background: hsl(var(--egibi-muted));
+    overflow: hidden;
+
+    .step-fill {
+      height: 100%;
+      background: hsl(var(--egibi-primary));
+      border-radius: 2px;
+      transition: width 0.3s ease;
+    }
+  }
+
+  .step-label {
+    flex-shrink: 0;
+    font-size: 0.75rem;
+  }
+}
+
+// Back button
+.back-btn {
+  color: hsl(var(--egibi-muted-foreground));
+  text-decoration: none;
+  &:hover { color: hsl(var(--egibi-foreground)); }
+}
+
+// Service dot
+.service-dot {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  margin-right: 0.5rem;
+  vertical-align: middle;
+}
+
+// Provider cards (step 1)
+.provider-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.provider-card {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.875rem 1rem;
+  border: 1px solid hsl(var(--egibi-border));
+  border-radius: var(--egibi-radius);
+  background: hsl(var(--egibi-card));
+  cursor: pointer;
+  transition: all 0.15s ease;
+  width: 100%;
+  text-align: left;
+
+  &:hover {
+    border-color: hsl(var(--egibi-primary));
+    background: hsl(var(--egibi-accent));
+  }
+
+  .card-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: var(--egibi-radius);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+
+    .icon-letter {
+      color: #fff;
+      font-weight: 700;
+      font-size: 1rem;
+    }
+  }
+
+  .card-info {
+    flex: 1;
+    min-width: 0;
+
+    .card-name {
+      font-weight: 600;
+      font-size: 0.9rem;
+    }
+
+    .card-desc {
+      font-size: 0.8rem;
+      color: hsl(var(--egibi-muted-foreground));
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+  }
+
+  .card-arrow {
+    flex-shrink: 0;
+    color: hsl(var(--egibi-muted-foreground));
+  }
+}
+
+// Signup guide (step 2)
+.signup-guide {
+  .guide-question {
+    h6 {
+      font-weight: 600;
+    }
+  }
+
+  .guide-options {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .guide-option {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem 1.25rem;
+    border: 1px solid hsl(var(--egibi-border));
+    border-radius: var(--egibi-radius);
+    background: hsl(var(--egibi-card));
+    cursor: pointer;
+    transition: all 0.15s ease;
+    width: 100%;
+    text-align: left;
+
+    &:hover {
+      border-color: hsl(var(--egibi-primary));
+      background: hsl(var(--egibi-accent));
+    }
+
+    .option-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+
+      &.option-yes {
+        background: hsl(var(--egibi-success) / 0.1);
+        color: hsl(var(--egibi-success));
+      }
+
+      &.option-new {
+        background: hsl(var(--egibi-primary) / 0.1);
+        color: hsl(var(--egibi-primary));
+      }
+    }
+
+    .option-info {
+      flex: 1;
+      min-width: 0;
+
+      .option-title {
+        font-weight: 600;
+        font-size: 0.9rem;
+        margin-bottom: 0.15rem;
+      }
+
+      .option-desc {
+        font-size: 0.8rem;
+        color: hsl(var(--egibi-muted-foreground));
+      }
+    }
+
+    .option-arrow {
+      flex-shrink: 0;
+      color: hsl(var(--egibi-muted-foreground));
+    }
+  }
+}
+
+// Signup banner (step 3)
+.signup-banner {
+  display: flex;
+  gap: 0.75rem;
+  padding: 0.875rem 1rem;
+  background: hsl(var(--egibi-primary) / 0.08);
+  border: 1px solid hsl(var(--egibi-primary) / 0.2);
+  border-radius: var(--egibi-radius);
+  margin-bottom: 1.25rem;
+  font-size: 0.85rem;
+  line-height: 1.5;
+
+  svg {
+    flex-shrink: 0;
+    margin-top: 0.15rem;
+    color: hsl(var(--egibi-primary));
+  }
+
+  a {
+    color: hsl(var(--egibi-primary));
+    text-decoration: none;
+    font-weight: 500;
+    &:hover { text-decoration: underline; }
+  }
+}
+
+// Credentials form (step 3)
+.credentials-form {
+  .form-section {
+    margin-bottom: 1.25rem;
+
+    .section-label {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-size: 0.8rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: hsl(var(--egibi-muted-foreground));
+      margin-bottom: 0.75rem;
+    }
+  }
+}
+
+// Security notice
+.security-notice {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.8rem;
+  color: hsl(var(--egibi-muted-foreground));
+  padding: 0.75rem 1rem;
+  background: hsl(var(--egibi-muted) / 0.5);
+  border-radius: var(--egibi-radius);
+  margin-top: 0.5rem;
+
+  svg {
+    flex-shrink: 0;
+    color: hsl(var(--egibi-success));
+  }
+}

@@ -23,6 +23,7 @@ import { MarketsComponent } from "./markets/markets.component";
 import { AccountingComponent } from "./accounting/accounting.component";
 import { AccountsComponent } from "./accounts/accounts.component";
 import { AccountComponent } from "./accounts/account/account.component";
+import { FundingComponent } from "./funding/funding.component";
 import { AppConfigurationComponent } from "./app-configuration/app-configuration.component";
 import { DocumentationComponent } from "./documentation/documentation.component";
 import { StorageComponent } from "./storage/storage.component";
@@ -78,6 +79,11 @@ export const routes: Routes = [
   {
     path: "accounts",
     component: AccountsComponent,
+    canActivate: [authGuard],
+  },
+  {
+    path: "funding",
+    component: FundingComponent,
     canActivate: [authGuard],
   },
   {
