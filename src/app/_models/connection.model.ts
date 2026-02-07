@@ -45,5 +45,6 @@ export const SERVICE_CATEGORIES: { value: string; label: string }[] = [
   { value: 'crypto_exchange', label: 'Crypto Exchange' },
   { value: 'stock_broker', label: 'Stock Broker' },
   { value: 'data_provider', label: 'Data Provider' },
+  { value: 'funding_provider', label: 'Funding Provider' },
   { value: 'other', label: 'Other' },
 ];

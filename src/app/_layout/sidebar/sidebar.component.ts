@@ -46,6 +46,7 @@ export class SidebarComponent {
       title: 'Portfolio',
       items: [
         { label: 'Accounts', route: '/accounts', icon: 'wallet' },
+        { label: 'Funding', route: '/funding', icon: 'banknote' },
         { label: 'Markets', route: '/markets', icon: 'chart' }
       ]
     },

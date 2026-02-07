@@ -22,6 +22,9 @@ export class Account extends EntityBase {
   credentialLabel: string = '';
   maskedApiKey: string = '';
   credentialLastUsedAt: Date | null = null;
+
+  // Funding
+  isPrimaryFunding: boolean = false;
 }
 
 /** Request body for creating an account with credentials */
