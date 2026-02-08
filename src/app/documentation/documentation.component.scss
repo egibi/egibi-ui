@@ -40,69 +40,207 @@
   }
 }
 
-// Typography
-.doc-text {
-  font-size: 0.9rem;
-  line-height: 1.7;
-  color: hsl(var(--egibi-foreground));
-  margin-bottom: 0.75rem;
+// ============================================
+// MARKDOWN RENDERED CONTENT
+// ============================================
+// Styles applied to HTML output from marked
+.doc-markdown {
 
-  &:last-child {
-    margin-bottom: 0;
-  }
-}
-
-.doc-heading {
-  font-size: 0.95rem;
-  font-weight: 600;
-  color: hsl(var(--egibi-foreground));
-  margin-top: 1.25rem;
-  margin-bottom: 0.5rem;
-  padding-bottom: 0.35rem;
-  border-bottom: 1px solid hsl(var(--egibi-border));
-
-  &:first-child {
-    margin-top: 0;
-  }
-}
-
-// Lists
-.doc-list {
-  list-style: none;
-  padding: 0;
-  margin: 0 0 0.75rem;
-
-  li {
-    font-size: 0.875rem;
-    line-height: 1.6;
-    padding: 0.3rem 0 0.3rem 1.25rem;
-    position: relative;
+  // Paragraphs
+  p {
+    font-size: 0.9rem;
+    line-height: 1.7;
     color: hsl(var(--egibi-foreground));
+    margin-bottom: 0.75rem;
 
-    &::before {
-      content: '';
-      position: absolute;
-      left: 0;
-      top: 0.7rem;
-      width: 6px;
-      height: 6px;
-      border-radius: 50%;
-      background: hsl(var(--egibi-primary));
-      opacity: 0.6;
-    }
-
-    strong {
-      color: hsl(var(--egibi-foreground));
-      font-weight: 600;
+    &:last-child {
+      margin-bottom: 0;
     }
   }
 
-  &:last-child {
-    margin-bottom: 0;
+  // H2 = section sub-headings (from ### in markdown)
+  h3 {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: hsl(var(--egibi-foreground));
+    margin-top: 1.25rem;
+    margin-bottom: 0.5rem;
+    padding-bottom: 0.35rem;
+    border-bottom: 1px solid hsl(var(--egibi-border));
+
+    &:first-child {
+      margin-top: 0;
+    }
+  }
+
+  // H2 from ## in markdown (rare, but handle)
+  h2 {
+    font-size: 1rem;
+    font-weight: 600;
+    color: hsl(var(--egibi-foreground));
+    margin-top: 1.5rem;
+    margin-bottom: 0.5rem;
+    padding-bottom: 0.35rem;
+    border-bottom: 1px solid hsl(var(--egibi-border));
+
+    &:first-child {
+      margin-top: 0;
+    }
+  }
+
+  // Lists
+  ul {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 0.75rem;
+
+    li {
+      font-size: 0.875rem;
+      line-height: 1.6;
+      padding: 0.3rem 0 0.3rem 1.25rem;
+      position: relative;
+      color: hsl(var(--egibi-foreground));
+
+      &::before {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 0.7rem;
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: hsl(var(--egibi-primary));
+        opacity: 0.6;
+      }
+
+      strong {
+        color: hsl(var(--egibi-foreground));
+        font-weight: 600;
+      }
+    }
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+
+  // Ordered lists (migration steps, etc.)
+  ol {
+    padding-left: 1.5rem;
+    margin: 0 0 0.75rem;
+
+    li {
+      font-size: 0.875rem;
+      line-height: 1.6;
+      padding: 0.2rem 0;
+      color: hsl(var(--egibi-foreground));
+    }
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+
+  // Code blocks (fenced ```...```)
+  pre {
+    background: hsl(var(--egibi-secondary));
+    border: 1px solid hsl(var(--egibi-border));
+    border-radius: var(--egibi-radius);
+    padding: 1rem;
+    font-size: 0.825rem;
+    line-height: 1.6;
+    overflow-x: auto;
+    margin: 0.5rem 0;
+
+    code {
+      background: none;
+      color: hsl(var(--egibi-foreground));
+      font-family: 'SF Mono', 'Fira Code', 'Cascadia Code', monospace;
+    }
+  }
+
+  // Inline code
+  code {
+    font-size: 0.825rem;
+    font-weight: 600;
+    color: hsl(var(--egibi-primary));
+    background: none;
+    padding: 0;
+    font-family: 'SF Mono', 'Fira Code', 'Cascadia Code', monospace;
+  }
+
+  // Tables (markdown tables)
+  table {
+    width: 100%;
+    font-size: 0.85rem;
+    border-collapse: collapse;
+    margin: 0.5rem 0;
+
+    th {
+      text-align: left;
+      font-weight: 600;
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+      color: hsl(var(--egibi-muted-foreground));
+      padding: 0.5rem 0.75rem;
+      border-bottom: 2px solid hsl(var(--egibi-border));
+    }
+
+    td {
+      padding: 0.5rem 0.75rem;
+      border-bottom: 1px solid hsl(var(--egibi-border));
+      color: hsl(var(--egibi-foreground));
+      vertical-align: top;
+
+      code {
+        font-size: 0.825rem;
+        font-weight: 600;
+        color: hsl(var(--egibi-primary));
+        background: none;
+        padding: 0;
+      }
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
   }
 }
 
-// Schema tables
+// ============================================
+// SHARED COMPONENT CLASSES
+// (used in both markdown HTML blocks and component)
+// ============================================
+
+// Schema/endpoint table badge
+.doc-badge {
+  display: inline-block;
+  font-size: 0.75rem;
+  font-weight: 500;
+  padding: 0.15rem 0.5rem;
+  border-radius: var(--egibi-radius);
+  background: hsl(var(--egibi-secondary));
+  color: hsl(var(--egibi-secondary-foreground));
+  white-space: nowrap;
+}
+
+// Diagrams (monospace blocks via <pre class="doc-diagram">)
+.doc-diagram {
+  background: hsl(var(--egibi-secondary));
+  border: 1px solid hsl(var(--egibi-border));
+  border-radius: var(--egibi-radius);
+  padding: 1.25rem;
+  font-family: 'SF Mono', 'Fira Code', 'Cascadia Code', monospace;
+  font-size: 0.78rem;
+  line-height: 1.5;
+  overflow-x: auto;
+  margin: 0.5rem 0;
+  color: hsl(var(--egibi-foreground));
+  white-space: pre;
+}
+
+// Doc table (used in HTML blocks within markdown)
 .doc-table {
   width: 100%;
   font-size: 0.85rem;
@@ -140,50 +278,7 @@
   }
 }
 
-.doc-badge {
-  display: inline-block;
-  font-size: 0.75rem;
-  font-weight: 500;
-  padding: 0.15rem 0.5rem;
-  border-radius: var(--egibi-radius);
-  background: hsl(var(--egibi-secondary));
-  color: hsl(var(--egibi-secondary-foreground));
-  white-space: nowrap;
-}
-
-// Code blocks
-.doc-code {
-  background: hsl(var(--egibi-secondary));
-  border: 1px solid hsl(var(--egibi-border));
-  border-radius: var(--egibi-radius);
-  padding: 1rem;
-  font-size: 0.825rem;
-  line-height: 1.6;
-  overflow-x: auto;
-  margin: 0.5rem 0;
-
-  code {
-    background: none;
-    color: hsl(var(--egibi-foreground));
-  }
-}
-
-// Diagrams (monospace blocks)
-.doc-diagram {
-  background: hsl(var(--egibi-secondary));
-  border: 1px solid hsl(var(--egibi-border));
-  border-radius: var(--egibi-radius);
-  padding: 1.25rem;
-  font-family: 'SF Mono', 'Fira Code', 'Cascadia Code', monospace;
-  font-size: 0.78rem;
-  line-height: 1.5;
-  overflow-x: auto;
-  margin: 0.5rem 0;
-  color: hsl(var(--egibi-foreground));
-  white-space: pre;
-}
-
-// Status indicators
+// Status indicators (used in HTML blocks within markdown)
 .doc-status {
   display: flex;
   align-items: flex-start;

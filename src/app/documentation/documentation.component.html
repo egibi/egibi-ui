@@ -67,96 +67,18 @@
     <div [ngbNavOutlet]="nav" class="doc-content"></div>
   </div>
 
-  <!-- Section Content (rendered by each tab) -->
-  @for (section of sections[activeTab]; track section.id) {
-    <div class="card doc-card" [id]="section.id">
-      <div class="card-header">
-        <h2 class="card-title">{{ section.title }}</h2>
-      </div>
-      <div class="card-body">
-        @for (block of section.content; track $index) {
-          @switch (block.type) {
-            @case ('text') {
-              <p class="doc-text">{{ block.value }}</p>
-            }
-            @case ('heading') {
-              <h3 class="doc-heading">{{ block.value }}</h3>
-            }
-            @case ('list') {
-              <ul class="doc-list">
-                @for (item of block.items; track $index) {
-                  <li>
-                    @if (item.includes(' — ')) {
-                      <strong>{{ item.split(' — ')[0] }}</strong> — {{ item.split(' — ').slice(1).join(' — ') }}
-                    } @else {
-                      {{ item }}
-                    }
-                  </li>
-                }
-              </ul>
-            }
-            @case ('schema') {
-              <div class="table-responsive">
-                <table class="doc-table">
-                  <thead>
-                    <tr>
-                      <th>Entity / Column</th>
-                      <th>Type</th>
-                      <th>Purpose</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    @for (row of block.rows; track row.column) {
-                      <tr>
-                        <td><code>{{ row.column }}</code></td>
-                        <td><span class="doc-badge">{{ row.type }}</span></td>
-                        <td>{{ row.purpose }}</td>
-                      </tr>
-                    }
-                  </tbody>
-                </table>
-              </div>
-            }
-            @case ('code') {
-              <pre class="doc-code"><code>{{ block.value }}</code></pre>
-            }
-            @case ('diagram') {
-              <pre class="doc-diagram">{{ block.value }}</pre>
-            }
-            @case ('status') {
-              <div class="doc-status" [class]="'doc-status-' + block.variant">
-                <span class="status-indicator"></span>
-                <span class="status-text">{{ block.value }}</span>
-              </div>
-            }
-            @case ('endpoint') {
-              <div class="table-responsive">
-                <table class="doc-table endpoint-table">
-                  <thead>
-                    <tr>
-                      <th>Method</th>
-                      <th>Endpoint</th>
-                      <th>Description</th>
-                      <th>Parameters</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    @for (ep of block.endpoints; track ep.path + ep.method) {
-                      <tr>
-                        <td><span class="method-badge" [class]="'method-' + ep.method.toLowerCase()">{{ ep.method }}</span></td>
-                        <td><code>{{ ep.path }}</code></td>
-                        <td>{{ ep.description }}</td>
-                        <td>@if (ep.params) { <span class="endpoint-params">{{ ep.params }}</span> } @else { <span class="endpoint-params none">—</span> }</td>
-                      </tr>
-                    }
-                  </tbody>
-                </table>
-              </div>
-            }
-          }
-        }
+  <!-- Loading State -->
+  @if (loading) {
+    <div class="text-center py-4">
+      <div class="spinner-border spinner-border-sm text-muted" role="status">
+        <span class="visually-hidden">Loading...</span>
       </div>
     </div>
+  }
+
+  <!-- Rendered Markdown Content -->
+  @if (!loading && renderedHtml) {
+    <div [innerHTML]="renderedHtml"></div>
   }
 
   <!-- Return to Top Button -->
