@@ -1,20 +1,17 @@
-import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
-import { RequestResponse } from '../request-response';
-import { Account, CreateAccountRequest } from '../_models/account.model';
-import { AccountDetails } from '../_models/account-details.model';
-import {
-  UpdateAccountRequest,
-  UpdateCredentialsRequest,
-  UpdateAccountFeesRequest,
-} from '../_models/account-detail.model';
+import { Injectable } from "@angular/core";
+import { HttpClient } from "@angular/common/http";
+import { Observable } from "rxjs";
+import { RequestResponse } from "../request-response";
+import { Account, CreateAccountRequest } from "../_models/account.model";
+import { AccountDetails } from "../_models/account-details.model";
+import { UpdateAccountRequest, UpdateCredentialsRequest, UpdateAccountFeesRequest } from "../_models/account-detail.model";
+import { environment } from "../../environments/environment";
 
 @Injectable({
-  providedIn: 'root',
+  providedIn: "root",
 })
 export class AccountsService {
-  private apiBaseUrl: string = 'https://localhost:7182/Accounts';
+  private apiBaseUrl: string = `${environment.apiUrl}/Accounts`;
 
   constructor(private http: HttpClient) {}
 
@@ -56,7 +53,7 @@ export class AccountsService {
   }
 
   public getAccount(id: number): Observable<RequestResponse> {
-    return this.http.get<RequestResponse>(`${this.apiBaseUrl}/get-account` + '?id=' + id);
+    return this.http.get<RequestResponse>(`${this.apiBaseUrl}/get-account` + "?id=" + id);
   }
 
   public getAccountTypes(): Observable<RequestResponse> {
@@ -76,7 +73,7 @@ export class AccountsService {
   }
 
   public deleteAccount(account: Account): Observable<RequestResponse> {
-    return this.http.delete<RequestResponse>(`${this.apiBaseUrl}/delete-account` + '?id=' + account.id);
+    return this.http.delete<RequestResponse>(`${this.apiBaseUrl}/delete-account` + "?id=" + account.id);
   }
 
   // CRUD ACTIONS FOR ACCOUNT DETAILS

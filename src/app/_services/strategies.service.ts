@@ -1,21 +1,14 @@
 // FILE: egibi-ui/src/app/_services/strategies.service.ts
 
-import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { firstValueFrom } from 'rxjs';
-import {
-  Strategy,
-  CreateStrategyRequest,
-  BacktestRequest,
-  BacktestResult,
-  BacktestSummary,
-  DataCoverage,
-  DataVerificationRequest
-} from '../_models/strategy.model';
+import { Injectable } from "@angular/core";
+import { HttpClient } from "@angular/common/http";
+import { firstValueFrom } from "rxjs";
+import { Strategy, CreateStrategyRequest, BacktestRequest, BacktestResult, BacktestSummary, DataCoverage, DataVerificationRequest } from "../_models/strategy.model";
+import { environment } from "../../environments/environment";
 
-@Injectable({ providedIn: 'root' })
+@Injectable({ providedIn: "root" })
 export class StrategiesService {
-  private apiBaseUrl = 'https://localhost:7182/api/strategies';
+  private apiBaseUrl = `${environment.apiUrl}/api/strategies`;
 
   constructor(private http: HttpClient) {}
 
@@ -44,41 +37,29 @@ export class StrategiesService {
   // ── Backtesting ──────────────────────────────────────────
 
   async runBacktest(strategyId: number, request: BacktestRequest): Promise<any> {
-    return firstValueFrom(
-      this.http.post<any>(`${this.apiBaseUrl}/${strategyId}/backtest`, request)
-    );
+    return firstValueFrom(this.http.post<any>(`${this.apiBaseUrl}/${strategyId}/backtest`, request));
   }
 
   async getBacktests(strategyId: number): Promise<any> {
-    return firstValueFrom(
-      this.http.get<any>(`${this.apiBaseUrl}/${strategyId}/backtests`)
-    );
+    return firstValueFrom(this.http.get<any>(`${this.apiBaseUrl}/${strategyId}/backtests`));
   }
 
   async getBacktestDetail(backtestId: number): Promise<any> {
-    return firstValueFrom(
-      this.http.get<any>(`${this.apiBaseUrl}/backtests/${backtestId}`)
-    );
+    return firstValueFrom(this.http.get<any>(`${this.apiBaseUrl}/backtests/${backtestId}`));
   }
 
   // ── Data Verification & Coverage ──────────────────────────
 
   async verifyData(request: DataVerificationRequest): Promise<any> {
-    return firstValueFrom(
-      this.http.post<any>(`${this.apiBaseUrl}/verify-data`, request)
-    );
+    return firstValueFrom(this.http.post<any>(`${this.apiBaseUrl}/verify-data`, request));
   }
 
   async getDataCoverage(symbol?: string): Promise<any> {
-    const params = symbol ? `?symbol=${encodeURIComponent(symbol)}` : '';
-    return firstValueFrom(
-      this.http.get<any>(`${this.apiBaseUrl}/data-coverage${params}`)
-    );
+    const params = symbol ? `?symbol=${encodeURIComponent(symbol)}` : "";
+    return firstValueFrom(this.http.get<any>(`${this.apiBaseUrl}/data-coverage${params}`));
   }
 
   async getAvailableSymbols(): Promise<any> {
-    return firstValueFrom(
-      this.http.get<any>(`${this.apiBaseUrl}/available-symbols`)
-    );
+    return firstValueFrom(this.http.get<any>(`${this.apiBaseUrl}/available-symbols`));
   }
 }

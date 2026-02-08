@@ -3,12 +3,13 @@ import { Injectable } from "@angular/core";
 import { RequestResponse } from "../request-response";
 import { Observable } from "rxjs";
 import { Market } from "../_models/market.model";
+import { environment } from "../../environments/environment";
 
 @Injectable({
   providedIn: "root",
 })
 export class MarketsService {
-  private apiBaseUrl: string = "https://localhost:7182/Markets";
+  private apiBaseUrl: string = `${environment.apiUrl}/Markets`;
 
   constructor(private http: HttpClient) {}
 

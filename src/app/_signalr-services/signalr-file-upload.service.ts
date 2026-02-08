@@ -1,26 +1,26 @@
-import { Injectable } from '@angular/core';
-import * as signalR from '@microsoft/signalr';
-import { Subject } from 'rxjs';
+import { Injectable } from "@angular/core";
+import * as signalR from "@microsoft/signalr";
+import { Subject } from "rxjs";
+import { environment } from "../../environments/environment";
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: "root",
 })
 export class SignalrFileUploadService {
-
   private hubConnection!: signalR.HubConnection;
   public progressMessage$ = new Subject<string>();
   public uploadComplete$ = new Subject<string>();
   public uploadError$ = new Subject<string>();
 
- private apiBaseUrl: string = "https://localhost:7182";
+  private apiBaseUrl: string = `${environment.apiUrl}`;
 
-  constructor() { }
+  constructor() {}
 
- public startConnection(): Promise<void> {
+  public startConnection(): Promise<void> {
     this.hubConnection = new signalR.HubConnectionBuilder()
       .withUrl(`${this.apiBaseUrl}/fileUploadHub`, {
         skipNegotiation: true,
-        transport: signalR.HttpTransportType.WebSockets
+        transport: signalR.HttpTransportType.WebSockets,
       })
       .withAutomaticReconnect()
       .build();
@@ -28,31 +28,31 @@ export class SignalrFileUploadService {
     return this.hubConnection
       .start()
       .then(() => {
-        console.log('SignalR connection started');
+        console.log("SignalR connection started");
         this.registerServerEvents();
       })
-      .catch(err => {
-        console.error('Error starting SignalR connection: ', err);
+      .catch((err) => {
+        console.error("Error starting SignalR connection: ", err);
         throw err;
       });
   }
 
   private registerServerEvents(): void {
-    this.hubConnection.on('UploadProgress', (message: string) => {
+    this.hubConnection.on("UploadProgress", (message: string) => {
       this.progressMessage$.next(message);
     });
 
-    this.hubConnection.on('UploadComplete', (fileName: string) => {
+    this.hubConnection.on("UploadComplete", (fileName: string) => {
       this.uploadComplete$.next(fileName);
     });
 
-    this.hubConnection.on('UploadError', (error: string) => {
+    this.hubConnection.on("UploadError", (error: string) => {
       this.uploadError$.next(error);
     });
   }
 
   public uploadFile(fileName: string, base64Content: string): Promise<void> {
-    return this.hubConnection.invoke('UploadFile', fileName, base64Content);
+    return this.hubConnection.invoke("UploadFile", fileName, base64Content);
   }
 
   public stopConnection(): void {
@@ -63,6 +63,5 @@ export class SignalrFileUploadService {
 
   public isConnected(): boolean {
     return this.hubConnection?.state === signalR.HubConnectionState.Connected;
-  }  
-
+  }
 }

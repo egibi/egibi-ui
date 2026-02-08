@@ -4,11 +4,13 @@ import { Observable } from "rxjs";
 import { RequestResponse } from "../request-response";
 import { EntityType } from "../_models/entity-type.model";
 import { AccountUser } from "../_models/account-user.model";
+import { environment } from "../../environments/environment";
+
 @Injectable({
   providedIn: "root",
 })
 export class AppConfigurationService {
-  private apiBaseUrl: string = "https://localhost:7182/AppConfigurations";
+  private apiBaseUrl: string = `${environment.apiUrl}/AppConfigurations`;
 
   constructor(private http: HttpClient) {}
 
@@ -61,7 +63,7 @@ export class AppConfigurationService {
 
   //=====================================================================================
   // ACCOUNT USER STATE MANAGEMENT
-  //===================================================================================== 
+  //=====================================================================================
   selectedAccountUser = signal<AccountUser>(new AccountUser());
   getSelectedAccountUser(): AccountUser {
     return this.selectedAccountUser();
@@ -71,10 +73,10 @@ export class AppConfigurationService {
   }
 
   createdAccountUser = signal<AccountUser>(new AccountUser());
-  getCreatedAccountUser():AccountUser{
+  getCreatedAccountUser(): AccountUser {
     return this.createdAccountUser();
   }
-  setCreatedAccountUser(accountUser:AccountUser){
+  setCreatedAccountUser(accountUser: AccountUser) {
     this.createdAccountUser.update(() => accountUser);
   }
 
@@ -98,7 +100,7 @@ export class AppConfigurationService {
     return this.http.post<RequestResponse>(`${this.apiBaseUrl}/save-account-user`, accountUser);
   }
 
-  public deleteAccountUser(accountUser:AccountUser): Observable<RequestResponse> {
+  public deleteAccountUser(accountUser: AccountUser): Observable<RequestResponse> {
     return this.http.post<RequestResponse>(`${this.apiBaseUrl}/delete-account-user`, accountUser);
   }
 }

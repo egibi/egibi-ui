@@ -1,5 +1,6 @@
 export const environment = {
   production: true,
   name: 'Production',
-  tag: 'PROD'
+  tag: 'PROD',
+  apiUrl: 'https://api.egibi.io'  // Update to your production API URL
 };

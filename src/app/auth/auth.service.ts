@@ -6,16 +6,17 @@ import {
   LoginRequest, SignupRequest, ForgotPasswordRequest, ResetPasswordRequest,
   AuthResponse, OidcTokenResponse, UserProfile
 } from './auth.models';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
 
-  // --- Configuration ---
-  private readonly apiUrl = 'https://localhost:7182';
+  // FIX #8: Use centralized environment config instead of hardcoded URLs
+  private readonly apiUrl = environment.apiUrl;
   private readonly clientId = 'egibi-ui';
-  private readonly redirectUri = 'http://localhost:4200/auth/callback';
+  private readonly redirectUri = `${window.location.origin}/auth/callback`;
   private readonly scopes = 'openid email profile roles api offline_access';
 
   // --- State ---
@@ -24,6 +25,10 @@ export class AuthService {
   private _user = signal<UserProfile | null>(null);
   private _loading = signal<boolean>(false);
   private _initialized = signal<boolean>(false);
+
+  // FIX #18: Track token expiry time instead of using fragile setTimeout
+  private _tokenExpiresAt: number | null = null;
+  private _refreshPromise: Promise<boolean> | null = null;
 
   /** Promise that resolves when initial session restore (including token refresh) is complete */
   readonly whenInitialized: Promise<void>;
@@ -217,10 +222,29 @@ export class AuthService {
   // TOKEN REFRESH
   // =============================================
 
+  /**
+   * FIX #18: Deduplicates concurrent refresh calls.
+   * If a refresh is already in-flight, returns the same promise.
+   */
   async refreshAccessToken(): Promise<boolean> {
+    // Deduplicate concurrent calls
+    if (this._refreshPromise) {
+      return this._refreshPromise;
+    }
+
     const refreshToken = this._refreshToken();
     if (!refreshToken) return false;
 
+    this._refreshPromise = this._doRefresh(refreshToken);
+
+    try {
+      return await this._refreshPromise;
+    } finally {
+      this._refreshPromise = null;
+    }
+  }
+
+  private async _doRefresh(refreshToken: string): Promise<boolean> {
     try {
       const body = new HttpParams()
         .set('grant_type', 'refresh_token')
@@ -238,6 +262,16 @@ export class AuthService {
     } catch {
       return false;
     }
+  }
+
+  /**
+   * FIX #18: Check if token is about to expire (proactive refresh).
+   * Called by the interceptor before each API request.
+   */
+  isTokenExpiringSoon(): boolean {
+    if (!this._tokenExpiresAt) return false;
+    // Refresh if within 60 seconds of expiry
+    return Date.now() >= (this._tokenExpiresAt - 60_000);
   }
 
   // =============================================
@@ -287,10 +321,10 @@ export class AuthService {
       localStorage.setItem('oidc_refresh_token', response.refresh_token);
     }
 
-    // Schedule token refresh before expiry
+    // FIX #18: Track expiry time instead of using setTimeout
     if (response.expires_in) {
-      const refreshMs = (response.expires_in - 60) * 1000; // Refresh 60s before expiry
-      setTimeout(() => this.refreshAccessToken(), Math.max(refreshMs, 5000));
+      this._tokenExpiresAt = Date.now() + (response.expires_in * 1000);
+      localStorage.setItem('oidc_token_expires_at', this._tokenExpiresAt.toString());
     }
   }
 
@@ -298,11 +332,13 @@ export class AuthService {
     const accessToken = localStorage.getItem('oidc_access_token');
     const refreshToken = localStorage.getItem('oidc_refresh_token');
     const userJson = localStorage.getItem('oidc_user');
+    const expiresAt = localStorage.getItem('oidc_token_expires_at');
 
     if (accessToken && userJson) {
       this._accessToken.set(accessToken);
       this._refreshToken.set(refreshToken);
       this._user.set(JSON.parse(userJson));
+      this._tokenExpiresAt = expiresAt ? parseInt(expiresAt, 10) : null;
 
       // Try to refresh the token silently.
       // If it succeeds, we get a fresh access token.
@@ -320,11 +356,14 @@ export class AuthService {
     this._accessToken.set(null);
     this._refreshToken.set(null);
     this._user.set(null);
+    this._tokenExpiresAt = null;
+    this._refreshPromise = null;
     localStorage.removeItem('oidc_access_token');
     localStorage.removeItem('oidc_refresh_token');
     localStorage.removeItem('oidc_user');
     localStorage.removeItem('oidc_code_verifier');
     localStorage.removeItem('oidc_state');
+    localStorage.removeItem('oidc_token_expires_at');
   }
 
   // =============================================

@@ -5,12 +5,13 @@ import { RequestResponse } from "../request-response";
 import { DataProvider } from "../_models/data-provider.model";
 import { DataProviderType } from "../_models/data-provider-type.model";
 import { QuestDbTable } from "../_models/questdb-table.model";
+import { environment } from "../../environments/environment";
 
 @Injectable({
   providedIn: "root",
 })
 export class DataManagerService {
-  private apiBaseUrl: string = "https://localhost:7182/DataManager";
+  private apiBaseUrl: string = `${environment.apiUrl}/DataManager`;
 
   //--------------------------------------------------------------------------------------------------------------
   // TESTING (DATABASE STUFF)

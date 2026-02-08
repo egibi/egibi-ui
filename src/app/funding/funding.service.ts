@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { RequestResponse } from '../request-response';
 import { PlaidFundingDetails } from './plaid-link/plaid-link.service';
+import { environment } from '../../environments/environment';  
 
 export interface FundingSourceResponse {
   accountId: number;
@@ -63,7 +64,7 @@ export interface CreateFundingSourceRequest {
   providedIn: 'root',
 })
 export class FundingService {
-  private apiBaseUrl = 'https://localhost:7182/Funding';
+  private apiBaseUrl = `${environment.apiUrl}/Funding`;
 
   constructor(private http: HttpClient) {}
 

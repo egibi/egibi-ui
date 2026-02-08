@@ -3,15 +3,15 @@ import { HttpClient } from "@angular/common/http";
 import { Observable } from "rxjs";
 import { RequestResponse } from "../request-response";
 import { EntityType } from "../_models/entity-type.model";
+import { environment } from "../../environments/environment";
 
 @Injectable({
   providedIn: "root",
 })
 export class ServiceConfigurationsService {
-  private apiBaseUrl: string = "https://localhost:7182/ServiceConfigurations";
+  private apiBaseUrl: string = `${environment.apiUrl}/ServiceConfigurations`;
 
   entityTypes: string[] = [];
-
 
   public selectedEntityTypeTable = signal<string>("");
 
@@ -22,7 +22,6 @@ export class ServiceConfigurationsService {
   public getSelectedEntityTypeTable(): string {
     return this.selectedEntityTypeTable();
   }
-
 
   constructor(private http: HttpClient) {}
 
@@ -35,7 +34,7 @@ export class ServiceConfigurationsService {
   }
 
   public saveEntityType(entityType: EntityType): Observable<RequestResponse> {
-    console.log('configuration service should be calling saveEntityType()');
+    console.log("configuration service should be calling saveEntityType()");
     return this.http.post<RequestResponse>(`${this.apiBaseUrl}/save-entity-type`, entityType);
   }
 }

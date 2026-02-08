@@ -1,6 +1,7 @@
-import { Injectable, inject } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Injectable, inject } from "@angular/core";
+import { HttpClient } from "@angular/common/http";
+import { Observable } from "rxjs";
+import { environment } from "../../environments/environment";
 
 export interface StorageConfig {
   externalDiskPath: string;
@@ -87,10 +88,10 @@ export interface ArchiveLogEntry {
   details: string;
 }
 
-@Injectable({ providedIn: 'root' })
+@Injectable({ providedIn: "root" })
 export class StorageService {
   private http = inject(HttpClient);
-  private baseUrl = 'https://localhost:7182/Storage';
+  private baseUrl = `${environment.apiUrl}/Storage`;
 
   // --- Config ---
   getConfig(): Observable<StorageConfig> {

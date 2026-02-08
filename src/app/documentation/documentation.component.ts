@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { NgbNavModule } from '@ng-bootstrap/ng-bootstrap';
+import { environment } from '../../environments/environment';  
 
 interface DocSection {
   id: string;

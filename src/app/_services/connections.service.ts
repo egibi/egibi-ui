@@ -1,14 +1,15 @@
-import { HttpClient } from '@angular/common/http';
-import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
-import { RequestResponse } from '../request-response';
-import { Connection } from '../_models/connection.model';
+import { HttpClient } from "@angular/common/http";
+import { Injectable } from "@angular/core";
+import { Observable } from "rxjs";
+import { RequestResponse } from "../request-response";
+import { Connection } from "../_models/connection.model";
+import { environment } from "../../environments/environment";
 
 @Injectable({
-  providedIn: 'root',
+  providedIn: "root",
 })
 export class ConnectionsService {
-  private apiBaseUrl = 'https://localhost:7182/Connections';
+  private apiBaseUrl = `${environment.apiUrl}/Connections`;
 
   constructor(private http: HttpClient) {}
 

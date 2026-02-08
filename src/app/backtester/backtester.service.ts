@@ -1,19 +1,18 @@
-import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
-import { Backtest } from './backtester.models';
-import { RequestResponse } from '../_models/request-response.model';
+import { Injectable } from "@angular/core";
+import { HttpClient } from "@angular/common/http";
+import { Observable } from "rxjs";
+import { Backtest } from "./backtester.models";
+import { RequestResponse } from "../_models/request-response.model";
+import { environment } from "../../environments/environment";
 
 @Injectable({
-  providedIn: 'root',
+  providedIn: "root",
 })
 export class BacktesterService {
-  private readonly apiBaseUrl = 'https://localhost:7182/Backtester';
-  private currentBacktestsGridAction: string = '';
+  private readonly apiBaseUrl = `${environment.apiUrl}/Backtester`;
+  private currentBacktestsGridAction: string = "";
 
-  constructor(
-    private http: HttpClient,
-  ) {}
+  constructor(private http: HttpClient) {}
 
   public getBacktests(): Observable<RequestResponse> {
     return this.http.get<RequestResponse>(`${this.apiBaseUrl}/get-backtests`);

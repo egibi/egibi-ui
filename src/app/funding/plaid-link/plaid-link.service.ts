@@ -1,8 +1,9 @@
-import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { Observable, from, of } from 'rxjs';
-import { map, switchMap } from 'rxjs/operators';
-import { RequestResponse } from '../../request-response';
+import { Injectable } from "@angular/core";
+import { HttpClient } from "@angular/common/http";
+import { Observable, from, of } from "rxjs";
+import { map, switchMap } from "rxjs/operators";
+import { RequestResponse } from "../../request-response";
+import { environment } from "../../../environments/environment";
 
 declare global {
   interface Window {
@@ -45,14 +46,14 @@ export interface PlaidFundingDetails {
 }
 
 @Injectable({
-  providedIn: 'root',
+  providedIn: "root",
 })
 export class PlaidLinkService {
   private plaidScriptLoaded = false;
   private plaidScriptLoading = false;
   private scriptLoadPromise: Promise<void> | null = null;
 
-  private apiBaseUrl = 'https://localhost:7182/Plaid';
+  private apiBaseUrl = `${environment.apiUrl}/Plaid`;
 
   constructor(private http: HttpClient) {}
 
@@ -67,8 +68,8 @@ export class PlaidLinkService {
 
     this.plaidScriptLoading = true;
     this.scriptLoadPromise = new Promise<void>((resolve, reject) => {
-      const script = document.createElement('script');
-      script.src = 'https://cdn.plaid.com/link/v2/stable/link-initialize.js';
+      const script = document.createElement("script");
+      script.src = "https://cdn.plaid.com/link/v2/stable/link-initialize.js";
       script.async = true;
       script.onload = () => {
         this.plaidScriptLoaded = true;
@@ -78,7 +79,7 @@ export class PlaidLinkService {
       script.onerror = () => {
         this.plaidScriptLoading = false;
         this.scriptLoadPromise = null;
-        reject(new Error('Failed to load Plaid Link SDK'));
+        reject(new Error("Failed to load Plaid Link SDK"));
       };
       document.head.appendChild(script);
     });
@@ -103,10 +104,10 @@ export class PlaidLinkService {
       switchMap((res) => {
         const linkToken = res.responseData?.linkToken;
         if (!linkToken) {
-          throw new Error('Failed to get link token from server');
+          throw new Error("Failed to get link token from server");
         }
         return this.launchLink(linkToken);
-      })
+      }),
     );
   }
 
@@ -119,7 +120,7 @@ export class PlaidLinkService {
   private launchLink(linkToken: string): Observable<PlaidLinkResult> {
     return new Observable<PlaidLinkResult>((subscriber) => {
       if (!window.Plaid) {
-        subscriber.error(new Error('Plaid SDK not loaded'));
+        subscriber.error(new Error("Plaid SDK not loaded"));
         return;
       }
 
@@ -173,9 +174,7 @@ export class PlaidLinkService {
 
   /** Get recent transactions */
   getTransactions(plaidItemId: number, days = 30): Observable<RequestResponse> {
-    return this.http.get<RequestResponse>(
-      `${this.apiBaseUrl}/transactions?plaidItemId=${plaidItemId}&days=${days}`
-    );
+    return this.http.get<RequestResponse>(`${this.apiBaseUrl}/transactions?plaidItemId=${plaidItemId}&days=${days}`);
   }
 
   /** Get ACH auth data */
