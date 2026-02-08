@@ -1,5 +1,6 @@
 import { Routes } from "@angular/router";
 import { authGuard } from "./auth/auth.guard";
+import { adminGuard } from "./auth/admin.guard";
 
 // Auth pages (public)
 import { LoginComponent } from "./auth/login/login.component";
@@ -154,7 +155,7 @@ export const routes: Routes = [
   {
     path: "admin",
     component: AdminComponent,
-    canActivate: [authGuard],
+    canActivate: [adminGuard],
   },
   {
     path: 'storage',

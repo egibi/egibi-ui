@@ -1,0 +1,212 @@
+.user-management {
+  // Stats bar
+  .stats-bar {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+
+    .stat-item {
+      .stat-value {
+        font-size: 1.25rem;
+        font-weight: 700;
+        line-height: 1.2;
+      }
+      .stat-label {
+        font-size: 0.75rem;
+        color: hsl(var(--egibi-muted-foreground));
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+      }
+    }
+
+    .stat-spacer {
+      flex: 1;
+    }
+  }
+
+  // Create form card
+  .create-form-card {
+    padding: 1rem 1.25rem;
+    border: 1px solid hsl(var(--egibi-border));
+    border-radius: var(--egibi-radius);
+    background: hsl(var(--egibi-muted) / 0.3);
+
+    .card-header-label {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-size: 0.8rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: hsl(var(--egibi-muted-foreground));
+      margin-bottom: 0.75rem;
+    }
+  }
+
+  .create-form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr auto auto;
+    gap: 0.75rem;
+    align-items: end;
+  }
+
+  // Users table
+  .users-table-wrapper {
+    border: 1px solid hsl(var(--egibi-border));
+    border-radius: var(--egibi-radius);
+    overflow: hidden;
+  }
+
+  table {
+    th {
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: hsl(var(--egibi-muted-foreground));
+      border-bottom-width: 1px;
+      padding: 0.6rem 0.75rem;
+      white-space: nowrap;
+    }
+
+    td {
+      padding: 0.6rem 0.75rem;
+      vertical-align: middle;
+      font-size: 0.875rem;
+    }
+
+    .inactive-row {
+      opacity: 0.55;
+    }
+  }
+
+  .user-name-cell {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .user-avatar {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: hsl(var(--egibi-muted));
+    color: hsl(var(--egibi-muted-foreground));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+    font-weight: 700;
+    flex-shrink: 0;
+
+    &.admin-avatar {
+      background: hsl(var(--egibi-primary) / 0.15);
+      color: hsl(var(--egibi-primary));
+    }
+  }
+
+  .role-badge {
+    display: inline-block;
+    font-size: 0.7rem;
+    font-weight: 600;
+    padding: 0.15rem 0.45rem;
+    border-radius: 3px;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+
+    &.role-admin {
+      background: hsl(var(--egibi-primary) / 0.1);
+      color: hsl(var(--egibi-primary));
+    }
+
+    &.role-user {
+      background: hsl(var(--egibi-muted) / 0.5);
+      color: hsl(var(--egibi-muted-foreground));
+    }
+  }
+
+  .status-dot {
+    display: inline-block;
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    margin-right: 0.3rem;
+    vertical-align: middle;
+
+    &.active {
+      background: hsl(var(--egibi-success));
+    }
+
+    &.inactive {
+      background: hsl(var(--egibi-muted-foreground));
+    }
+  }
+
+  .action-buttons {
+    display: flex;
+    gap: 0.3rem;
+    justify-content: flex-end;
+
+    .btn {
+      padding: 0.2rem 0.4rem;
+      line-height: 1;
+    }
+  }
+
+  // Inline edit row
+  .edit-row {
+    td {
+      background: hsl(var(--egibi-muted) / 0.2);
+      padding: 0.75rem;
+    }
+  }
+
+  .edit-form {
+    .edit-form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr auto auto;
+      gap: 0.75rem;
+      align-items: end;
+    }
+
+    .reset-form-grid {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 0.75rem;
+      align-items: end;
+    }
+  }
+
+  .form-actions {
+    display: flex;
+    gap: 0.4rem;
+    align-items: end;
+    padding-bottom: 1px;
+  }
+
+  .form-field {
+    .form-label {
+      margin-bottom: 0.25rem;
+      font-size: 0.8rem;
+    }
+  }
+}
+
+// Responsive
+@media (max-width: 768px) {
+  .user-management {
+    .create-form-grid {
+      grid-template-columns: 1fr 1fr;
+    }
+
+    .edit-form .edit-form-grid {
+      grid-template-columns: 1fr 1fr;
+    }
+
+    .stats-bar {
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+  }
+}

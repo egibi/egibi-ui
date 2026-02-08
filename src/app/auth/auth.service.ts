@@ -45,6 +45,12 @@ export class AuthService {
   /** Whether initial token check is complete */
   initialized = this._initialized.asReadonly();
 
+  /** Current user's role */
+  userRole = computed(() => this._user()?.role ?? null);
+
+  /** Whether the current user is an admin */
+  isAdmin = computed(() => this._user()?.role === 'admin');
+
   /** Current access token (for interceptor) */
   get accessToken(): string | null {
     return this._accessToken();

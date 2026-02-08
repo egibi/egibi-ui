@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, ElementRef, ViewChild, AfterViewInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
@@ -11,9 +11,11 @@ import { Connection, SERVICE_CATEGORIES, ALL_CREDENTIAL_FIELDS, CREDENTIAL_FIELD
   templateUrl: './edit-service-modal.component.html',
   styleUrl: './edit-service-modal.component.scss',
 })
-export class EditServiceModalComponent implements OnInit {
+export class EditServiceModalComponent implements OnInit, AfterViewInit, OnDestroy {
   /** If provided, we're editing an existing connection; otherwise creating new */
   @Input() connection: Connection | null = null;
+
+  @ViewChild('modalBody') modalBody!: ElementRef<HTMLElement>;
 
   categories = SERVICE_CATEGORIES;
   allCredentialFields = ALL_CREDENTIAL_FIELDS;
@@ -32,6 +34,9 @@ export class EditServiceModalComponent implements OnInit {
   formSortOrder = 0;
 
   saving = false;
+  showScrollTop = false;
+
+  private scrollListener: (() => void) | null = null;
 
   get isNew(): boolean {
     return !this.connection || this.connection.id === 0;
@@ -56,6 +61,28 @@ export class EditServiceModalComponent implements OnInit {
       } catch {
         this.formRequiredFields = [];
       }
+    }
+  }
+
+  ngAfterViewInit(): void {
+    if (this.modalBody) {
+      const el = this.modalBody.nativeElement;
+      this.scrollListener = () => {
+        this.showScrollTop = el.scrollTop > 200;
+      };
+      el.addEventListener('scroll', this.scrollListener);
+    }
+  }
+
+  ngOnDestroy(): void {
+    if (this.modalBody && this.scrollListener) {
+      this.modalBody.nativeElement.removeEventListener('scroll', this.scrollListener);
+    }
+  }
+
+  scrollToTop(): void {
+    if (this.modalBody) {
+      this.modalBody.nativeElement.scrollTo({ top: 0, behavior: 'smooth' });
     }
   }
 

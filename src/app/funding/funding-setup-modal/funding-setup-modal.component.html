@@ -9,6 +9,8 @@
     <h5 class="modal-title mb-0">
       @if (step === 'pick-provider') {
         Set Up Funding
+      } @else if (step === 'plaid-config') {
+        Configure Plaid
       } @else if (selectedProvider) {
         <span class="service-dot" [style.background-color]="selectedProvider.color"></span>
         {{ selectedProvider.name }}
@@ -35,6 +37,13 @@
   @if (step === 'pick-provider') {
     <p class="text-muted mb-3">Choose a banking provider to use as your primary funding source.</p>
 
+    @if (plaidConfigChecking) {
+      <div class="text-center py-4">
+        <span class="spinner-border spinner-border-sm me-2"></span>
+        Checking configuration...
+      </div>
+    }
+
     @if (providers.length === 0) {
       <div class="text-center py-4 text-muted">
         No funding providers available. Contact your administrator.
@@ -43,7 +52,7 @@
 
     <div class="provider-cards">
       @for (provider of providers; track provider.connectionId) {
-        <button class="provider-card" (click)="selectProvider(provider)">
+        <button class="provider-card" (click)="selectProvider(provider)" [disabled]="plaidConfigChecking">
           <div class="card-icon" [style.background-color]="provider.color || '#6C757D'">
             <span class="icon-letter">{{ provider.name.charAt(0).toUpperCase() }}</span>
           </div>
@@ -61,6 +70,132 @@
           <svg class="card-arrow" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
         </button>
       }
+    </div>
+  }
+
+  <!-- ============================== -->
+  <!-- STEP 2p: PLAID CONFIG SETUP    -->
+  <!-- ============================== -->
+  @if (step === 'plaid-config') {
+    <div class="plaid-config-step">
+      <div class="config-intro">
+        <div class="config-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+          </svg>
+        </div>
+        <h6 class="mb-1">Set Up Your Plaid Integration</h6>
+        <p class="text-muted small mb-0">
+          To link bank accounts, you need a free Plaid developer account. Your credentials are encrypted and stored securely.
+        </p>
+      </div>
+
+      <!-- Instructions -->
+      <div class="config-steps">
+        <div class="config-step-item">
+          <div class="step-num">1</div>
+          <div class="step-content">
+            <strong>Create a Plaid account</strong>
+            <span>Sign up at dashboard.plaid.com — it's free and takes about 2 minutes.</span>
+            <button class="btn btn-outline-primary btn-sm mt-1" (click)="openPlaidSignup()">
+              <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" x2="21" y1="14" y2="3"/></svg>
+              Open Plaid Signup
+            </button>
+          </div>
+        </div>
+        <div class="config-step-item">
+          <div class="step-num">2</div>
+          <div class="step-content">
+            <strong>Get your API keys</strong>
+            <span>Go to Developers → Keys in your Plaid dashboard to find your Client ID and Secret.</span>
+            <button class="btn btn-outline-secondary btn-sm mt-1" (click)="openPlaidDashboard()">
+              <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" x2="21" y1="14" y2="3"/></svg>
+              Open Plaid Keys
+            </button>
+          </div>
+        </div>
+        <div class="config-step-item">
+          <div class="step-num">3</div>
+          <div class="step-content">
+            <strong>Enter your credentials below</strong>
+            <span>Paste your Client ID and Secret, then choose your environment.</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Credential Form -->
+      <div class="form-section mt-3">
+        <div class="section-label">
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+          Plaid Credentials
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">Client ID <span class="text-danger">*</span></label>
+          <input
+            type="text"
+            class="form-control form-control-sm"
+            [(ngModel)]="plaidClientId"
+            placeholder="e.g., 5f1234abc567890def123456"
+            autocomplete="off"
+          >
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">Secret <span class="text-danger">*</span></label>
+          <div class="input-group input-group-sm">
+            <input
+              [type]="showPlaidSecret ? 'text' : 'password'"
+              class="form-control"
+              [(ngModel)]="plaidSecret"
+              placeholder="Enter your Plaid secret"
+              autocomplete="off"
+            >
+            <button
+              class="btn btn-outline-secondary"
+              type="button"
+              (click)="showPlaidSecret = !showPlaidSecret"
+              [title]="showPlaidSecret ? 'Hide' : 'Show'">
+              @if (showPlaidSecret) {
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" x2="23" y1="1" y2="23"/></svg>
+              } @else {
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+              }
+            </button>
+          </div>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">Environment</label>
+          <select class="form-select form-select-sm" [(ngModel)]="plaidEnvironment">
+            <option value="sandbox">Sandbox (testing with fake banks)</option>
+            <option value="development">Development (real banks, limited connections)</option>
+            <option value="production">Production (real banks, unlimited)</option>
+          </select>
+          <div class="form-text">
+            @if (plaidEnvironment === 'sandbox') {
+              Use test credentials to try Plaid without connecting real banks.
+            } @else if (plaidEnvironment === 'development') {
+              Connect real banks (up to 100 items). Requires Plaid account approval.
+            } @else {
+              Full production access. Requires Plaid production approval.
+            }
+          </div>
+        </div>
+      </div>
+
+      @if (plaidConfigError) {
+        <div class="alert alert-danger d-flex align-items-center gap-2 mb-0">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m15 9-6 6"/><path d="m9 9 6 6"/></svg>
+          {{ plaidConfigError }}
+        </div>
+      }
+
+      <!-- Security Notice -->
+      <div class="security-notice">
+        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        <span>Credentials are encrypted with AES-256-GCM using your personal encryption key</span>
+      </div>
     </div>
   }
 
@@ -124,6 +259,11 @@
           Securely connect your bank through Plaid. Your login credentials are never shared with Egibi —
           Plaid handles all authentication directly with your bank.
         </p>
+        <div class="plaid-env-badge">
+          <span class="badge" [class.bg-warning]="plaidEnvironment === 'sandbox'" [class.text-dark]="plaidEnvironment === 'sandbox'" [class.bg-info]="plaidEnvironment === 'development'" [class.bg-success]="plaidEnvironment === 'production'">
+            {{ plaidEnvironment | titlecase }}
+          </span>
+        </div>
       </div>
 
       <div class="plaid-features">
@@ -340,6 +480,20 @@
 <div class="modal-footer">
   @if (step === 'pick-provider') {
     <button class="btn btn-outline-secondary btn-sm" (click)="dismiss()">Cancel</button>
+  } @else if (step === 'plaid-config') {
+    <button class="btn btn-outline-secondary btn-sm" (click)="goBack()">Back</button>
+    <button
+      class="btn btn-primary btn-sm"
+      (click)="savePlaidConfig()"
+      [disabled]="!canSavePlaidConfig"
+      style="min-width: 160px;">
+      @if (plaidConfigSaving) {
+        <span class="spinner-border spinner-border-sm me-1"></span>
+        Saving...
+      } @else {
+        Save & Continue
+      }
+    </button>
   } @else if (step === 'signup-guide') {
     <button class="btn btn-outline-secondary btn-sm" (click)="goBack()">Back</button>
   } @else if (step === 'plaid-link') {

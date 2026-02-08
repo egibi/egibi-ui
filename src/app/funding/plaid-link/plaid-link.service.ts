@@ -1,7 +1,7 @@
 import { Injectable } from "@angular/core";
 import { HttpClient } from "@angular/common/http";
-import { Observable, from, of } from "rxjs";
-import { map, switchMap } from "rxjs/operators";
+import { Observable, from } from "rxjs";
+import { switchMap } from "rxjs/operators";
 import { RequestResponse } from "../../request-response";
 import { environment } from "../../../environments/environment";
 
@@ -27,6 +27,13 @@ export interface PlaidLinkResult {
     }[];
     link_session_id: string;
   };
+}
+
+export interface PlaidConfigStatus {
+  isConfigured: boolean;
+  environment: string;
+  createdAt: string | null;
+  lastModifiedAt: string | null;
 }
 
 export interface PlaidFundingDetails {
@@ -56,6 +63,29 @@ export class PlaidLinkService {
   private apiBaseUrl = `${environment.apiUrl}/Plaid`;
 
   constructor(private http: HttpClient) {}
+
+  // =============================================
+  // PLAID CONFIG MANAGEMENT
+  // =============================================
+
+  /** Check if user has Plaid credentials configured */
+  getConfigStatus(): Observable<RequestResponse> {
+    return this.http.get<RequestResponse>(`${this.apiBaseUrl}/config/status`);
+  }
+
+  /** Save user's Plaid developer credentials */
+  saveConfig(request: {
+    clientId: string;
+    secret: string;
+    environment: string;
+  }): Observable<RequestResponse> {
+    return this.http.post<RequestResponse>(`${this.apiBaseUrl}/config`, request);
+  }
+
+  /** Delete user's Plaid configuration */
+  deleteConfig(): Observable<RequestResponse> {
+    return this.http.delete<RequestResponse>(`${this.apiBaseUrl}/config`);
+  }
 
   // =============================================
   // SCRIPT LOADING
@@ -94,7 +124,7 @@ export class PlaidLinkService {
   /**
    * Opens Plaid Link for the user:
    * 1. Loads Plaid SDK if not already loaded
-   * 2. Gets a link_token from the backend
+   * 2. Gets a link_token from the backend (uses user's stored credentials)
    * 3. Opens Plaid Link modal
    * 4. Returns the public_token and metadata on success
    */
@@ -102,9 +132,16 @@ export class PlaidLinkService {
     return from(this.loadScript()).pipe(
       switchMap(() => this.createLinkToken()),
       switchMap((res) => {
+        // Check for backend error response
+        if (res.responseCode !== 200) {
+          const serverMsg = res.responseMessage || 'Unknown server error';
+          const errorDetail = res.responseError?.exceptionMessage ? `: ${res.responseError.exceptionMessage}` : '';
+          throw new Error(`${serverMsg}${errorDetail}`);
+        }
+
         const linkToken = res.responseData?.linkToken;
         if (!linkToken) {
-          throw new Error("Failed to get link token from server");
+          throw new Error("Server returned success but no link token was provided");
         }
         return this.launchLink(linkToken);
       }),
@@ -134,7 +171,6 @@ export class PlaidLinkService {
           if (err) {
             subscriber.error(err);
           } else {
-            // User closed without completing — not an error, just complete
             subscriber.complete();
           }
         },

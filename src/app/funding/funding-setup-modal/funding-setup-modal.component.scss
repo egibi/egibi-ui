@@ -208,6 +208,101 @@
   }
 }
 
+// Plaid config setup (step 2p)
+.plaid-config-step {
+  .config-intro {
+    text-align: center;
+    padding: 0.5rem 0 1rem;
+
+    .config-icon {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      background: hsl(var(--egibi-primary) / 0.08);
+      color: hsl(var(--egibi-primary));
+      margin-bottom: 0.75rem;
+    }
+
+    h6 {
+      font-weight: 700;
+    }
+
+    p {
+      max-width: 420px;
+      margin: 0 auto;
+    }
+  }
+
+  .config-steps {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    margin-top: 1rem;
+  }
+
+  .config-step-item {
+    display: flex;
+    gap: 0.75rem;
+    padding: 0.75rem 1rem;
+    border-radius: var(--egibi-radius);
+    background: hsl(var(--egibi-muted) / 0.3);
+
+    .step-num {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: hsl(var(--egibi-primary));
+      color: #fff;
+      font-size: 0.75rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      margin-top: 0.1rem;
+    }
+
+    .step-content {
+      display: flex;
+      flex-direction: column;
+      gap: 0.15rem;
+
+      strong {
+        font-size: 0.85rem;
+        font-weight: 600;
+      }
+
+      span {
+        font-size: 0.8rem;
+        color: hsl(var(--egibi-muted-foreground));
+      }
+
+      .btn {
+        align-self: flex-start;
+        font-size: 0.75rem;
+        padding: 0.2rem 0.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.35rem;
+      }
+    }
+  }
+}
+
+// Plaid environment badge
+.plaid-env-badge {
+  margin-top: 0.5rem;
+
+  .badge {
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.03em;
+  }
+}
+
 // Plaid Link step (step 2b)
 .plaid-link-step {
   .plaid-intro {

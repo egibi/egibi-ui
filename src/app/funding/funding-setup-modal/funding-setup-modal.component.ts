@@ -12,6 +12,7 @@ type WizardStep =
   | 'signup-guide'
   | 'enter-credentials'
   // Plaid Link flow
+  | 'plaid-config'
   | 'plaid-link'
   | 'select-account';
 
@@ -47,6 +48,16 @@ export class FundingSetupModalComponent implements OnInit {
   showSecrets: Record<string, boolean> = {};
   saving = false;
 
+  // Plaid config state
+  plaidConfigured = false;
+  plaidConfigChecking = false;
+  plaidConfigError = '';
+  plaidConfigSaving = false;
+  plaidClientId = '';
+  plaidSecret = '';
+  plaidEnvironment = 'sandbox';
+  showPlaidSecret = false;
+
   // Plaid Link state
   plaidLinking = false;
   plaidLinkError = '';
@@ -74,19 +85,92 @@ export class FundingSetupModalComponent implements OnInit {
     this.showSecrets = {};
 
     if (provider.linkMethod === 'plaid_link') {
-      // Plaid flow — go directly to link step
+      // Plaid flow — check if user has credentials configured
       this.plaidLinkError = '';
+      this.plaidConfigError = '';
       this.plaidResult = null;
       this.plaidLinking = false;
-      this.step = 'plaid-link';
+      this.checkPlaidConfig();
     } else {
-      // API key flow — existing flow
+      // API key flow
       for (const field of provider.requiredFields || []) {
         this.credentials[field] = '';
         this.showSecrets[field] = false;
       }
       this.step = 'signup-guide';
     }
+  }
+
+  // =============================================
+  // PLAID CONFIG CHECK
+  // =============================================
+
+  private checkPlaidConfig(): void {
+    this.plaidConfigChecking = true;
+
+    this.plaidLinkService.getConfigStatus().subscribe({
+      next: (res) => {
+        this.plaidConfigChecking = false;
+        if (res.responseCode === 200 && res.responseData?.isConfigured) {
+          this.plaidConfigured = true;
+          this.plaidEnvironment = res.responseData.environment || 'sandbox';
+          this.step = 'plaid-link';
+        } else {
+          this.plaidConfigured = false;
+          this.step = 'plaid-config';
+        }
+      },
+      error: () => {
+        this.plaidConfigChecking = false;
+        this.plaidConfigured = false;
+        this.step = 'plaid-config';
+      },
+    });
+  }
+
+  // =============================================
+  // STEP 2p — PLAID CONFIG SETUP
+  // =============================================
+
+  get canSavePlaidConfig(): boolean {
+    return !!this.plaidClientId.trim() && !!this.plaidSecret.trim() && !this.plaidConfigSaving;
+  }
+
+  savePlaidConfig(): void {
+    if (!this.canSavePlaidConfig) return;
+    this.plaidConfigSaving = true;
+    this.plaidConfigError = '';
+
+    this.plaidLinkService
+      .saveConfig({
+        clientId: this.plaidClientId.trim(),
+        secret: this.plaidSecret.trim(),
+        environment: this.plaidEnvironment,
+      })
+      .subscribe({
+        next: (res) => {
+          this.plaidConfigSaving = false;
+          if (res.responseCode === 200) {
+            this.plaidConfigured = true;
+            this.step = 'plaid-link';
+          } else {
+            this.plaidConfigError = res.responseMessage || 'Failed to save Plaid configuration';
+          }
+        },
+        error: (err) => {
+          this.plaidConfigSaving = false;
+          this.plaidConfigError = 'Failed to save Plaid configuration. Please try again.';
+          console.error('Plaid config save error:', err);
+        },
+      });
+  }
+
+  openPlaidDashboard(): void {
+    window.open('https://dashboard.plaid.com/developers/keys', '_blank');
+  }
+
+  openPlaidSignup(): void {
+    window.open('https://dashboard.plaid.com/signup', '_blank');
   }
 
   // =============================================
@@ -279,15 +363,25 @@ export class FundingSetupModalComponent implements OnInit {
 
   goBack(): void {
     this.plaidLinkError = '';
+    this.plaidConfigError = '';
 
     if (this.step === 'enter-credentials') {
       this.step = 'signup-guide';
     } else if (this.step === 'signup-guide') {
       this.step = 'pick-provider';
       this.selectedProvider = null;
-    } else if (this.step === 'plaid-link') {
+    } else if (this.step === 'plaid-config') {
       this.step = 'pick-provider';
       this.selectedProvider = null;
+      this.plaidResult = null;
+    } else if (this.step === 'plaid-link') {
+      if (this.plaidConfigured) {
+        // Config already done, go back to provider picker
+        this.step = 'pick-provider';
+        this.selectedProvider = null;
+      } else {
+        this.step = 'plaid-config';
+      }
       this.plaidResult = null;
     } else if (this.step === 'select-account') {
       this.step = 'plaid-link';
@@ -304,15 +398,20 @@ export class FundingSetupModalComponent implements OnInit {
       case 'pick-provider':
         return 1;
       case 'signup-guide':
-      case 'plaid-link':
+      case 'plaid-config':
         return 2;
+      case 'plaid-link':
+        return this.plaidConfigured ? 2 : 3;
       case 'enter-credentials':
       case 'select-account':
-        return 3;
+        return this.plaidConfigured ? 3 : 4;
     }
   }
 
   get totalSteps(): number {
+    if (this.selectedProvider?.linkMethod === 'plaid_link') {
+      return this.plaidConfigured ? 3 : 4;
+    }
     return 3;
   }
 }

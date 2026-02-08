@@ -4,12 +4,14 @@ import { RouterModule } from '@angular/router';
 import { NgbTooltipModule } from '@ng-bootstrap/ng-bootstrap';
 import { ThemeService } from '../../_services/theme.service';
 import { EnvironmentService } from '../../_services/environment.service';
+import { AuthService } from '../../auth/auth.service';
 
 interface NavItem {
   label: string;
   route: string;
   icon: string;
   exact?: boolean;
+  requiresAdmin?: boolean;
 }
 
 interface NavSection {
@@ -31,6 +33,7 @@ export class SidebarComponent {
   
   themeService = inject(ThemeService);
   envService = inject(EnvironmentService);
+  authService = inject(AuthService);
   isMobile = false;
   isCollapsed = false;
   
@@ -65,11 +68,22 @@ export class SidebarComponent {
         { label: 'Storage', route: '/storage', icon: 'hard-drive' },
         { label: 'Settings', route: '/app-configuration', icon: 'settings' },
         { label: 'API Tester', route: '/api-tester', icon: 'terminal' },
-        { label: 'Admin', route: '/admin', icon: 'shield' },
+        { label: 'Admin', route: '/admin', icon: 'shield', requiresAdmin: true },
         { label: 'Documentation', route: '/documentation', icon: 'book' }
       ]
     }
   ];
+
+  /** Returns nav sections filtered by the current user's role */
+  get visibleNavSections(): NavSection[] {
+    const isAdmin = this.authService.isAdmin();
+    return this.navSections
+      .map(section => ({
+        ...section,
+        items: section.items.filter(item => !item.requiresAdmin || isAdmin)
+      }))
+      .filter(section => section.items.length > 0);
+  }
   
   constructor() {
     this.checkMobile();

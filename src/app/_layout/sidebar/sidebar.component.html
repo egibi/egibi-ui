@@ -47,7 +47,7 @@
 
   <!-- Navigation -->
   <nav class="sidebar-nav">
-    @for (section of navSections; track section.title) {
+    @for (section of visibleNavSections; track section.title) {
       <div class="sidebar-section">
         @if (section.title) {
           <p class="sidebar-section-title" [class.hidden]="isCollapsed">{{ section.title }}</p>
