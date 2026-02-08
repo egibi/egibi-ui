@@ -1,0 +1,82 @@
+// =============================================
+// MODAL OVERRIDES
+// =============================================
+
+.modal-header {
+  border-bottom-color: var(--egibi-border);
+  padding: 0.875rem 1.25rem;
+}
+
+.modal-title {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.service-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  display: inline-block;
+  flex-shrink: 0;
+}
+
+.modal-body {
+  padding: 1.25rem;
+  max-height: 65vh;
+  overflow-y: auto;
+}
+
+.modal-footer {
+  border-top-color: var(--egibi-border);
+  padding: 0.75rem 1.25rem;
+}
+
+// =============================================
+// FORM LAYOUT
+// =============================================
+
+.configure-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.form-section {
+  padding: 1rem;
+  border-radius: 10px;
+  background: var(--egibi-card);
+  border: 1px solid var(--egibi-border);
+}
+
+.section-label {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--egibi-muted);
+  margin-bottom: 0.875rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--egibi-border);
+}
+
+.form-row {
+  display: flex;
+  gap: 1rem;
+
+  @media (max-width: 576px) {
+    flex-direction: column;
+    gap: 0;
+  }
+}
+
+.credential-fields {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}

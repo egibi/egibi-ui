@@ -1,46 +1,33 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
-import { Connection, SERVICE_CATEGORIES, ALL_CREDENTIAL_FIELDS, CREDENTIAL_FIELD_LABELS } from '../../_models/connection.model';
+import { Connection, SERVICE_CATEGORIES, CREDENTIAL_FIELD_LABELS } from '../../_models/connection.model';
 import { ConnectionsService } from '../../_services/connections.service';
+import { NgbGlobalModalService, ModalResult } from '../../_services/ngb-global-modal.service';
+import { EditServiceModalComponent } from './edit-service-modal/edit-service-modal.component';
 
 @Component({
   selector: 'service-catalog',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule],
   templateUrl: './service-catalog.component.html',
   styleUrl: './service-catalog.component.scss',
 })
 export class ServiceCatalogComponent implements OnInit {
   connections: Connection[] = [];
   categories = SERVICE_CATEGORIES;
-  allCredentialFields = ALL_CREDENTIAL_FIELDS;
   fieldLabels = CREDENTIAL_FIELD_LABELS;
   loading = true;
 
-  // Edit state
-  editing: Connection | null = null;
-  isNew = false;
-
-  // Form fields
-  formName = '';
-  formDescription = '';
-  formCategory = 'crypto_exchange';
-  formIconKey = '';
-  formColor = '#6C757D';
-  formWebsite = '';
-  formDefaultBaseUrl = '';
-  formRequiredFields: string[] = ['api_key', 'api_secret'];
-  formIsDataSource = true;
-  formSortOrder = 0;
-
-  constructor(private connectionsService: ConnectionsService) {}
+  constructor(
+    private connectionsService: ConnectionsService,
+    private modalService: NgbGlobalModalService,
+  ) {}
 
   ngOnInit(): void {
     this.loadConnections();
   }
 
-loadConnections(): void {
+  loadConnections(): void {
     this.loading = true;
     this.connectionsService.getConnections().subscribe({
       next: (res: any) => {
@@ -74,91 +61,39 @@ loadConnections(): void {
   }
 
   // =============================================
-  // EDIT / CREATE
+  // MODAL OPERATIONS
   // =============================================
 
   addNew(): void {
-    this.isNew = true;
-    this.editing = new Connection();
-    this.formName = '';
-    this.formDescription = '';
-    this.formCategory = 'crypto_exchange';
-    this.formIconKey = '';
-    this.formColor = '#6C757D';
-    this.formWebsite = '';
-    this.formDefaultBaseUrl = '';
-    this.formRequiredFields = ['api_key', 'api_secret'];
-    this.formIsDataSource = true;
-    this.formSortOrder = this.connections.length + 1;
+    this.modalService
+      .openModal(
+        EditServiceModalComponent,
+        { size: 'lg', centered: true, scrollable: true },
+        { connection: null },
+      )
+      .subscribe((modalResult: ModalResult) => {
+        if (modalResult.result && !modalResult.dismissed) {
+          this.connectionsService.saveConnection(modalResult.result).subscribe({
+            next: () => this.loadConnections(),
+          });
+        }
+      });
   }
 
   edit(conn: Connection): void {
-    this.isNew = false;
-    this.editing = conn;
-    this.formName = conn.name;
-    this.formDescription = conn.description || '';
-    this.formCategory = conn.category || 'other';
-    this.formIconKey = conn.iconKey || '';
-    this.formColor = conn.color || '#6C757D';
-    this.formWebsite = conn.website || '';
-    this.formDefaultBaseUrl = conn.defaultBaseUrl || '';
-    this.formIsDataSource = conn.isDataSource ?? true;
-    this.formSortOrder = conn.sortOrder || 0;
-    try {
-      this.formRequiredFields = JSON.parse(conn.requiredFields || '[]');
-    } catch {
-      this.formRequiredFields = [];
-    }
-  }
-
-  cancelEdit(): void {
-    this.editing = null;
-    this.isNew = false;
-  }
-
-  toggleField(field: string): void {
-    const idx = this.formRequiredFields.indexOf(field);
-    if (idx >= 0) {
-      this.formRequiredFields.splice(idx, 1);
-    } else {
-      this.formRequiredFields.push(field);
-    }
-  }
-
-  isFieldSelected(field: string): boolean {
-    return this.formRequiredFields.includes(field);
-  }
-
-  save(): void {
-    if (!this.editing || !this.formName.trim()) return;
-
-    const conn: any = {
-      ...this.editing,
-      name: this.formName.trim(),
-      description: this.formDescription.trim(),
-      category: this.formCategory,
-      iconKey: this.formIconKey.trim(),
-      color: this.formColor,
-      website: this.formWebsite.trim(),
-      defaultBaseUrl: this.formDefaultBaseUrl.trim(),
-      requiredFields: JSON.stringify(this.formRequiredFields),
-      isDataSource: this.formIsDataSource,
-      sortOrder: this.formSortOrder,
-      connectionTypeId: 2, // api
-      isActive: true,
-    };
-
-    if (this.isNew) {
-      conn.id = 0;
-    }
-
-    this.connectionsService.saveConnection(conn).subscribe({
-      next: () => {
-        this.editing = null;
-        this.isNew = false;
-        this.loadConnections();
-      },
-    });
+    this.modalService
+      .openModal(
+        EditServiceModalComponent,
+        { size: 'lg', centered: true, scrollable: true },
+        { connection: conn },
+      )
+      .subscribe((modalResult: ModalResult) => {
+        if (modalResult.result && !modalResult.dismissed) {
+          this.connectionsService.saveConnection(modalResult.result).subscribe({
+            next: () => this.loadConnections(),
+          });
+        }
+      });
   }
 
   delete(conn: Connection): void {

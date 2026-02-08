@@ -2,34 +2,6 @@
   padding: 1.25rem;
 }
 
-// Edit form
-.edit-card {
-  border-color: var(--egibi-primary);
-
-  .card-header {
-    background: var(--egibi-primary);
-    color: white;
-    padding: 0.6rem 1rem;
-  }
-}
-
-.form-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 1rem;
-
-  .full-width {
-    grid-column: 1 / -1;
-  }
-}
-
-.credential-fields {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-  margin-bottom: 0.25rem;
-}
-
 // Category groups
 .category-label {
   font-size: 0.75rem;
@@ -117,14 +89,6 @@
 }
 
 @media (max-width: 768px) {
-  .form-grid {
-    grid-template-columns: 1fr;
-
-    .full-width {
-      grid-column: 1;
-    }
-  }
-
   .service-row {
     flex-wrap: wrap;
   }

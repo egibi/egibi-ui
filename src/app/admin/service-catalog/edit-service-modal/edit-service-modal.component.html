@@ -1,0 +1,133 @@
+<!-- Modal Header -->
+<div class="modal-header">
+  <h5 class="modal-title mb-0">
+    @if (!isNew && connection) {
+      <span class="service-dot" [style.background-color]="formColor"></span>
+    }
+    {{ isNew ? 'Add New Service' : 'Edit ' + formName }}
+  </h5>
+  <button type="button" class="btn-close" (click)="dismiss()"></button>
+</div>
+
+<!-- Modal Body -->
+<div class="modal-body">
+  <div class="configure-form">
+
+    <!-- Identity Section -->
+    <div class="form-section">
+      <div class="section-label">Service Identity</div>
+
+      <div class="form-row">
+        <div class="mb-3 flex-fill">
+          <label class="form-label">Service Name <span class="text-danger">*</span></label>
+          <input type="text" class="form-control form-control-sm" [(ngModel)]="formName" placeholder="e.g., Binance US">
+        </div>
+        <div class="mb-3 flex-fill">
+          <label class="form-label">Category</label>
+          <select class="form-select form-select-sm" [(ngModel)]="formCategory">
+            @for (cat of categories; track cat.value) {
+              <option [value]="cat.value">{{ cat.label }}</option>
+            }
+          </select>
+        </div>
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label">Description</label>
+        <input type="text" class="form-control form-control-sm" [(ngModel)]="formDescription" placeholder="Brief description of the service">
+      </div>
+    </div>
+
+    <!-- Appearance Section -->
+    <div class="form-section">
+      <div class="section-label">
+        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+        Appearance
+      </div>
+
+      <div class="form-row">
+        <div class="mb-3 flex-fill">
+          <label class="form-label">Icon Key</label>
+          <input type="text" class="form-control form-control-sm" [(ngModel)]="formIconKey" placeholder="e.g., binance, coinbase">
+          <small class="text-muted">Lowercase key for SVG icon lookup</small>
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Brand Color</label>
+          <div class="d-flex align-items-center gap-2">
+            <input type="color" class="form-control form-control-color form-control-sm" [(ngModel)]="formColor">
+            <input type="text" class="form-control form-control-sm" [(ngModel)]="formColor" style="max-width: 120px;" placeholder="#000000">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Connection Section -->
+    <div class="form-section">
+      <div class="section-label">
+        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+        Connection Details
+      </div>
+
+      <div class="form-row">
+        <div class="mb-3 flex-fill">
+          <label class="form-label">Website</label>
+          <input type="url" class="form-control form-control-sm" [(ngModel)]="formWebsite" placeholder="https://www.example.com">
+        </div>
+        <div class="mb-3 flex-fill">
+          <label class="form-label">Default API Base URL</label>
+          <input type="url" class="form-control form-control-sm" [(ngModel)]="formDefaultBaseUrl" placeholder="https://api.example.com">
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="mb-3">
+          <label class="form-label">Sort Order</label>
+          <input type="number" class="form-control form-control-sm" [(ngModel)]="formSortOrder" min="0" style="max-width: 100px;">
+        </div>
+        <div class="mb-3 d-flex align-items-end">
+          <div class="form-check">
+            <input class="form-check-input" type="checkbox" id="isDataSource" [(ngModel)]="formIsDataSource">
+            <label class="form-check-label" for="isDataSource">Can be used as a data source</label>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Credential Fields Section -->
+    <div class="form-section">
+      <div class="section-label">
+        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+        Required Credential Fields
+      </div>
+      <p class="text-muted small mb-3">Select which fields users must provide when connecting this service.</p>
+
+      <div class="credential-fields">
+        @for (field of allCredentialFields; track field) {
+          <button
+            type="button"
+            class="btn btn-sm"
+            [class.btn-primary]="isFieldSelected(field)"
+            [class.btn-outline-secondary]="!isFieldSelected(field)"
+            (click)="toggleField(field)">
+            {{ fieldLabels[field] }}
+          </button>
+        }
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- Modal Footer -->
+<div class="modal-footer">
+  <button class="btn btn-outline-secondary btn-sm" (click)="dismiss()">Cancel</button>
+  <button
+    class="btn btn-primary btn-sm"
+    (click)="save()"
+    [disabled]="!canSave || saving">
+    @if (saving) {
+      <span class="spinner-border spinner-border-sm me-1"></span>
+    }
+    {{ isNew ? 'Add Service' : 'Save Changes' }}
+  </button>
+</div>

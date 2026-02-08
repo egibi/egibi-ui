@@ -6,105 +6,11 @@
       <h5 class="mb-1">Service Catalog</h5>
       <p class="text-muted mb-0 small">Configure available platforms and data providers that users can connect accounts to.</p>
     </div>
-    <button class="btn btn-primary btn-sm" (click)="addNew()" [disabled]="editing">
+    <button class="btn btn-primary btn-sm" (click)="addNew()">
       <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
       Add Service
     </button>
   </div>
-
-  <!-- Edit / Create Form -->
-  @if (editing) {
-    <div class="card mb-4 edit-card">
-      <div class="card-header">
-        <h6 class="mb-0">{{ isNew ? 'Add New Service' : 'Edit ' + formName }}</h6>
-      </div>
-      <div class="card-body">
-        <div class="form-grid">
-          <!-- Row 1: Name + Category -->
-          <div class="form-group">
-            <label class="form-label">Service Name <span class="text-danger">*</span></label>
-            <input type="text" class="form-control form-control-sm" [(ngModel)]="formName" placeholder="e.g., Binance US">
-          </div>
-          <div class="form-group">
-            <label class="form-label">Category</label>
-            <select class="form-select form-select-sm" [(ngModel)]="formCategory">
-              @for (cat of categories; track cat.value) {
-                <option [value]="cat.value">{{ cat.label }}</option>
-              }
-            </select>
-          </div>
-
-          <!-- Row 2: Icon Key + Color -->
-          <div class="form-group">
-            <label class="form-label">Icon Key</label>
-            <input type="text" class="form-control form-control-sm" [(ngModel)]="formIconKey" placeholder="e.g., binance, coinbase">
-            <small class="text-muted">Lowercase key for SVG icon lookup</small>
-          </div>
-          <div class="form-group">
-            <label class="form-label">Brand Color</label>
-            <div class="d-flex align-items-center gap-2">
-              <input type="color" class="form-control form-control-color form-control-sm" [(ngModel)]="formColor">
-              <input type="text" class="form-control form-control-sm" [(ngModel)]="formColor" style="max-width: 120px;" placeholder="#000000">
-            </div>
-          </div>
-
-          <!-- Row 3: Website + Default Base URL -->
-          <div class="form-group">
-            <label class="form-label">Website</label>
-            <input type="url" class="form-control form-control-sm" [(ngModel)]="formWebsite" placeholder="https://www.example.com">
-          </div>
-          <div class="form-group">
-            <label class="form-label">Default API Base URL</label>
-            <input type="url" class="form-control form-control-sm" [(ngModel)]="formDefaultBaseUrl" placeholder="https://api.example.com">
-          </div>
-
-          <!-- Row 4: Sort Order + Data Source -->
-          <div class="form-group">
-            <label class="form-label">Sort Order</label>
-            <input type="number" class="form-control form-control-sm" [(ngModel)]="formSortOrder" min="0" style="max-width: 100px;">
-          </div>
-          <div class="form-group d-flex align-items-end">
-            <div class="form-check">
-              <input class="form-check-input" type="checkbox" id="isDataSource" [(ngModel)]="formIsDataSource">
-              <label class="form-check-label" for="isDataSource">Can be used as a data source</label>
-            </div>
-          </div>
-
-          <!-- Full width: Description -->
-          <div class="form-group full-width">
-            <label class="form-label">Description</label>
-            <input type="text" class="form-control form-control-sm" [(ngModel)]="formDescription" placeholder="Brief description of the service">
-          </div>
-
-          <!-- Full width: Required Credential Fields -->
-          <div class="form-group full-width">
-            <label class="form-label">Required Credential Fields</label>
-            <div class="credential-fields">
-              @for (field of allCredentialFields; track field) {
-                <button
-                  type="button"
-                  class="btn btn-sm"
-                  [class.btn-primary]="isFieldSelected(field)"
-                  [class.btn-outline-secondary]="!isFieldSelected(field)"
-                  (click)="toggleField(field)">
-                  {{ fieldLabels[field] }}
-                </button>
-              }
-            </div>
-            <small class="text-muted">Select which fields users must provide when connecting this service</small>
-          </div>
-        </div>
-
-        <!-- Actions -->
-        <div class="d-flex gap-2 mt-3">
-          <button class="btn btn-primary btn-sm" (click)="save()" [disabled]="!formName.trim()">
-            {{ isNew ? 'Add Service' : 'Save Changes' }}
-          </button>
-          <button class="btn btn-outline-secondary btn-sm" (click)="cancelEdit()">Cancel</button>
-        </div>
-      </div>
-    </div>
-  }
 
   <!-- Service List -->
   @if (loading) {
@@ -147,10 +53,10 @@
                 }
               </div>
               <div class="service-actions">
-                <button class="btn btn-sm btn-outline-secondary" (click)="edit(conn)" [disabled]="editing" title="Edit">
+                <button class="btn btn-sm btn-outline-secondary" (click)="edit(conn)" title="Edit">
                   <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/></svg>
                 </button>
-                <button class="btn btn-sm btn-outline-danger" (click)="delete(conn)" [disabled]="editing" title="Delete">
+                <button class="btn btn-sm btn-outline-danger" (click)="delete(conn)" title="Delete">
                   <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
                 </button>
               </div>
