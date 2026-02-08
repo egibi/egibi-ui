@@ -1,7 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { NgbNavModule } from '@ng-bootstrap/ng-bootstrap';
-import { environment } from '../../environments/environment';  
 
 interface DocSection {
   id: string;
@@ -33,7 +32,7 @@ interface EndpointRow {
 }
 
 @Component({
-  selector: 'app-documentation',
+  selector: 'documentation',
   standalone: true,
   imports: [CommonModule, NgbNavModule],
   templateUrl: './documentation.component.html',
@@ -41,6 +40,16 @@ interface EndpointRow {
 })
 export class DocumentationComponent {
   activeTab = 'overview';
+  showScrollTop = false;
+
+  @HostListener('window:scroll')
+  onWindowScroll() {
+    this.showScrollTop = window.scrollY > 400;
+  }
+
+  scrollToTop() {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
 
   tabs: { id: string; label: string; icon: string }[] = [
     { id: 'overview', label: 'Overview', icon: 'overview' },
@@ -78,7 +87,7 @@ export class DocumentationComponent {
             items: [
               'Frontend — Angular 19, Bootstrap 5.3.3, AG Grid, Highcharts',
               'Backend — .NET 8 (ASP.NET Core Web API)',
-              'Authentication — OpenIddict 6.x (OAuth 2.0 / OpenID Connect with Authorization Code + PKCE)',
+              'Authentication — OpenIddict 5.8 (OAuth 2.0 / OpenID Connect with Authorization Code + PKCE)',
               'Primary Database — PostgreSQL 16 (relational data, configuration, user accounts, OIDC grants)',
               'Time-Series Database — QuestDB 8.2.1 (OHLC candles, market data)',
               'Exchange SDKs — Binance.Net, Coinbase, Coinbase Pro',
@@ -258,9 +267,10 @@ export class DocumentationComponent {
           {
             type: 'list',
             items: [
-              'appsettings.json — Base config (connection strings, QuestDb section, EgibiEnvironment, Encryption)',
-              'appsettings.Development.json — Dev overrides (local PostgreSQL/QuestDB, EgibiEnvironment: DEV)',
-              'appsettings.Production.json — Prod overrides (EgibiEnvironment: PROD, external DB connections)'
+              'appsettings.json — Base config (connection strings placeholders, QuestDb section, EgibiEnvironment, Encryption placeholder) — safe to commit',
+              'appsettings.Development.json — Dev overrides with real secrets (master key, DB passwords, Plaid keys) — excluded from source control via .gitignore',
+              'appsettings.Production.json — Prod overrides (EgibiEnvironment: PROD, external DB connections) — excluded from source control via .gitignore',
+              '.gitignore — Prevents appsettings.Development.json and appsettings.Production.json from being committed'
             ]
           }
         ]
@@ -1246,7 +1256,7 @@ dotnet ef migrations list`
               'AppUserService (authentication + user management)',
               'StorageService (disk monitoring, partition archival, OIDC cleanup, PostgreSQL backup)',
               'DataManagerService, StrategiesService, BacktesterService, BacktestExecutionService',
-              'ExchangesService, MarketsService, ExchangeAccountsService',
+              'ExchangesService, MarketsService, ExchangeAccountsService (all three now properly registered in DI)',
               'AppConfigurationsService, AccountsService',
               'QuestDbService (legacy SDK), TestingService, GeoDateTimeDataService'
             ]
@@ -1272,7 +1282,7 @@ dotnet ef migrations list`
             items: [
               'QuestDbOptions — Bound from "QuestDb" config section (HttpUrl, IlpHost, IlpPort)',
               'EgibiEnvironment — Name and Tag for runtime environment identification',
-              'Encryption:MasterKey — Base64-encoded 32-byte key for credential encryption',
+              'Encryption:MasterKey — Base64-encoded 32-byte key loaded from appsettings.Development.json (local) or environment variable (CI/CD). Never in source control.',
               'StorageConfig — Persisted in AppConfiguration table (external disk path, threshold %, retention months, auto-archive settings)'
             ]
           }
@@ -1562,6 +1572,113 @@ dotnet ef migrations list`
         ]
       },
       {
+        id: 'secrets-management',
+        title: 'Secrets Management & Master Key',
+        content: [
+          {
+            type: 'text',
+            value: 'The master encryption key must be generated before first run and stored securely — never in source control. Egibi supports multiple methods for generating and configuring the key.'
+          },
+          {
+            type: 'heading',
+            value: 'Generating a Master Key'
+          },
+          {
+            type: 'text',
+            value: 'Use any of the following methods to generate a cryptographically random 256-bit (32-byte) base64-encoded key:'
+          },
+          {
+            type: 'heading',
+            value: 'Option A — PowerShell (quick)'
+          },
+          {
+            type: 'code',
+            value: '[Convert]::ToBase64String((1..32 | ForEach-Object { Get-Random -Maximum 256 }) -as [byte[]])'
+          },
+          {
+            type: 'heading',
+            value: 'Option B — C# Interactive (cryptographically secure)'
+          },
+          {
+            type: 'code',
+            value: `using System.Security.Cryptography;
+Console.WriteLine(Convert.ToBase64String(RandomNumberGenerator.GetBytes(32)));`
+          },
+          {
+            type: 'heading',
+            value: 'Option C — EncryptionService Static Helper'
+          },
+          {
+            type: 'code',
+            value: `// Call from anywhere in the codebase or a test project:
+var key = EncryptionService.GenerateMasterKey();
+Console.WriteLine(key);`
+          },
+          {
+            type: 'heading',
+            value: 'Local Development'
+          },
+          {
+            type: 'text',
+            value: 'For local development, store the generated key in appsettings.Development.json under Encryption:MasterKey. This file is excluded from source control via .gitignore and will not be committed.'
+          },
+          {
+            type: 'code',
+            value: `// appsettings.Development.json
+{
+  "Encryption": {
+    "MasterKey": "YOUR_GENERATED_BASE64_KEY_HERE"
+  }
+}`
+          },
+          {
+            type: 'heading',
+            value: 'CI/CD — GitHub Repository Secrets'
+          },
+          {
+            type: 'text',
+            value: '.NET reads environment variables with __ (double underscore) as the configuration section separator. For example, ENCRYPTION__MASTERKEY maps to Encryption:MasterKey in configuration. Configure these secrets on the egibi/egibi-api GitHub repository:'
+          },
+          {
+            type: 'schema',
+            rows: [
+              { column: 'ENCRYPTION__MASTERKEY', type: 'string (base64)', purpose: 'AES-256 master encryption key (32 bytes, base64-encoded)' },
+              { column: 'CONNECTIONSTRINGS__EGIBIDB', type: 'string', purpose: 'PostgreSQL connection string' },
+              { column: 'CONNECTIONSTRINGS__QUESTDB', type: 'string', purpose: 'QuestDB connection string' },
+              { column: 'PLAID__CLIENTID', type: 'string', purpose: 'Plaid API client ID' },
+              { column: 'PLAID__SECRET', type: 'string', purpose: 'Plaid API secret' },
+              { column: 'ADMINSEED__DEFAULTPASSWORD', type: 'string', purpose: 'Initial admin account password' }
+            ]
+          },
+          {
+            type: 'heading',
+            value: 'GitHub Actions Example'
+          },
+          {
+            type: 'code',
+            value: `# In your GitHub Actions workflow:
+env:
+  Encryption__MasterKey: \${{ secrets.ENCRYPTION__MASTERKEY }}
+  ConnectionStrings__EgibiDb: \${{ secrets.CONNECTIONSTRINGS__EGIBIDB }}
+  ConnectionStrings__QuestDb: \${{ secrets.CONNECTIONSTRINGS__QUESTDB }}
+  Plaid__ClientId: \${{ secrets.PLAID__CLIENTID }}
+  Plaid__Secret: \${{ secrets.PLAID__SECRET }}
+  AdminSeed__DefaultPassword: \${{ secrets.ADMINSEED__DEFAULTPASSWORD }}`
+          },
+          {
+            type: 'heading',
+            value: 'Files Excluded from Source Control (.gitignore)'
+          },
+          {
+            type: 'list',
+            items: [
+              'appsettings.Development.json — Local dev secrets (master key, DB passwords, Plaid keys)',
+              'appsettings.Production.json — Production secrets and connection strings'
+            ]
+          }
+        ]
+      },
+      {
         id: 'security-rules',
         title: 'Security Rules',
         content: [
@@ -1575,7 +1692,14 @@ dotnet ef migrations list`
               'All API endpoints accepting credentials must enforce HTTPS',
               'CORS restricted to specific origins (localhost:4200) with AllowCredentials for cookie transport',
               'Development uses ephemeral signing/encryption keys — production must use persistent certificates',
-              'The old Encryptor.cs (PBKDF2+AES-CBC) is deprecated — use EncryptionService for all new work',
+              'The old Encryptor.cs (PBKDF2+AES-CBC) has been removed — use EncryptionService for all encryption',
+              'All controllers require [Authorize] — no unauthenticated access to any endpoint except /auth/* and /connect/*',
+              'ExchangeAccount entity no longer contains plaintext Username/Password fields — credentials stored only in encrypted UserCredential',
+              'Connection entity no longer copies ApiKey/ApiSecretKey during create/update — legacy plaintext fields deprecated',
+              'Admin seed password loaded from configuration (AdminSeed:DefaultPassword), not hardcoded',
+              'Upload limit enforced at 100 MB (FormOptions.MultipartBodyLengthLimit) to prevent abuse',
+              'DateTime operations use DateTime.UtcNow consistently (not DateTime.Now.ToUniversalTime())',
+              'Auth interceptor retries the original failed request after successful token refresh',
               'Archived data on external disk retains the same security posture — no credentials are stored in QuestDB partitions or pg_dump backups (credentials are encrypted in PostgreSQL)',
               'Storage operations (archive, restore, backup) require authentication via [Authorize] on StorageController'
             ]
@@ -2093,6 +2217,31 @@ dotnet ef migrations list`
             type: 'status',
             variant: 'done',
             value: 'Strategies API — RESTful /api/strategies controller with full CRUD, integrated backtest execution (POST /{id}/backtest), backtest history, cascade delete (strategy + all backtests)'
+          },
+          {
+            type: 'status',
+            variant: 'done',
+            value: 'Security Audit & Hardening — Removed hardcoded secrets from appsettings (master key, DB passwords), added .gitignore for sensitive config files, added [Authorize] to all 11 controllers, removed plaintext credential fields from ExchangeAccount entity, removed legacy dead code (Encryptor.cs, ConfigOptions.cs, OverviewService.cs), fixed async delete bug in ExchangeAccountsService, enforced 100 MB upload limit, consistent UTC datetime usage'
+          },
+          {
+            type: 'status',
+            variant: 'done',
+            value: 'Secrets Management — Master key generation (PowerShell, C# Interactive, EncryptionService.GenerateMasterKey()), GitHub repository secrets for CI/CD, environment variable mapping (double-underscore convention), .gitignore exclusion of appsettings.Development.json and appsettings.Production.json'
+          },
+          {
+            type: 'status',
+            variant: 'done',
+            value: 'Auth Token Refresh — Replaced setTimeout-based refresh with timestamp tracking (isTokenExpiringSoon()), added refresh deduplication to prevent concurrent refresh requests, interceptor now retries original failed request after successful token refresh'
+          },
+          {
+            type: 'status',
+            variant: 'done',
+            value: 'Environment-Based API URLs — Frontend services use environment.apiUrl (configurable per environment) instead of hardcoded localhost URLs, production CORS policy configurable via Cors:AllowedOrigins'
+          },
+          {
+            type: 'status',
+            variant: 'done',
+            value: 'Credential Storage — EncryptionService registered in Program.cs DI, Connection entity legacy plaintext fields deprecated, credentials stored exclusively in encrypted UserCredential via per-user DEK'
           }          
         ]
       },
@@ -2103,17 +2252,17 @@ dotnet ef migrations list`
           {
             type: 'status',
             variant: 'active',
-            value: 'Credential Storage — Integrating EncryptionService into Program.cs DI, migrating Connection API keys to UserCredential'
-          },
-          {
-            type: 'status',
-            variant: 'active',
             value: 'AppUser Migration — Consolidating AccountUser into AppUser entity'
           },
           {
             type: 'status',
             variant: 'active',
             value: 'Email Service — Password reset tokens currently logged to console; email delivery service pending'
+          },
+          {
+            type: 'status',
+            variant: 'active',
+            value: 'Remaining UI Service URL Migration — 19 Angular services still use hardcoded localhost URLs; migrating to environment.apiUrl pattern'
           }
         ]
       },
@@ -2156,5 +2305,5 @@ dotnet ef migrations list`
   }
 
   // Last updated timestamp
-  lastUpdated = 'February 6, 2026';
+  lastUpdated = 'February 8, 2026';
 }

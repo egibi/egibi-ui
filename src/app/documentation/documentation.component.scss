@@ -286,3 +286,47 @@
     opacity: 0.4;
   }
 }
+
+// Scroll to top button
+.scroll-top-btn {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  border: 1px solid hsl(var(--egibi-border));
+  background: hsl(var(--egibi-card));
+  color: hsl(var(--egibi-muted-foreground));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 2px 8px hsla(var(--egibi-foreground), 0.08);
+  transition: all 0.2s ease;
+  z-index: 50;
+  animation: scroll-top-fade-in 0.25s ease;
+
+  &:hover {
+    color: hsl(var(--egibi-primary));
+    border-color: hsl(var(--egibi-primary));
+    box-shadow: 0 4px 12px hsla(var(--egibi-primary), 0.15);
+    transform: translateY(-2px);
+  }
+
+  &:active {
+    transform: translateY(0);
+    box-shadow: 0 1px 4px hsla(var(--egibi-foreground), 0.08);
+  }
+}
+
+@keyframes scroll-top-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
