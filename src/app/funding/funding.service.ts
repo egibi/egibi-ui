@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { RequestResponse } from '../request-response';
+import { PlaidFundingDetails } from './plaid-link/plaid-link.service';
 
 export interface FundingSourceResponse {
   accountId: number;
@@ -19,6 +20,12 @@ export interface FundingSourceResponse {
   credentialLabel: string;
   maskedApiKey: string;
   credentialLastUsedAt: string | null;
+
+  /** How this provider was connected: "api_key" or "plaid_link" */
+  linkMethod: string;
+
+  /** Plaid-specific details (only for plaid_link sources) */
+  plaidDetails: PlaidFundingDetails | null;
 }
 
 export interface FundingProviderEntry {
@@ -32,6 +39,9 @@ export interface FundingProviderEntry {
   requiredFields: string[];
   signupUrl: string;
   apiDocsUrl: string;
+
+  /** How this provider connects: "api_key" or "plaid_link" */
+  linkMethod: string;
 }
 
 export interface CreateFundingSourceRequest {
@@ -67,7 +77,7 @@ export class FundingService {
     return this.http.get<RequestResponse>(`${this.apiBaseUrl}/get-providers`);
   }
 
-  /** Create or update the primary funding source */
+  /** Create or update the primary funding source (API key flow) */
   setPrimary(request: CreateFundingSourceRequest): Observable<RequestResponse> {
     return this.http.post<RequestResponse>(`${this.apiBaseUrl}/set-primary`, request);
   }
