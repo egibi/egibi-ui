@@ -1,7 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, HostListener, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { NgbNavModule } from '@ng-bootstrap/ng-bootstrap';
 import { EgibiTableComponent } from '../_components/egibi-table/egibi-table.component';
 import { Account, CreateAccountRequest } from '../_models/account.model';
 import { AccountsService } from './accounts.service';
@@ -12,10 +13,16 @@ import { AccountType } from '../_models/account-type';
 import { Connection } from '../_models/connection.model';
 import { ConnectionsService } from '../_services/connections.service';
 
+interface AccountTab {
+  id: string;
+  label: string;
+  count: number;
+}
+
 @Component({
   selector: 'accounts',
   standalone: true,
-  imports: [CommonModule, EgibiTableComponent, FormsModule],
+  imports: [CommonModule, EgibiTableComponent, FormsModule, NgbNavModule],
   templateUrl: './accounts.component.html',
   styleUrl: './accounts.component.scss',
 })
@@ -23,7 +30,14 @@ export class AccountsComponent implements OnInit {
   accounts: Account[] = [];
   accountTypes: AccountType[] = [];
   connections: Connection[] = [];
-  tableData: any[] = [];
+
+  // Tab state
+  activeTab = 'all';
+  tabs: AccountTab[] = [];
+  filteredAccounts: Account[] = [];
+
+  // Scroll-to-top
+  showScrollTop = false;
 
   constructor(
     private accountService: AccountsService,
@@ -31,6 +45,15 @@ export class AccountsComponent implements OnInit {
     private router: Router,
     private modalService: NgbGlobalModalService
   ) {}
+
+  @HostListener('window:scroll')
+  onWindowScroll() {
+    this.showScrollTop = window.scrollY > 400;
+  }
+
+  scrollToTop() {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
 
   ngOnInit(): void {
     this.loadAccounts();
@@ -46,8 +69,42 @@ export class AccountsComponent implements OnInit {
 
   loadAccounts(): void {
     this.accountService.getAccounts().subscribe((res) => {
-      this.tableData = <Account[]>(res.responseData || []);
+      this.accounts = <Account[]>(res.responseData || []);
+      this.buildTabs();
+      this.applyFilter();
     });
+  }
+
+  buildTabs(): void {
+    const typeOrder = ['Crypto Exchange', 'Stock Broker', 'Data Provider', 'Funding Provider', 'Custom'];
+    const counts = new Map<string, number>();
+
+    for (const account of this.accounts) {
+      const typeName = account.accountTypeName || 'Custom';
+      counts.set(typeName, (counts.get(typeName) || 0) + 1);
+    }
+
+    this.tabs = [
+      { id: 'all', label: 'All', count: this.accounts.length },
+      ...typeOrder
+        .filter(type => counts.has(type))
+        .map(type => ({ id: type, label: type, count: counts.get(type)! }))
+    ];
+  }
+
+  onTabChange(tabId: string): void {
+    this.activeTab = tabId;
+    this.applyFilter();
+  }
+
+  applyFilter(): void {
+    if (this.activeTab === 'all') {
+      this.filteredAccounts = [...this.accounts].sort((a, b) => a.name.localeCompare(b.name));
+    } else {
+      this.filteredAccounts = this.accounts
+        .filter(a => (a.accountTypeName || 'Custom') === this.activeTab)
+        .sort((a, b) => a.name.localeCompare(b.name));
+    }
   }
 
   tableColumns: TableColumn[] = [

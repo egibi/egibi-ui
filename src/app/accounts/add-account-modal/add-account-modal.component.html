@@ -21,70 +21,122 @@
 </div>
 
 <!-- Modal Body -->
-<div class="modal-body">
+<div class="modal-body" #modalBody>
 
   <!-- ============================== -->
   <!-- STEP 1: SERVICE PICKER         -->
   <!-- ============================== -->
   @if (step === 'pick') {
-    <p class="text-muted mb-3">Choose a service to connect, or create a custom account.</p>
 
-    <!-- Search -->
-    <div class="search-bar mb-3">
-      <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
-      <input
-        type="text"
-        class="form-control form-control-sm"
-        placeholder="Search services..."
-        [(ngModel)]="searchQuery"
+    <!-- Search & Filter Row -->
+    <div class="filter-row mb-3">
+      <div class="search-bar">
+        <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+        <input
+          type="text"
+          class="form-control form-control-sm"
+          placeholder="Search services..."
+          [(ngModel)]="searchQuery"
+        >
+      </div>
+      <select
+        class="form-select form-select-sm category-filter"
+        [(ngModel)]="selectedCategory"
       >
+        <option value="">All Categories</option>
+        @for (cat of availableCategories; track cat.value) {
+          <option [value]="cat.value">{{ cat.label }}</option>
+        }
+      </select>
     </div>
 
-    <!-- Service Cards by Category -->
-    @for (group of getGroupedConnections(); track group.category) {
-      <div class="category-section">
-        <div class="category-label">{{ group.label }}</div>
-        <div class="service-cards">
-          @for (conn of group.items; track conn.id) {
-            <button class="service-card" (click)="selectService(conn)">
-              <div class="card-icon" [style.background-color]="conn.color || '#6C757D'">
-                <span class="icon-letter">{{ (conn.iconKey || conn.name || '?').charAt(0).toUpperCase() }}</span>
-              </div>
-              <div class="card-info">
-                <div class="card-name">{{ conn.name }}</div>
-                @if (conn.description) {
-                  <div class="card-desc">{{ conn.description }}</div>
-                }
-              </div>
-              <svg class="card-arrow" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
-            </button>
+    <!-- Expand / Collapse All (only when showing all categories) -->
+    @if (isShowingAll && getGroupedConnections().length > 1) {
+      <div class="expand-collapse-row">
+        <button class="expand-collapse-btn" (click)="toggleAll()">
+          @if (allCollapsed) {
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m7 20 5-5 5 5"/><path d="m7 4 5 5 5-5"/></svg>
+            Expand All
+          } @else {
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m7 15 5 5 5-5"/><path d="m7 9 5-5 5 5"/></svg>
+            Collapse All
           }
-        </div>
+        </button>
       </div>
     }
 
-    @if (filteredConnections.length === 0 && searchQuery) {
-      <div class="text-center py-4 text-muted">
-        No services match "{{ searchQuery }}"
+    <!-- Service Cards by Category -->
+    @for (group of getGroupedConnections(); track group.category) {
+      <div class="category-card">
+        <!-- Category Header -->
+        @if (isShowingAll) {
+          <button class="category-card-header" (click)="toggleCategory(group.category)">
+            <div class="category-card-title">
+              <span class="category-card-name">{{ group.label }}</span>
+              <span class="category-card-count">{{ group.items.length }}</span>
+            </div>
+            <svg
+              class="category-card-chevron"
+              [class.collapsed]="isCategoryCollapsed(group.category)"
+              xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+              viewBox="0 0 24 24" fill="none" stroke="currentColor"
+              stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="m6 9 6 6 6-6"/>
+            </svg>
+          </button>
+        }
+
+        <!-- Service items -->
+        @if (!isShowingAll || !isCategoryCollapsed(group.category)) {
+          <div class="category-card-body">
+            @for (conn of group.items; track conn.id) {
+              <button class="service-card" (click)="selectService(conn)">
+                <div class="card-icon" [style.background-color]="conn.color || '#6C757D'">
+                  <span class="icon-letter">{{ (conn.iconKey || conn.name || '?').charAt(0).toUpperCase() }}</span>
+                </div>
+                <div class="card-info">
+                  <div class="card-name">{{ conn.name }}</div>
+                  @if (conn.description) {
+                    <div class="card-desc">{{ conn.description }}</div>
+                  }
+                </div>
+                <svg class="card-arrow" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+              </button>
+            }
+          </div>
+        }
+      </div>
+    }
+
+    @if (hasNoResults) {
+      <div class="text-center py-4">
+        <p class="text-muted mb-2">No services match your filters.</p>
+        <button class="btn btn-outline-secondary btn-sm" (click)="clearFilters()">Clear Filters</button>
       </div>
     }
 
     <!-- Custom Option -->
-    <div class="category-section">
-      <div class="category-label">Custom</div>
-      <div class="service-cards">
-        <button class="service-card custom-card" (click)="selectCustom()">
-          <div class="card-icon custom-icon">
-            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
+    @if (!selectedCategory || selectedCategory === 'other') {
+      <div class="category-card custom-category-card">
+        @if (isShowingAll) {
+          <div class="category-card-header-static">
+            <span class="category-card-name">Custom</span>
           </div>
-          <div class="card-info">
-            <div class="card-name">Custom Setup</div>
-            <div class="card-desc">Connect any service with custom API credentials</div>
-          </div>
-          <svg class="card-arrow" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
-        </button>
+        }
+        <div class="category-card-body">
+          <button class="service-card custom-card" (click)="selectCustom()">
+            <div class="card-icon custom-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
+            </div>
+            <div class="card-info">
+              <div class="card-name">Custom Setup</div>
+              <div class="card-desc">Connect any service with custom API credentials</div>
+            </div>
+            <svg class="card-arrow" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+          </button>
+        </div>
       </div>
-    </div>
+    }
   }
 
   <!-- ============================== -->
@@ -126,6 +178,9 @@
                 <option [ngValue]="type.id">{{ type.name }}</option>
               }
             </select>
+            @if (selectedConnection && accountTypeId) {
+              <div class="form-text">Auto-assigned from service category</div>
+            }
           </div>
         }
       </div>
@@ -198,6 +253,15 @@
         <span>Credentials are encrypted with AES-256-GCM using your personal encryption key</span>
       </div>
     </div>
+  }
+
+  <!-- Scroll to Top Button (inside modal-body, fixed to bottom-right) -->
+  @if (showScrollButton) {
+    <button class="scroll-top-btn" (click)="scrollToTop()" aria-label="Return to top">
+      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M18 15l-6-6-6 6"/>
+      </svg>
+    </button>
   }
 </div>
 

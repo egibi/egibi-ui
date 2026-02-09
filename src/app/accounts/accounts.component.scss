@@ -1,14 +1,40 @@
 // Accounts page specific styles
 
-.filters-row {
+// Tab count badge
+.tab-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 6px;
+  margin-left: 6px;
+  border-radius: 10px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  background: hsla(var(--egibi-muted-foreground), 0.1);
+  color: hsl(var(--egibi-muted-foreground));
+  line-height: 1;
+}
+
+.nav-link.active .tab-count {
+  background: hsla(var(--egibi-primary), 0.12);
+  color: hsl(var(--egibi-primary));
+}
+
+// Tab content wrapper
+.tab-content-wrapper {
+  min-height: 120px;
+}
+
+// Empty state within a tab
+.tab-empty-state {
   display: flex;
-  flex-wrap: wrap;
-  gap: 0.75rem;
-  
-  .form-select {
-    width: auto;
-    min-width: 180px;
-  }
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem 2rem;
+  text-align: center;
 }
 
 // Ensure card body takes full width for table
@@ -16,7 +42,7 @@
   padding: 0 !important;
 }
 
-// Empty state
+// Empty state (no accounts at all)
 .empty-state {
   display: flex;
   flex-direction: column;
@@ -37,15 +63,57 @@
   }
 }
 
+// =============================================
+// RETURN TO TOP BUTTON
+// =============================================
+
+.scroll-top-btn {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  border: 1px solid hsl(var(--egibi-border));
+  background: hsl(var(--egibi-card));
+  color: hsl(var(--egibi-muted-foreground));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 2px 8px hsla(var(--egibi-foreground), 0.08);
+  transition: all 0.2s ease;
+  z-index: 50;
+  animation: scroll-top-fade-in 0.25s ease;
+
+  &:hover {
+    color: hsl(var(--egibi-primary));
+    border-color: hsl(var(--egibi-primary));
+    box-shadow: 0 4px 12px hsla(var(--egibi-primary), 0.15);
+    transform: translateY(-2px);
+  }
+
+  &:active {
+    transform: translateY(0);
+    box-shadow: 0 1px 4px hsla(var(--egibi-foreground), 0.08);
+  }
+}
+
+@keyframes scroll-top-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 // Responsive adjustments
 @media (max-width: 768px) {
-  .filters-row {
-    width: 100%;
-    margin-top: 1rem;
-    
-    .form-select {
-      flex: 1;
-      min-width: 140px;
-    }
+  .scroll-top-btn {
+    bottom: 1.5rem;
+    right: 1.5rem;
   }
 }
