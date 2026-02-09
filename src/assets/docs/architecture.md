@@ -2,7 +2,7 @@
 
 <pre class="doc-diagram">┌──────────────┐     HTTP/JSON      ┌──────────────────┐
 │              │ ◄────────────────► │                  │
-│  Angular 19  │     SignalR/WS     │  .NET 8 Web API  │
+│  Angular 21  │     SignalR/WS     │  .NET 9 Web API  │
 │  (egibi-ui)  │ ◄────────────────► │  (egibi-api)     │
 │              │     OIDC/PKCE      │  + OpenIddict     │
 │  Port: 4200  │ ◄────────────────► │  Port: 5000      │
@@ -90,7 +90,6 @@ The API solution root also serves as the Docker infrastructure root. Solution-le
 - **EgibiGeoDateTimeDataLibrary** — Geographic and timezone data management
 - **EgibiQuestDB** — QuestDB time-series database client (PG wire protocol)
 - **EgibiStrategyLibrary** — Trading strategy definitions and execution
-- **egibi-connections-manager** — Standalone Angular app for connection management
 
 # Runtime Environment Configuration
 

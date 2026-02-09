@@ -1,6 +1,6 @@
 # API Overview
 
-The Egibi API is a .NET 8 ASP.NET Core Web API running on port 5000 (HTTP) / 7182 (HTTPS). All endpoints return a standardized RequestResponse wrapper unless otherwise noted. Swagger UI is available in Development mode at /swagger.
+The Egibi API is a .NET 9 ASP.NET Core Web API running on port 5000 (HTTP) / 7182 (HTTPS). All endpoints return a standardized RequestResponse wrapper unless otherwise noted. Swagger UI is available in Development mode at /swagger.
 
 Protected endpoints require a Bearer token obtained via the Authorization Code + PKCE flow. The OpenIddict OIDC endpoints (/connect/*) and auth endpoints (/auth/*) are public.
 

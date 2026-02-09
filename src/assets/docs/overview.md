@@ -6,8 +6,8 @@ The name "Egibi" references the ancient Babylonian banking house Egibi & Sons, o
 
 # Technology Stack
 
-- **Frontend** — Angular 19, Bootstrap 5.3.3, AG Grid, Highcharts
-- **Backend** — .NET 8 (ASP.NET Core Web API)
+- **Frontend** — Angular 21, Bootstrap 5.3.3, AG Grid, Highcharts
+- **Backend** — .NET 9 (ASP.NET Core Web API)
 - **Authentication** — OpenIddict 5.8 (OAuth 2.0 / OpenID Connect with Authorization Code + PKCE)
 - **Primary Database** — PostgreSQL 16 (relational data, configuration, user accounts, OIDC grants)
 - **Time-Series Database** — QuestDB 8.2.1 (OHLC candles, market data)
