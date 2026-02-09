@@ -5,7 +5,7 @@
 <h3 align="center">Multi-Asset Algorithmic Trading Platform — UI</h3>
 
 <p align="center">
-  Angular 19 frontend for strategy management, backtesting, and multi-exchange trading
+  Angular 21 frontend for strategy management, backtesting, and multi-exchange trading
 </p>
 
 <p align="center">
@@ -26,10 +26,10 @@ Egibi UI is the Angular frontend for the Egibi algorithmic trading platform. It 
 
 | Category | Technology |
 |---|---|
-| Framework | Angular 19 (standalone components, signals, reactive forms) |
+| Framework | Angular 21 (standalone components, signals, reactive forms) |
 | Styling | Bootstrap 5.3 via SCSS |
-| UI Components | NgBootstrap 18 (modals, dropdowns, tabs, tooltips) |
-| Data Tables | AG Grid 33 (sorting, pagination, filtering) |
+| UI Components | NgBootstrap 20 (modals, dropdowns, tabs, tooltips) |
+| Data Tables | AG Grid 35 (sorting, pagination, filtering) |
 | Charts | Highcharts 12 (candlestick and time-series) |
 | Real-time | Microsoft SignalR (notifications, file upload progress) |
 | Banking | Plaid Link (bank account connection) |
@@ -39,8 +39,8 @@ Egibi UI is the Angular frontend for the Egibi algorithmic trading platform. It 
 
 ## Prerequisites
 
-- [Node.js 20+](https://nodejs.org/) (LTS recommended)
-- [Angular CLI 19](https://angular.dev/tools/cli) — `npm install -g @angular/cli`
+- [Node.js 22+](https://nodejs.org/) (LTS recommended)
+- [Angular CLI 21](https://angular.dev/tools/cli) — `npm install -g @angular/cli`
 - A running instance of [egibi-api](https://github.com/egibi/egibi-api) at `https://localhost:7182`
 
 ## Quick Start
