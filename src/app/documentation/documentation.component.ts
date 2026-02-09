@@ -26,6 +26,9 @@ export class DocumentationComponent implements OnInit {
     { id: 'backend', label: 'Backend (API)', icon: 'backend' },
     { id: 'database', label: 'Database', icon: 'database' },
     { id: 'security', label: 'Security', icon: 'security' },
+    { id: 'security-policy', label: 'Security Policy', icon: 'security' },
+    { id: 'privacy-policy', label: 'Privacy Policy', icon: 'security' },
+    { id: 'terms-of-service', label: 'Terms of Service', icon: 'security' },
     { id: 'api', label: 'API Reference', icon: 'api' },
     { id: 'status', label: 'Build Status', icon: 'status' }
   ];

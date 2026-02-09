@@ -8,6 +8,7 @@ import { SignupComponent } from "./auth/signup/signup.component";
 import { ForgotPasswordComponent } from "./auth/forgot-password/forgot-password.component";
 import { ResetPasswordComponent } from "./auth/reset-password/reset-password.component";
 import { AuthCallbackComponent } from "./auth/callback/auth-callback.component";
+import { LegalPageComponent } from "./auth/legal-page/legal-page.component";
 
 // App pages (protected)
 import { StrategiesComponent } from "./strategies/strategies.component";
@@ -52,6 +53,16 @@ export const routes: Routes = [
   {
     path: "auth/callback",
     component: AuthCallbackComponent,
+  },
+  {
+    path: "privacy-policy",
+    component: LegalPageComponent,
+    data: { document: 'privacy-policy' },
+  },
+  {
+    path: "terms-of-service",
+    component: LegalPageComponent,
+    data: { document: 'terms-of-service' },
   },
 
   // =============================================
