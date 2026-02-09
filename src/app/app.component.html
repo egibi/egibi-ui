@@ -67,15 +67,14 @@
           </button>
 
           <!-- User Menu -->
-          <div class="user-menu-container" (mouseleave)="userMenuOpen = false">
+          <div class="user-menu-container" (mouseenter)="onUserMenuEnter()" (mouseleave)="onUserMenuLeave()">
             <button class="header-btn user-btn" (click)="toggleUserMenu()" aria-label="User menu">
               <div class="user-avatar">
                 <span>{{ userInitials() }}</span>
               </div>
             </button>
 
-            @if (userMenuOpen) {
-              <div class="user-dropdown" (click)="userMenuOpen = false">
+              <div class="user-dropdown" [class.open]="userMenuOpen" (click)="userMenuOpen = false">
                 <div class="user-dropdown-header">
                   <span class="user-dropdown-name">{{ auth.user()?.name || "User" }}</span>
                   <span class="user-dropdown-email">{{ auth.user()?.email }}</span>
@@ -90,7 +89,6 @@
                   Sign out
                 </button>
               </div>
-            }
           </div>
         </div>
       </header>

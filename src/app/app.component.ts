@@ -21,6 +21,8 @@ export class AppComponent {
   sidebarOpen = false;
   sidebarCollapsed = false;
   userMenuOpen = false;
+  private userMenuCloseTimer: ReturnType<typeof setTimeout> | null = null;
+  private readonly MENU_CLOSE_DELAY = 200; // ms
   
   private readonly COLLAPSED_KEY = 'egibi-sidebar-collapsed';
   
@@ -75,7 +77,32 @@ export class AppComponent {
   }
 
   toggleUserMenu() {
+    this.cancelMenuClose();
     this.userMenuOpen = !this.userMenuOpen;
+  }
+
+  /** Cancel any pending close when mouse re-enters */
+  onUserMenuEnter() {
+    this.cancelMenuClose();
+  }
+
+  /** Schedule close after a short delay so the menu doesn't vanish instantly */
+  onUserMenuLeave() {
+    this.scheduleMenuClose();
+  }
+
+  private scheduleMenuClose() {
+    this.cancelMenuClose();
+    this.userMenuCloseTimer = setTimeout(() => {
+      this.userMenuOpen = false;
+    }, this.MENU_CLOSE_DELAY);
+  }
+
+  private cancelMenuClose() {
+    if (this.userMenuCloseTimer) {
+      clearTimeout(this.userMenuCloseTimer);
+      this.userMenuCloseTimer = null;
+    }
   }
 
   logout() {

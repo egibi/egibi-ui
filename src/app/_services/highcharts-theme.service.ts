@@ -81,6 +81,10 @@ export class HighchartsThemeService {
     const theme: Highcharts.Options = {
       colors: palette.seriesColors,
       
+      accessibility: {
+        enabled: false
+      },
+
       chart: {
         backgroundColor: palette.background,
         plotBackgroundColor: palette.plotBackground,
