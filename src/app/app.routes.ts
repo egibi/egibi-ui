@@ -1,6 +1,8 @@
 import { Routes } from "@angular/router";
 import { authGuard } from "./auth/auth.guard";
 import { adminGuard } from "./auth/admin.guard";
+import { MfaVerifyComponent } from "./auth/mfa-verify/mfa-verify.component";
+import { SecurityComponent } from "./security/security.component";
 
 // Auth pages (public)
 import { LoginComponent } from "./auth/login/login.component";
@@ -57,12 +59,15 @@ export const routes: Routes = [
   {
     path: "privacy-policy",
     component: LegalPageComponent,
-    data: { document: 'privacy-policy' },
+    data: { document: "privacy-policy" },
   },
   {
     path: "terms-of-service",
     component: LegalPageComponent,
-    data: { document: 'terms-of-service' },
+    data: { document: "terms-of-service" },
+  },
+  { path: "auth/mfa-verify", 
+    component: MfaVerifyComponent 
   },
 
   // =============================================
@@ -169,15 +174,18 @@ export const routes: Routes = [
     canActivate: [adminGuard],
   },
   {
-    path: 'storage',
+    path: "storage",
     component: StorageComponent,
-    title: 'Storage - Egibi',
+    title: "Storage - Egibi",
     canActivate: [authGuard],
+  },
+  { path: "security", 
+    component: SecurityComponent, canActivate: [authGuard] 
   },
 
   // Catch-all → login
   {
     path: "**",
     redirectTo: "auth/login",
-  }
+  },
 ];

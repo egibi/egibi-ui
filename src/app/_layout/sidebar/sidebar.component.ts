@@ -69,7 +69,8 @@ export class SidebarComponent {
         { label: 'Settings', route: '/app-configuration', icon: 'settings' },
         { label: 'API Tester', route: '/api-tester', icon: 'terminal' },
         { label: 'Admin', route: '/admin', icon: 'shield', requiresAdmin: true },
-        { label: 'Documentation', route: '/documentation', icon: 'book' }
+        { label: 'Documentation', route: '/documentation', icon: 'book' },
+        { label: 'Security', route: '/security', icon: 'lock' }
       ]
     }
   ];

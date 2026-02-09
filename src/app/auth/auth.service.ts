@@ -4,7 +4,7 @@ import { Router } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
 import {
   LoginRequest, SignupRequest, ForgotPasswordRequest, ResetPasswordRequest,
-  AuthResponse, OidcTokenResponse, UserProfile
+  AuthResponse, OidcTokenResponse, UserProfile, MfaVerifyLoginRequest
 } from './auth.models';
 import { environment } from '../../environments/environment';
 
@@ -29,6 +29,9 @@ export class AuthService {
   // FIX #18: Track token expiry time instead of using fragile setTimeout
   private _tokenExpiresAt: number | null = null;
   private _refreshPromise: Promise<boolean> | null = null;
+
+  // --- MFA State ---
+  private _mfaToken = signal<string | null>(null);
 
   /** Promise that resolves when initial session restore (including token refresh) is complete */
   readonly whenInitialized: Promise<void>;
@@ -56,6 +59,11 @@ export class AuthService {
     return this._accessToken();
   }
 
+  /** Current MFA token (used by MFA verify component) */
+  get mfaToken(): string | null {
+    return this._mfaToken();
+  }
+
   constructor(
     private http: HttpClient,
     private router: Router
@@ -69,22 +77,69 @@ export class AuthService {
   // =============================================
 
   /**
-   * Step 1: Authenticate with email/password → sets server cookie.
-   * Step 2: Initiate OIDC Authorization Code + PKCE flow.
+   * Step 1: Authenticate with email/password → sets server cookie OR returns MFA challenge.
+   * Step 2: If no MFA, initiate OIDC Authorization Code + PKCE flow.
+   *         If MFA required, navigate to MFA verification page.
    */
   async login(email: string, password: string): Promise<void> {
     this._loading.set(true);
 
     try {
-      // POST credentials to set the auth cookie on the API domain
-      await firstValueFrom(
+      const response = await firstValueFrom(
         this.http.post<AuthResponse>(`${this.apiUrl}/auth/login`,
           { email, password } as LoginRequest,
           { withCredentials: true }
         )
       );
 
-      // Cookie is set — now start OIDC Authorization Code + PKCE flow
+      // --- MFA CHECK ---
+      if (response.mfaRequired && response.mfaToken) {
+        // Store the MFA token and navigate to verification page
+        this._mfaToken.set(response.mfaToken);
+        this._loading.set(false);
+        this.router.navigateByUrl('/auth/mfa-verify');
+        return;
+      }
+
+      // No MFA — cookie is set, start OIDC Authorization Code + PKCE flow
+      this.startAuthorizationFlow();
+    } catch (err: any) {
+      this._loading.set(false);
+      throw err;
+    }
+  }
+
+  /**
+   * Completes login after MFA verification.
+   * Sends the MFA token + TOTP code (or recovery code) to the server.
+   * On success, server sets the cookie and we proceed with OIDC flow.
+   */
+  async verifyMfa(code: string, isRecoveryCode: boolean = false): Promise<void> {
+    this._loading.set(true);
+
+    const mfaToken = this._mfaToken();
+    if (!mfaToken) {
+      this._loading.set(false);
+      throw new Error('No MFA session found. Please log in again.');
+    }
+
+    try {
+      const body: MfaVerifyLoginRequest = {
+        mfaToken,
+        ...(isRecoveryCode ? { recoveryCode: code } : { code })
+      };
+
+      await firstValueFrom(
+        this.http.post<AuthResponse>(`${this.apiUrl}/auth/mfa-verify`,
+          body,
+          { withCredentials: true }
+        )
+      );
+
+      // Clear the MFA token
+      this._mfaToken.set(null);
+
+      // Cookie is set — start OIDC flow
       this.startAuthorizationFlow();
     } catch (err: any) {
       this._loading.set(false);
@@ -362,6 +417,7 @@ export class AuthService {
     this._accessToken.set(null);
     this._refreshToken.set(null);
     this._user.set(null);
+    this._mfaToken.set(null);
     this._tokenExpiresAt = null;
     this._refreshPromise = null;
     localStorage.removeItem('oidc_access_token');

@@ -1,0 +1,187 @@
+<div class="security-page">
+  <div class="page-header">
+    <h1>Security</h1>
+    <p>Manage your account security settings</p>
+  </div>
+
+  <!-- Alerts -->
+  @if (error()) {
+    <div class="alert alert-error">
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+           fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="10"/>
+        <line x1="12" x2="12" y1="8" y2="12"/>
+        <line x1="12" x2="12.01" y1="16" y2="16"/>
+      </svg>
+      <span>{{ error() }}</span>
+    </div>
+  }
+  @if (success()) {
+    <div class="alert alert-success">
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+           fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+        <polyline points="22 4 12 14.01 9 11.01"/>
+      </svg>
+      <span>{{ success() }}</span>
+    </div>
+  }
+
+  <!-- MFA Card -->
+  <div class="security-card">
+    <div class="card-header">
+      <div class="card-title-row">
+        <div>
+          <h2>Two-factor authentication (2FA)</h2>
+          <p>Add an extra layer of security to your account using a time-based one-time password (TOTP).</p>
+        </div>
+        @if (mfaStatus()?.isMfaEnabled) {
+          <span class="badge badge-enabled">Enabled</span>
+        } @else {
+          <span class="badge badge-disabled">Disabled</span>
+        }
+      </div>
+    </div>
+
+    <div class="card-body">
+
+      <!-- IDLE STATE -->
+      @if (step() === 'idle') {
+        @if (mfaStatus()?.isMfaEnabled) {
+          <div class="mfa-status-info">
+            <p>Your account is protected with two-factor authentication. You have
+              <strong>{{ mfaStatus()?.remainingRecoveryCodes }}</strong> recovery codes remaining.</p>
+            @if ((mfaStatus()?.remainingRecoveryCodes ?? 0) <= 2) {
+              <p class="warning-text">You're running low on recovery codes. Consider disabling and re-enabling MFA to generate new codes.</p>
+            }
+          </div>
+          <button class="btn btn-danger" (click)="startDisable()" [disabled]="loading()">
+            Disable 2FA
+          </button>
+        } @else {
+          <p>Protect your account by requiring a verification code from an authenticator app when you sign in.</p>
+          <button class="btn btn-primary" (click)="beginSetup()" [disabled]="loading()">
+            @if (loading()) {
+              <span class="spinner"></span>
+            }
+            Enable 2FA
+          </button>
+        }
+      }
+
+      <!-- QR CODE STEP -->
+      @if (step() === 'qr') {
+        <div class="setup-step">
+          <h3>Step 1: Scan QR code</h3>
+          <p>Scan this QR code with your authenticator app (Google Authenticator, Authy, Microsoft Authenticator, etc.).</p>
+
+          <div class="qr-container">
+            @if (qrDataUrl()) {
+              <img [src]="qrDataUrl()" alt="MFA QR Code" width="200" height="200" />
+            }
+          </div>
+
+          <div class="manual-entry">
+            <p>Can't scan? Enter this key manually:</p>
+            <code class="shared-key">{{ formattedKey }}</code>
+          </div>
+
+          <div class="step-actions">
+            <button class="btn btn-secondary" (click)="cancelAction()">Cancel</button>
+            <button class="btn btn-primary" (click)="proceedToVerify()">Next</button>
+          </div>
+        </div>
+      }
+
+      <!-- VERIFY STEP -->
+      @if (step() === 'verify') {
+        <div class="setup-step">
+          <h3>Step 2: Verify code</h3>
+          <p>Enter the 6-digit code from your authenticator app to confirm setup.</p>
+
+          <form [formGroup]="verifyForm" (ngSubmit)="confirmSetup()">
+            <div class="form-field">
+              <input
+                type="text"
+                formControlName="code"
+                placeholder="000000"
+                autocomplete="one-time-code"
+                inputmode="numeric"
+                maxlength="6"
+                autofocus
+                [class.invalid]="verifyForm.get('code')?.touched && verifyForm.get('code')?.invalid"
+              />
+            </div>
+            <div class="step-actions">
+              <button type="button" class="btn btn-secondary" (click)="step.set('qr')">Back</button>
+              <button type="submit" class="btn btn-primary" [disabled]="loading()">
+                @if (loading()) {
+                  <span class="spinner"></span>
+                }
+                Verify & Enable
+              </button>
+            </div>
+          </form>
+        </div>
+      }
+
+      <!-- RECOVERY CODES STEP -->
+      @if (step() === 'recovery') {
+        <div class="setup-step">
+          <h3>Save your recovery codes</h3>
+          <p>Store these codes in a safe place. Each code can only be used once. If you lose access to your authenticator app, you can use a recovery code to sign in.</p>
+
+          <div class="recovery-codes">
+            @for (code of recoveryCodes(); track code) {
+              <code class="recovery-code">{{ code }}</code>
+            }
+          </div>
+
+          <div class="step-actions">
+            <button class="btn btn-secondary" (click)="copyRecoveryCodes()">
+              @if (recoveryCodesCopied()) {
+                Copied!
+              } @else {
+                Copy codes
+              }
+            </button>
+            <button class="btn btn-primary" (click)="finishSetup()">
+              I've saved my codes
+            </button>
+          </div>
+        </div>
+      }
+
+      <!-- DISABLE STEP -->
+      @if (step() === 'disable') {
+        <div class="setup-step">
+          <h3>Disable two-factor authentication</h3>
+          <p>Enter your password to confirm. This will remove the extra security from your account.</p>
+
+          <form [formGroup]="disableForm" (ngSubmit)="confirmDisable()">
+            <div class="form-field">
+              <label for="password">Password</label>
+              <input
+                id="password"
+                type="password"
+                formControlName="password"
+                placeholder="Enter your password"
+                autocomplete="current-password"
+                [class.invalid]="disableForm.get('password')?.touched && disableForm.get('password')?.invalid"
+              />
+            </div>
+            <div class="step-actions">
+              <button type="button" class="btn btn-secondary" (click)="cancelAction()">Cancel</button>
+              <button type="submit" class="btn btn-danger" [disabled]="loading()">
+                @if (loading()) {
+                  <span class="spinner"></span>
+                }
+                Disable 2FA
+              </button>
+            </div>
+          </form>
+        </div>
+      }
+    </div>
+  </div>
+</div>

@@ -1,0 +1,301 @@
+// ============================================
+// AUTH PAGE — Shared Styles
+// ============================================
+
+.auth-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 1rem;
+  background-color: hsl(var(--egibi-background));
+}
+
+.auth-card {
+  width: 100%;
+  max-width: 400px;
+  padding: 2.5rem;
+  background: hsl(var(--egibi-card));
+  border: 1px solid hsl(var(--egibi-border));
+  border-radius: var(--egibi-radius);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.06);
+}
+
+// Header
+.auth-header {
+  text-align: center;
+  margin-bottom: 2rem;
+
+  .auth-logo {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    height: 48px;
+    background: hsl(var(--egibi-primary));
+    color: hsl(var(--egibi-primary-foreground));
+    border-radius: 12px;
+    margin-bottom: 1rem;
+  }
+
+  h1 {
+    font-size: 1.375rem;
+    font-weight: 600;
+    color: hsl(var(--egibi-foreground));
+    margin: 0 0 0.375rem;
+    letter-spacing: -0.02em;
+  }
+
+  p {
+    font-size: 0.875rem;
+    color: hsl(var(--egibi-muted-foreground));
+    margin: 0;
+  }
+}
+
+// Alert banners
+.auth-alert {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  border-radius: var(--egibi-radius);
+  font-size: 0.8125rem;
+  margin-bottom: 1.5rem;
+  line-height: 1.5;
+
+  svg {
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+
+  &-error {
+    background: hsl(var(--egibi-danger) / 0.08);
+    color: hsl(var(--egibi-danger));
+    border: 1px solid hsl(var(--egibi-danger) / 0.2);
+  }
+
+  &-success {
+    background: hsl(var(--egibi-success) / 0.08);
+    color: hsl(var(--egibi-success));
+    border: 1px solid hsl(var(--egibi-success) / 0.2);
+  }
+}
+
+// Form fields
+.auth-field {
+  margin-bottom: 1.25rem;
+
+  label {
+    display: block;
+    font-size: 0.8125rem;
+    font-weight: 500;
+    color: hsl(var(--egibi-foreground));
+    margin-bottom: 0.375rem;
+  }
+
+  input {
+    width: 100%;
+    height: 40px;
+    padding: 0 0.75rem;
+    font-size: 0.875rem;
+    color: hsl(var(--egibi-foreground));
+    background: hsl(var(--egibi-background));
+    border: 1px solid hsl(var(--egibi-input));
+    border-radius: var(--egibi-radius);
+    outline: none;
+    transition: border-color 0.15s, box-shadow 0.15s;
+
+    &::placeholder {
+      color: hsl(var(--egibi-muted-foreground));
+    }
+
+    &:focus {
+      border-color: hsl(var(--egibi-ring));
+      box-shadow: 0 0 0 3px hsl(var(--egibi-ring) / 0.1);
+    }
+
+    &.invalid {
+      border-color: hsl(var(--egibi-danger));
+
+      &:focus {
+        box-shadow: 0 0 0 3px hsl(var(--egibi-danger) / 0.1);
+      }
+    }
+  }
+}
+
+.field-label-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 0.375rem;
+
+  label {
+    margin-bottom: 0;
+  }
+}
+
+.field-link {
+  font-size: 0.8125rem;
+  color: hsl(var(--egibi-primary));
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+.field-error {
+  display: block;
+  font-size: 0.75rem;
+  color: hsl(var(--egibi-danger));
+  margin-top: 0.25rem;
+}
+
+// Password toggle
+.input-with-toggle {
+  position: relative;
+
+  input {
+    padding-right: 2.75rem;
+  }
+
+  .toggle-password {
+    position: absolute;
+    right: 0;
+    top: 0;
+    height: 40px;
+    width: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: hsl(var(--egibi-muted-foreground));
+
+    &:hover {
+      color: hsl(var(--egibi-foreground));
+    }
+  }
+}
+
+// Primary button
+.auth-btn-primary {
+  width: 100%;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: hsl(var(--egibi-primary-foreground));
+  background: hsl(var(--egibi-primary));
+  border: none;
+  border-radius: var(--egibi-radius);
+  cursor: pointer;
+  transition: opacity 0.15s;
+  margin-top: 0.5rem;
+
+  &:hover:not(:disabled) {
+    opacity: 0.9;
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+}
+
+// Secondary / link button
+.auth-btn-secondary {
+  @extend .auth-btn-primary;
+  background: transparent;
+  color: hsl(var(--egibi-foreground));
+  border: 1px solid hsl(var(--egibi-border));
+
+  &:hover:not(:disabled) {
+    background: hsl(var(--egibi-accent));
+    opacity: 1;
+  }
+}
+
+// Spinner
+.spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid hsl(var(--egibi-primary-foreground) / 0.3);
+  border-top-color: hsl(var(--egibi-primary-foreground));
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+// Footer link
+.auth-footer {
+  text-align: center;
+  margin-top: 1.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid hsl(var(--egibi-border));
+  font-size: 0.8125rem;
+  color: hsl(var(--egibi-muted-foreground));
+
+  a {
+    color: hsl(var(--egibi-primary));
+    text-decoration: none;
+    font-weight: 500;
+    margin-left: 0.25rem;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}
+
+// Back link
+.auth-back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  font-size: 0.8125rem;
+  color: hsl(var(--egibi-muted-foreground));
+  text-decoration: none;
+  margin-bottom: 1.5rem;
+
+  &:hover {
+    color: hsl(var(--egibi-foreground));
+  }
+}
+
+// Password requirements
+.password-requirements {
+  margin-top: 0.5rem;
+  padding: 0.75rem;
+  background: hsl(var(--egibi-muted) / 0.5);
+  border-radius: var(--egibi-radius);
+
+  .req-title {
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: hsl(var(--egibi-muted-foreground));
+    margin-bottom: 0.375rem;
+  }
+
+  .req-item {
+    display: flex;
+    align-items: center;
+    gap: 0.375rem;
+    font-size: 0.75rem;
+    color: hsl(var(--egibi-muted-foreground));
+    padding: 0.125rem 0;
+
+    &.met {
+      color: hsl(var(--egibi-success));
+    }
+  }
+}
