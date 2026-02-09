@@ -34,7 +34,7 @@ export class DocumentationComponent implements OnInit {
   ];
 
   // Last updated timestamp
-  lastUpdated = 'February 8, 2026';
+  lastUpdated = 'February 9, 2026';
 
   @HostListener('window:scroll')
   onWindowScroll() {

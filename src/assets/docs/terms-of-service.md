@@ -1,7 +1,7 @@
 # Terms of Service
 
 <div class="doc-meta" style="margin-bottom: 1.5rem; color: #6c757d; font-size: 0.9rem;">
-  <p><strong>Effective Date:</strong> February 8, 2026 &nbsp;|&nbsp; <strong>Last Updated:</strong> February 8, 2026</p>
+  <p><strong>Effective Date:</strong> February 8, 2026 &nbsp;|&nbsp; <strong>Last Updated:</strong> February 9, 2026</p>
 </div>
 
 These Terms of Service ("Terms") govern your use of the Egibi platform operated by Egibi LLC ("Egibi," "we," "us," or "our"). By creating an account or using the platform, you agree to be bound by these Terms. If you do not agree, do not use the platform.
@@ -32,7 +32,11 @@ You must provide accurate and complete information when creating an account. You
 
 You are solely responsible for maintaining the confidentiality of your account credentials, including your password and any exchange API keys you provide. You agree to notify us immediately if you become aware of any unauthorized access to your account. Egibi is not liable for any loss or damage arising from unauthorized access to your account that results from your failure to safeguard your credentials.
 
-### 3.3 One Account Per Person
+### 3.3 Multi-Factor Authentication (MFA)
+
+The platform offers multi-factor authentication via Time-Based One-Time Password (TOTP) to enhance account security. MFA is required before you can access certain features, including financial integrations such as Plaid Link. We strongly recommend enabling MFA to protect your account.
+
+### 3.4 One Account Per Person
 
 Each user may maintain only one account. Creating multiple accounts may result in suspension or termination of all associated accounts.
 
@@ -48,19 +52,23 @@ We strongly recommend that API keys provided to Egibi be configured with the min
 
 ### 4.3 Credential Security
 
-Egibi encrypts your API credentials at rest using AES-256-GCM encryption. However, you acknowledge that no system is completely secure, and you provide credentials at your own risk.
+Egibi encrypts your API credentials at rest using AES-256-GCM encryption with per-user data encryption keys. However, you acknowledge that no system is completely secure, and you provide credentials at your own risk.
 
 ## 5. Linked Bank Accounts and Funding Sources
 
 ### 5.1 Plaid Integration
 
-When you choose to link a bank account through Plaid, you authorize Egibi to access your account and routing numbers and balance information through Plaid's services. Your use of Plaid is also subject to [Plaid's End User Privacy Policy](https://plaid.com/legal/#end-user-privacy-policy).
+When you choose to link a bank account through Plaid, you authorize Egibi to access your account and routing numbers and balance information through Plaid's services. You must enable multi-factor authentication (MFA) on your Egibi account before initiating a Plaid connection; this requirement is enforced at both the application and server level. Your use of Plaid is also subject to [Plaid's End User Privacy Policy](https://plaid.com/legal/#end-user-privacy-policy).
 
-### 5.2 Mercury Integration
+### 5.2 Plaid Developer Credentials
+
+If you provide your own Plaid developer credentials (client ID and secret), you represent that you are the authorized holder of those credentials. These credentials are encrypted at rest using AES-256-GCM with your personal data encryption key and are never stored in plaintext. You may delete your Plaid developer configuration at any time, which permanently removes the stored credentials.
+
+### 5.3 Mercury Integration
 
 If you connect a Mercury business bank account, you authorize Egibi to retrieve account balance and identification information through Mercury's API.
 
-### 5.3 No Fund Transfers by Egibi
+### 5.4 No Fund Transfers by Egibi
 
 Egibi does not initiate transfers, withdrawals, or deposits to or from your linked bank accounts. Bank account connections are used solely for informational purposes (viewing balances and account identifiers).
 
@@ -93,7 +101,7 @@ You agree not to use the Egibi platform to:
 - Use the platform for money laundering, fraud, or other illicit activities
 - Reverse engineer, decompile, or disassemble any part of the platform
 - Use automated tools (bots, scrapers) to access the platform outside of normal usage
-- Circumvent or attempt to circumvent any security measures
+- Circumvent or attempt to circumvent any security measures, including multi-factor authentication requirements
 
 ## 8. Intellectual Property
 
@@ -120,7 +128,7 @@ You agree to indemnify, defend, and hold harmless Egibi LLC and its members, off
 
 ### 12.1 Termination by You
 
-You may delete your account at any time through the platform. Upon deletion, your personal data will be removed in accordance with our Privacy Policy.
+You may delete your account at any time through the platform. Upon deletion, your personal data will be removed in accordance with our Privacy Policy and Data Retention & Deletion Policy.
 
 ### 12.2 Termination by Egibi
 
@@ -144,7 +152,7 @@ If any provision of these Terms is found to be unenforceable or invalid, that pr
 
 ## 16. Entire Agreement
 
-These Terms, together with the Privacy Policy and Information Security Policy, constitute the entire agreement between you and Egibi LLC regarding your use of the platform.
+These Terms, together with the Privacy Policy, Information Security Policy, and Data Retention & Deletion Policy, constitute the entire agreement between you and Egibi LLC regarding your use of the platform.
 
 ## 17. Contact Information
 
@@ -158,4 +166,4 @@ Email: admin@egibi.io
 ---
 
 **Egibi LLC**
-Last Updated: February 8, 2026
+Last Updated: February 9, 2026
