@@ -1,0 +1,7 @@
+{
+  "name": "egibi-ui",
+  "compatibility_date": "2026-02-10",
+  "assets": {
+    "directory": "./dist/egibi-ui/browser"
+  }
+}
