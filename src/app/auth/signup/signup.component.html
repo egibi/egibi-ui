@@ -18,149 +18,239 @@
           </g>
         </svg>
       </div>
-      <h1>Create your account</h1>
-      <p>Get started with Egibi</p>
+
+      @if (requestSubmitted()) {
+        <h1>Check Your Email</h1>
+        <p>One more step to go</p>
+      } @else {
+        <h1>Request Access</h1>
+        <p>Get started with Egibi</p>
+      }
     </div>
 
-    @if (error()) {
-      <div class="auth-alert auth-alert-error">
+    <!-- SUCCESS STATE: Access request submitted — check email -->
+    @if (requestSubmitted()) {
+      <div class="auth-alert auth-alert-success">
         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
              fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <circle cx="12" cy="12" r="10"/>
-          <line x1="12" x2="12" y1="8" y2="12"/>
-          <line x1="12" x2="12.01" y1="16" y2="16"/>
+          <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+          <polyline points="22 4 12 14.01 9 11.01"/>
         </svg>
-        <span>{{ error() }}</span>
-      </div>
-    }
-
-    <form [formGroup]="form" (ngSubmit)="onSubmit()">
-      <div class="name-row">
-        <div class="auth-field">
-          <label for="firstName">First name</label>
-          <input
-            id="firstName"
-            type="text"
-            formControlName="firstName"
-            placeholder="John"
-            autocomplete="given-name"
-          />
-        </div>
-        <div class="auth-field">
-          <label for="lastName">Last name</label>
-          <input
-            id="lastName"
-            type="text"
-            formControlName="lastName"
-            placeholder="Doe"
-            autocomplete="family-name"
-          />
-        </div>
+        <span>
+          We've sent a verification email to <strong>{{ submittedEmail() }}</strong>.
+          Please click the link in the email to verify your address.
+          Once verified, an administrator will review your request and you'll be notified by email.
+        </span>
       </div>
 
-      <div class="auth-field">
-        <label for="email">Email</label>
-        <input
-          id="email"
-          type="email"
-          formControlName="email"
-          placeholder="you@example.com"
-          autocomplete="email"
-          [class.invalid]="form.get('email')?.touched && form.get('email')?.invalid"
-        />
-        @if (form.get('email')?.touched && form.get('email')?.hasError('email')) {
-          <span class="field-error">Enter a valid email address</span>
-        }
-      </div>
-
-      <div class="auth-field">
-        <label for="password">Password</label>
-        <div class="input-with-toggle">
-          <input
-            id="password"
-            [type]="showPassword() ? 'text' : 'password'"
-            formControlName="password"
-            placeholder="••••••••"
-            autocomplete="new-password"
-          />
-          <button type="button" class="toggle-password" (click)="togglePassword()" tabindex="-1">
-            @if (showPassword()) {
-              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
-                   fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/>
-                <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/>
-                <line x1="1" x2="23" y1="1" y2="23"/>
-              </svg>
+      <div class="auth-info-note">
+        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"
+             fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"/>
+          <path d="M12 16v-4"/>
+          <path d="M12 8h.01"/>
+        </svg>
+        <span>Didn't receive the email? Check your spam folder or
+          <button type="button" class="link-button" (click)="resendVerification()" [disabled]="resendLoading()">
+            @if (resendLoading()) {
+              sending...
             } @else {
-              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
-                   fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
-                <circle cx="12" cy="12" r="3"/>
-              </svg>
+              resend verification email
             }
           </button>
+        </span>
+      </div>
+
+      @if (resendSuccess()) {
+        <div class="auth-alert auth-alert-success" style="margin-top: 12px;">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+               fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+            <polyline points="22 4 12 14.01 9 11.01"/>
+          </svg>
+          <span>Verification email resent.</span>
+        </div>
+      }
+
+      <div class="auth-footer">
+        <span>Already have an account?</span>
+        <a routerLink="/auth/login">Sign in</a>
+      </div>
+    } @else {
+      <!-- FORM STATE: Signup form -->
+      @if (error()) {
+        <div class="auth-alert auth-alert-error">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+               fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"/>
+            <line x1="12" x2="12" y1="8" y2="12"/>
+            <line x1="12" x2="12.01" y1="16" y2="16"/>
+          </svg>
+          <span>{{ error() }}</span>
+        </div>
+      }
+
+      <form [formGroup]="form" (ngSubmit)="onSubmit()">
+        <div class="name-row">
+          <div class="auth-field">
+            <label for="firstName">First name</label>
+            <input
+              id="firstName"
+              type="text"
+              formControlName="firstName"
+              placeholder="John"
+              autocomplete="given-name"
+            />
+          </div>
+          <div class="auth-field">
+            <label for="lastName">Last name</label>
+            <input
+              id="lastName"
+              type="text"
+              formControlName="lastName"
+              placeholder="Doe"
+              autocomplete="family-name"
+            />
+          </div>
         </div>
 
-        <!-- Password requirements -->
-        @if (form.get('password')?.dirty) {
-          <div class="password-requirements">
-            <div class="req-title">Password must contain:</div>
-            <div class="req-item" [class.met]="hasMinLength()">
-              @if (hasMinLength()) { ✓ } @else { ○ } At least 8 characters
-            </div>
-            <div class="req-item" [class.met]="hasUpper()">
-              @if (hasUpper()) { ✓ } @else { ○ } One uppercase letter
-            </div>
-            <div class="req-item" [class.met]="hasLower()">
-              @if (hasLower()) { ✓ } @else { ○ } One lowercase letter
-            </div>
-            <div class="req-item" [class.met]="hasNumber()">
-              @if (hasNumber()) { ✓ } @else { ○ } One number
-            </div>
-            <div class="req-item" [class.met]="hasSpecial()">
-              @if (hasSpecial()) { ✓ } @else { ○ } One special character
-            </div>
-          </div>
-        }
-      </div>
-
-      <!-- Consent checkbox -->
-      <div class="auth-consent">
-        <label class="consent-label">
+        <div class="auth-field">
+          <label for="email">Email</label>
           <input
-            type="checkbox"
-            formControlName="consentToTerms"
-            class="consent-checkbox"
+            id="email"
+            type="email"
+            formControlName="email"
+            placeholder="you@example.com"
+            autocomplete="email"
+            [class.invalid]="form.get('email')?.touched && form.get('email')?.invalid"
           />
-          <span class="consent-text">
-            I agree to the <a href="#" (click)="openLegalDoc('terms-of-service', $event)">Terms of Service</a>
-            and <a href="#" (click)="openLegalDoc('privacy-policy', $event)">Privacy Policy</a>,
-            and consent to the collection and processing of my data as described therein.
-          </span>
-        </label>
-        @if (form.get('consentToTerms')?.touched && form.get('consentToTerms')?.invalid) {
-          <span class="field-error">You must agree to the Terms of Service and Privacy Policy</span>
-        }
+          @if (form.get('email')?.touched && form.get('email')?.hasError('email')) {
+            <span class="field-error">Enter a valid email address</span>
+          }
+        </div>
+
+        <div class="auth-field">
+          <label for="password">Password</label>
+          <div class="input-with-toggle">
+            <input
+              id="password"
+              [type]="showPassword() ? 'text' : 'password'"
+              formControlName="password"
+              placeholder="••••••••"
+              autocomplete="new-password"
+            />
+            <button type="button" class="toggle-password" (click)="togglePassword()" tabindex="-1">
+              @if (showPassword()) {
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
+                     fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/>
+                  <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/>
+                  <line x1="1" x2="23" y1="1" y2="23"/>
+                </svg>
+              } @else {
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
+                     fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                  <circle cx="12" cy="12" r="3"/>
+                </svg>
+              }
+            </button>
+          </div>
+
+          <!-- Password requirements -->
+          @if (form.get('password')?.dirty) {
+            <div class="password-requirements">
+              <div class="req-title">Password must contain:</div>
+              <div class="req-item" [class.met]="hasMinLength()">
+                @if (hasMinLength()) { ✓ } @else { ○ } At least 8 characters
+              </div>
+              <div class="req-item" [class.met]="hasUpper()">
+                @if (hasUpper()) { ✓ } @else { ○ } One uppercase letter
+              </div>
+              <div class="req-item" [class.met]="hasLower()">
+                @if (hasLower()) { ✓ } @else { ○ } One lowercase letter
+              </div>
+              <div class="req-item" [class.met]="hasNumber()">
+                @if (hasNumber()) { ✓ } @else { ○ } One number
+              </div>
+              <div class="req-item" [class.met]="hasSpecial()">
+                @if (hasSpecial()) { ✓ } @else { ○ } One special character
+              </div>
+            </div>
+          }
+        </div>
+
+        <div class="auth-field">
+          <label for="confirmPassword">Confirm password</label>
+          <div class="input-with-toggle">
+            <input
+              id="confirmPassword"
+              [type]="showConfirmPassword() ? 'text' : 'password'"
+              formControlName="confirmPassword"
+              placeholder="••••••••"
+              autocomplete="new-password"
+              [class.invalid]="form.get('confirmPassword')?.touched && (form.get('confirmPassword')?.invalid || form.hasError('passwordsMismatch'))"
+            />
+            <button type="button" class="toggle-password" (click)="toggleConfirmPassword()" tabindex="-1">
+              @if (showConfirmPassword()) {
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
+                     fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/>
+                  <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/>
+                  <line x1="1" x2="23" y1="1" y2="23"/>
+                </svg>
+              } @else {
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
+                     fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                  <circle cx="12" cy="12" r="3"/>
+                </svg>
+              }
+            </button>
+          </div>
+          @if (form.get('confirmPassword')?.touched && form.hasError('passwordsMismatch')) {
+            <span class="field-error">Passwords do not match</span>
+          }
+        </div>
+
+        <!-- Consent checkbox -->
+        <div class="auth-consent">
+          <label class="consent-label">
+            <input
+              type="checkbox"
+              formControlName="consentToTerms"
+              class="consent-checkbox"
+            />
+            <span class="consent-text">
+              I agree to the <a href="#" (click)="openLegalDoc('terms-of-service', $event)">Terms of Service</a>
+              and <a href="#" (click)="openLegalDoc('privacy-policy', $event)">Privacy Policy</a>,
+              and consent to the collection and processing of my data as described therein.
+            </span>
+          </label>
+          @if (form.get('consentToTerms')?.touched && form.get('consentToTerms')?.invalid) {
+            <span class="field-error">You must agree to the Terms of Service and Privacy Policy</span>
+          }
+        </div>
+
+        <button
+          type="submit"
+          class="auth-btn-primary"
+          [disabled]="loading()"
+        >
+          @if (loading()) {
+            <span class="spinner"></span>
+            Submitting request...
+          } @else {
+            Request Access
+          }
+        </button>
+      </form>
+
+      <div class="auth-footer">
+        <span>Already have an account?</span>
+        <a routerLink="/auth/login">Sign in</a>
       </div>
-
-      <button
-        type="submit"
-        class="auth-btn-primary"
-        [disabled]="loading()"
-      >
-        @if (loading()) {
-          <span class="spinner"></span>
-          Creating account...
-        } @else {
-          Create account
-        }
-      </button>
-    </form>
-
-    <div class="auth-footer">
-      <span>Already have an account?</span>
-      <a routerLink="/auth/login">Sign in</a>
-    </div>
+    }
   </div>
 </div>
 

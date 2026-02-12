@@ -1,0 +1,79 @@
+<div class="auth-page">
+  <div class="auth-card">
+    <a routerLink="/auth/login" class="auth-back-link">
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+           fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="m15 18-6-6 6-6"/>
+      </svg>
+      Back to sign in
+    </a>
+
+    <div class="auth-header">
+      <div class="auth-logo">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="418 370 300 260" width="36" height="36"
+             role="img" aria-label="Egibi logo">
+          <g fill="currentColor" fill-rule="evenodd">
+            <path d="M481 459L493 459L494 460L503 460L504 459L507 459L508 458L509 458L510 457L511 457L512 456L513 456L514 455L515 455L516 454L517 454L519 452L520 452L523 449L524 449L525 448L524 447L521 447L520 446L516 446L515 445L512 445L511 444L508 444L507 443L504 443L503 442L495 442L492 445L492 446L490 448L490 449L481 458Z"/>
+            <path d="M679 406L522 384L474 437L418 475L442 524L478 526L463 540L448 537L454 559L499 560L522 616L545 608L541 552L562 602L604 581L555 505L517 491L510 522L447 512L437 490L451 474L441 471L477 447L497 422L596 410L587 433L557 447L573 466L559 498L620 568L665 535L599 472L673 514L695 481L623 439L688 461ZM598 471L599 470L600 471L599 472ZM596 470L597 469L598 469L599 470L598 471L597 471Z"/>
+          </g>
+        </svg>
+      </div>
+
+      @if (loading()) {
+        <h1>Verifying Email</h1>
+        <p>Please wait...</p>
+      } @else if (verified()) {
+        <h1>Email Verified</h1>
+        <p>You're all set</p>
+      } @else {
+        <h1>Verification Failed</h1>
+        <p>Something went wrong</p>
+      }
+    </div>
+
+    <!-- LOADING STATE -->
+    @if (loading()) {
+      <div class="verify-loading">
+        <span class="spinner"></span>
+        <p>Verifying your email address...</p>
+      </div>
+    }
+
+    <!-- SUCCESS STATE -->
+    @if (!loading() && verified()) {
+      <div class="auth-alert auth-alert-success">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+             fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+          <polyline points="22 4 12 14.01 9 11.01"/>
+        </svg>
+        <span>
+          Your email has been verified. An administrator will review your access request
+          and you'll be notified by email once a decision has been made.
+        </span>
+      </div>
+
+      <a routerLink="/auth/login" class="auth-btn-primary" style="display: block; text-align: center; text-decoration: none; margin-top: 16px;">
+        Go to Sign In
+      </a>
+    }
+
+    <!-- ERROR STATE -->
+    @if (!loading() && error()) {
+      <div class="auth-alert auth-alert-error">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+             fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"/>
+          <line x1="12" x2="12" y1="8" y2="12"/>
+          <line x1="12" x2="12.01" y1="16" y2="16"/>
+        </svg>
+        <span>{{ error() }}</span>
+      </div>
+
+      <div class="auth-footer">
+        <span>Need to request access again?</span>
+        <a routerLink="/auth/signup">Sign up</a>
+      </div>
+    }
+  </div>
+</div>

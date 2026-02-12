@@ -1,0 +1,148 @@
+<div class="p-4">
+  <!-- Header -->
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <div>
+      <h5 class="mb-1">Access Requests</h5>
+      <p class="text-muted mb-0 small">
+        @if (pendingCount > 0) {
+          {{ pendingCount }} pending request{{ pendingCount !== 1 ? 's' : '' }}
+        } @else {
+          No pending requests
+        }
+      </p>
+    </div>
+    <div class="d-flex gap-2 align-items-center">
+      <div class="form-check form-switch">
+        <input
+          class="form-check-input"
+          type="checkbox"
+          id="showAllToggle"
+          [checked]="showAll()"
+          (change)="toggleShowAll()"
+        />
+        <label class="form-check-label small" for="showAllToggle">Show all</label>
+      </div>
+      <button class="btn btn-sm btn-outline-secondary" (click)="loadRequests()" [disabled]="loading()">
+        Refresh
+      </button>
+    </div>
+  </div>
+
+  <!-- Loading -->
+  @if (loading()) {
+    <div class="text-center py-4">
+      <div class="spinner-border spinner-border-sm text-muted" role="status">
+        <span class="visually-hidden">Loading...</span>
+      </div>
+    </div>
+  } @else if (requests().length === 0) {
+    <div class="text-center py-5 text-muted">
+      <p class="mb-0">{{ showAll() ? 'No access requests found.' : 'No pending access requests.' }}</p>
+    </div>
+  } @else {
+    <!-- Table -->
+    <div class="table-responsive">
+      <table class="table table-hover align-middle mb-0">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Status</th>
+            <th>Requested</th>
+            @if (showAll()) {
+              <th>Reviewed</th>
+            }
+            <th class="text-end">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (req of requests(); track req.id) {
+            <tr>
+              <td>
+                <span class="fw-medium">{{ req.firstName }} {{ req.lastName }}</span>
+              </td>
+              <td>
+                <span class="text-muted small">{{ req.email }}</span>
+              </td>
+              <td>
+                @switch (req.status) {
+                  @case ('pending') {
+                    <span class="badge bg-warning text-dark">Pending</span>
+                  }
+                  @case ('approved') {
+                    <span class="badge bg-success">Approved</span>
+                  }
+                  @case ('denied') {
+                    <span class="badge bg-danger">Denied</span>
+                    @if (req.denialReason) {
+                      <br><span class="text-muted small">{{ req.denialReason }}</span>
+                    }
+                  }
+                }
+              </td>
+              <td>
+                <span class="small">{{ formatDate(req.createdAt) }}</span>
+              </td>
+              @if (showAll()) {
+                <td>
+                  @if (req.reviewedAt) {
+                    <span class="small">{{ formatDate(req.reviewedAt) }}</span>
+                  } @else {
+                    <span class="text-muted small">--</span>
+                  }
+                </td>
+              }
+              <td class="text-end">
+                @if (req.status === 'pending') {
+                  <div class="d-flex gap-2 justify-content-end">
+                    <button
+                      class="btn btn-sm btn-success"
+                      (click)="approve(req.id)"
+                      [disabled]="processingId() === req.id"
+                    >
+                      @if (processingId() === req.id) {
+                        <span class="spinner-border spinner-border-sm me-1"></span>
+                      }
+                      Approve
+                    </button>
+                    <button
+                      class="btn btn-sm btn-outline-danger"
+                      (click)="openDenyModal(req.id, denyModal)"
+                      [disabled]="processingId() === req.id"
+                    >
+                      Deny
+                    </button>
+                  </div>
+                } @else {
+                  <span class="text-muted small">--</span>
+                }
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</div>
+
+<!-- Deny Reason Modal -->
+<ng-template #denyModal let-modal>
+  <div class="modal-header">
+    <h5 class="modal-title">Deny Access Request</h5>
+    <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss()"></button>
+  </div>
+  <div class="modal-body">
+    <label for="denyReason" class="form-label">Reason (optional)</label>
+    <textarea
+      id="denyReason"
+      class="form-control"
+      rows="3"
+      placeholder="Provide a reason for denying this request..."
+      [(ngModel)]="denyReason"
+    ></textarea>
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-sm btn-outline-secondary" (click)="modal.dismiss()">Cancel</button>
+    <button type="button" class="btn btn-sm btn-danger" (click)="confirmDeny(modal)">Deny Request</button>
+  </div>
+</ng-template>

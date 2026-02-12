@@ -12,18 +12,24 @@
     <div class="card-body p-0">
       <ul ngbNav #nav="ngbNav" [(activeId)]="active" class="nav-tabs px-3 pt-2">
         <li [ngbNavItem]="1">
+          <button ngbNavLink>Access Requests</button>
+          <ng-template ngbNavContent>
+            <access-requests></access-requests>
+          </ng-template>
+        </li>
+        <li [ngbNavItem]="2">
           <button ngbNavLink>User Management</button>
           <ng-template ngbNavContent>
             <user-management></user-management>
           </ng-template>
         </li>
-        <li [ngbNavItem]="2">
+        <li [ngbNavItem]="3">
           <button ngbNavLink>Service Catalog</button>
           <ng-template ngbNavContent>
             <service-catalog></service-catalog>
           </ng-template>
         </li>
-        <li [ngbNavItem]="3">
+        <li [ngbNavItem]="4">
           <button ngbNavLink>System</button>
           <ng-template ngbNavContent>
             <div class="p-4">

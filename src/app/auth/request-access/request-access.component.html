@@ -1,0 +1,166 @@
+<!-- ═══════════════════════════════════════════════════════════════
+     REQUEST ACCESS PAGE
+     Matches the existing auth page layout (login/signup pattern).
+     ═══════════════════════════════════════════════════════════════ -->
+
+<div class="auth-page">
+  <div class="auth-card">
+
+    <!-- HEADER -->
+    <div class="auth-card-header text-center">
+      <h4 class="mb-1">Request Access</h4>
+      <p class="text-muted mb-0">Submit a request to join the Egibi platform</p>
+    </div>
+
+    <!-- BODY -->
+    <div class="auth-card-body">
+
+      <!-- ── SUCCESS STATE ────────────────────────────── -->
+      @if (requestSubmitted()) {
+        <div class="text-center py-4">
+          <div class="mb-3">
+            <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64"
+                 fill="currentColor" class="text-success"
+                 viewBox="0 0 16 16">
+              <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97
+                      -3.03a.75.75 0 0 0-1.08.022L7.477
+                      9.417 5.384 7.323a.75.75 0 0
+                      0-1.06 1.06L6.97 11.03a.75.75
+                      0 0 0 1.079-.02l3.992-4.99a.75.75
+                      0 0 0-.01-1.05z"/>
+            </svg>
+          </div>
+          <h5 class="mb-2">Request Submitted</h5>
+          <p class="text-muted mb-4">
+            Your access request has been submitted and is pending administrator approval.
+            You will be able to log in once your request is approved.
+          </p>
+          <a routerLink="/auth/login" class="btn btn-outline-primary">
+            Return to Login
+          </a>
+        </div>
+      }
+
+      <!-- ── FORM STATE ───────────────────────────────── -->
+      @if (!requestSubmitted()) {
+        <form [formGroup]="form" (ngSubmit)="onSubmit()">
+
+          <!-- Error Alert -->
+          @if (error()) {
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+              {{ error() }}
+              <button type="button" class="btn-close" (click)="error.set(null)"></button>
+            </div>
+          }
+
+          <!-- First Name / Last Name Row -->
+          <div class="row mb-3">
+            <div class="col-6">
+              <label for="firstName" class="form-label">First Name</label>
+              <input
+                type="text"
+                class="form-control"
+                id="firstName"
+                formControlName="firstName"
+                placeholder="First name"
+                [class.is-invalid]="form.get('firstName')?.touched && form.get('firstName')?.invalid"
+              />
+              <div class="invalid-feedback">First name is required.</div>
+            </div>
+            <div class="col-6">
+              <label for="lastName" class="form-label">Last Name</label>
+              <input
+                type="text"
+                class="form-control"
+                id="lastName"
+                formControlName="lastName"
+                placeholder="Last name"
+                [class.is-invalid]="form.get('lastName')?.touched && form.get('lastName')?.invalid"
+              />
+              <div class="invalid-feedback">Last name is required.</div>
+            </div>
+          </div>
+
+          <!-- Email -->
+          <div class="mb-3">
+            <label for="email" class="form-label">Email</label>
+            <input
+              type="email"
+              class="form-control"
+              id="email"
+              formControlName="email"
+              placeholder="you@example.com"
+              [class.is-invalid]="form.get('email')?.touched && form.get('email')?.invalid"
+            />
+            <div class="invalid-feedback">A valid email is required.</div>
+          </div>
+
+          <!-- Password -->
+          <div class="mb-3">
+            <label for="password" class="form-label">Password</label>
+            <input
+              type="password"
+              class="form-control"
+              id="password"
+              formControlName="password"
+              placeholder="Minimum 8 characters"
+              [class.is-invalid]="form.get('password')?.touched && form.get('password')?.invalid"
+            />
+            <div class="invalid-feedback">Password must be at least 8 characters.</div>
+          </div>
+
+          <!-- Confirm Password -->
+          <div class="mb-3">
+            <label for="confirmPassword" class="form-label">Confirm Password</label>
+            <input
+              type="password"
+              class="form-control"
+              id="confirmPassword"
+              formControlName="confirmPassword"
+              placeholder="Re-enter password"
+              [class.is-invalid]="form.get('confirmPassword')?.touched && form.get('confirmPassword')?.invalid"
+            />
+            <div class="invalid-feedback">Please confirm your password.</div>
+          </div>
+
+          <!-- Message (optional) -->
+          <div class="mb-3">
+            <label for="message" class="form-label">
+              Message <span class="text-muted">(optional)</span>
+            </label>
+            <textarea
+              class="form-control"
+              id="message"
+              formControlName="message"
+              rows="3"
+              placeholder="Tell us why you'd like access..."
+            ></textarea>
+          </div>
+
+          <!-- Submit -->
+          <button
+            type="submit"
+            class="btn btn-primary w-100"
+            [disabled]="loading()">
+            @if (loading()) {
+              <span class="spinner-border spinner-border-sm me-2" role="status"></span>
+              Submitting...
+            } @else {
+              Request Access
+            }
+          </button>
+        </form>
+      }
+    </div>
+
+    <!-- FOOTER -->
+    <div class="auth-card-footer text-center">
+      <span class="text-muted">Already have an account?</span>
+      <a routerLink="/auth/login" class="ms-1">Log in</a>
+      <span class="mx-2 text-muted">|</span>
+      <span class="text-muted">Have an invite code?</span>
+      <a routerLink="/auth/signup" class="ms-1">Sign up</a>
+    </div>
+
+  </div>
+</div>

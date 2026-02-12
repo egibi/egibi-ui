@@ -51,6 +51,51 @@
   }
 }
 
+// "Didn't receive the email?" info note
+.auth-info-note {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  background: hsl(var(--egibi-muted, 220 14% 96%));
+  border-radius: 0.5rem;
+  margin-top: 0.75rem;
+
+  svg {
+    flex-shrink: 0;
+    margin-top: 1px;
+    color: hsl(var(--egibi-muted-foreground, 220 9% 46%));
+  }
+
+  span {
+    font-size: 0.8rem;
+    line-height: 1.5;
+    color: hsl(var(--egibi-muted-foreground, 220 9% 46%));
+  }
+}
+
+// Inline link-style button (for "resend verification email")
+.link-button {
+  background: none;
+  border: none;
+  padding: 0;
+  color: hsl(var(--egibi-foreground, 224 71% 4%));
+  font-weight: 500;
+  font-size: inherit;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  cursor: pointer;
+
+  &:hover {
+    color: hsl(var(--egibi-primary, 222 47% 11%));
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+}
+
 // Legal document modal
 .legal-modal-loading {
   display: flex;
