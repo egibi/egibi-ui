@@ -21,49 +21,52 @@ export class AccessRequestsComponent implements OnInit {
   loading = signal(false);
   processingId = signal<number | null>(null);
 
-  // Status filter (null = all)
+  // Status filter
   statusFilter = signal<string | null>(null);
-
-  statusOptions: { value: string | null; label: string }[] = [
-    { value: null, label: 'All' },
-    { value: 'pending_verification', label: 'Pending Verification' },
-    { value: 'pending', label: 'Pending' },
-    { value: 'approved', label: 'Approved' },
-    { value: 'denied', label: 'Denied' }
+  statusOptions = [
+    { label: 'All', value: null as string | null },
+    { label: 'Pending Verification', value: 'pending_verification' },
+    { label: 'Pending', value: 'pending' },
+    { label: 'Approved', value: 'approved' },
+    { label: 'Denied', value: 'denied' }
   ];
-
-  // Review modal state
-  reviewRequest = signal<AccessRequestSummary | null>(null);
 
   // Deny modal state
   denyTargetId = signal<number | null>(null);
   denyReason = '';
 
+  // Review modal state
+  reviewRequest = signal<AccessRequestSummary | null>(null);
+
   // Delete modal state
   deleteTargetId = signal<number | null>(null);
 
   get pendingCount(): number {
-    return this.requests().filter(r => r.status === 'pending').length;
+    return this.requests().filter(r => r.status === 'pending' || r.status === 'pending_verification').length;
   }
 
   get filteredRequests(): AccessRequestSummary[] {
     const filter = this.statusFilter();
-    if (!filter) return this.requests();
+    if (filter === null) {
+      return this.requests();
+    }
     return this.requests().filter(r => r.status === filter);
+  }
+
+  getCountForStatus(status: string | null): number {
+    if (status === null) {
+      return this.requests().length;
+    }
+    return this.requests().filter(r => r.status === status).length;
   }
 
   ngOnInit(): void {
     this.loadRequests();
   }
 
-  // =============================================
-  // DATA LOADING
-  // =============================================
-
   loadRequests(): void {
     this.loading.set(true);
 
-    // Always load all requests; filter client-side
     this.service.getAllRequests().subscribe({
       next: (res) => {
         this.requests.set(res.responseData ?? []);
@@ -75,14 +78,6 @@ export class AccessRequestsComponent implements OnInit {
       }
     });
   }
-
-  setStatusFilter(status: string | null): void {
-    this.statusFilter.set(status);
-  }
-
-  // =============================================
-  // APPROVE
-  // =============================================
 
   approve(id: number): void {
     this.processingId.set(id);
@@ -100,10 +95,27 @@ export class AccessRequestsComponent implements OnInit {
     });
   }
 
-  // =============================================
-  // DENY / REJECT
-  // =============================================
+  // Review modal
+  openReviewModal(req: AccessRequestSummary, modal: any): void {
+    this.reviewRequest.set(req);
+    this.modalService.open(modal, { centered: true, size: 'lg' });
+  }
 
+  approveFromReview(modal: any): void {
+    const req = this.reviewRequest();
+    if (!req) return;
+    modal.close();
+    this.approve(req.id);
+  }
+
+  rejectFromReview(denyModal: any, reviewModal: any): void {
+    const req = this.reviewRequest();
+    if (!req) return;
+    reviewModal.close();
+    this.openDenyModal(req.id, denyModal);
+  }
+
+  // Deny modal
   openDenyModal(id: number, modal: any): void {
     this.denyTargetId.set(id);
     this.denyReason = '';
@@ -131,33 +143,7 @@ export class AccessRequestsComponent implements OnInit {
     });
   }
 
-  // =============================================
-  // REVIEW MODAL
-  // =============================================
-
-  openReviewModal(req: AccessRequestSummary, modal: any): void {
-    this.reviewRequest.set(req);
-    this.modalService.open(modal, { centered: true, size: 'lg' });
-  }
-
-  approveFromReview(modal: any): void {
-    const req = this.reviewRequest();
-    if (!req) return;
-    modal.close();
-    this.approve(req.id);
-  }
-
-  rejectFromReview(modal: any, denyModal: any): void {
-    const req = this.reviewRequest();
-    if (!req) return;
-    modal.close();
-    this.openDenyModal(req.id, denyModal);
-  }
-
-  // =============================================
-  // DELETE
-  // =============================================
-
+  // Delete modal
   openDeleteModal(id: number, modal: any): void {
     this.deleteTargetId.set(id);
     this.modalService.open(modal, { centered: true });
@@ -184,51 +170,32 @@ export class AccessRequestsComponent implements OnInit {
     });
   }
 
-  // =============================================
-  // HELPERS
-  // =============================================
-
-  getCountForStatus(status: string | null): number {
-    if (!status) return this.requests().length;
-    return this.requests().filter(r => r.status === status).length;
+  // Helpers
+  isPending(status: string): boolean {
+    return status === 'pending' || status === 'pending_verification';
   }
 
   getStatusBadgeClass(status: string): string {
     switch (status) {
-      case 'pending':
-        return 'bg-warning text-dark';
-      case 'pending_verification':
-        return 'bg-info text-dark';
-      case 'approved':
-        return 'bg-success';
-      case 'denied':
-        return 'bg-danger';
-      default:
-        return 'bg-secondary';
+      case 'pending_verification': return 'bg-info text-dark';
+      case 'pending': return 'bg-warning text-dark';
+      case 'approved': return 'bg-success';
+      case 'denied': return 'bg-danger';
+      default: return 'bg-secondary';
     }
   }
 
   getStatusLabel(status: string): string {
     switch (status) {
-      case 'pending_verification':
-        return 'Pending Verification';
-      case 'pending':
-        return 'Pending';
-      case 'approved':
-        return 'Approved';
-      case 'denied':
-        return 'Denied';
-      default:
-        return status;
+      case 'pending_verification': return 'Pending Verification';
+      case 'pending': return 'Pending';
+      case 'approved': return 'Approved';
+      case 'denied': return 'Denied';
+      default: return status;
     }
   }
 
-  isPending(status: string): boolean {
-    return status === 'pending' || status === 'pending_verification';
-  }
-
-  formatDate(iso: string | null): string {
-    if (!iso) return '--';
+  formatDate(iso: string): string {
     return new Date(iso).toLocaleDateString('en-US', {
       month: 'short',
       day: 'numeric',
