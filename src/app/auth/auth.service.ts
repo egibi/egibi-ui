@@ -4,7 +4,8 @@ import { Router } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
 import {
   LoginRequest, SignupRequest, ForgotPasswordRequest, ResetPasswordRequest,
-  AuthResponse, OidcTokenResponse, UserProfile, MfaVerifyLoginRequest
+  AuthResponse, OidcTokenResponse, UserProfile, MfaVerifyLoginRequest,
+  VerifyEmailResponse
 } from './auth.models';
 import { environment } from '../../environments/environment';
 
@@ -148,29 +149,52 @@ export class AuthService {
   }
 
   // =============================================
-  // SIGNUP
+  // SIGNUP (now submits an access request)
   // =============================================
 
   /**
-   * Create account, auto-login (sets cookie), then start OIDC flow.
+   * Submit an access request. Does NOT auto-login — admin must approve first.
+   * Returns the API response so the signup component can show a success message.
    */
-  async signup(email: string, password: string, firstName: string, lastName: string): Promise<void> {
+  async signup(email: string, password: string, firstName: string, lastName: string): Promise<AuthResponse> {
     this._loading.set(true);
 
     try {
-      await firstValueFrom(
+      const response = await firstValueFrom(
         this.http.post<AuthResponse>(`${this.apiUrl}/auth/signup`,
           { email, password, firstName, lastName } as SignupRequest,
           { withCredentials: true }
         )
       );
 
-      // Cookie is set — start OIDC flow
-      this.startAuthorizationFlow();
+      this._loading.set(false);
+      return response;
     } catch (err: any) {
       this._loading.set(false);
       throw err;
     }
+  }
+
+  // =============================================
+  // EMAIL VERIFICATION
+  // =============================================
+
+  /**
+   * Verify an email address using the token from the verification link.
+   */
+  async verifyEmail(email: string, token: string): Promise<VerifyEmailResponse> {
+    return firstValueFrom(
+      this.http.post<VerifyEmailResponse>(`${this.apiUrl}/auth/verify-email`, { email, token })
+    );
+  }
+
+  /**
+   * Resend the verification email for a pending access request.
+   */
+  async resendVerification(email: string): Promise<{ message: string }> {
+    return firstValueFrom(
+      this.http.post<{ message: string }>(`${this.apiUrl}/auth/resend-verification`, { email })
+    );
   }
 
   // =============================================

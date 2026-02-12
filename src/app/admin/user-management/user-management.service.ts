@@ -64,4 +64,8 @@ export class UserManagementService {
   resetPassword(id: number, newPassword: string): Observable<RequestResponse> {
     return this.http.post<RequestResponse>(`${this.apiUrl}/users/${id}/reset-password`, { newPassword });
   }
+
+  deleteUser(id: number): Observable<RequestResponse> {
+    return this.http.delete<RequestResponse>(`${this.apiUrl}/users/${id}`);
+  }
 }

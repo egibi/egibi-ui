@@ -1,0 +1,166 @@
+<!-- ═══════════════════════════════════════════════════════════════
+     PENDING USERS — Admin sub-component
+     Displays access requests with approve/reject/delete actions.
+     ═══════════════════════════════════════════════════════════════ -->
+
+<!-- Alerts -->
+@if (success()) {
+  <div class="alert alert-success alert-dismissible fade show" role="alert">
+    {{ success() }}
+    <button type="button" class="btn-close" (click)="success.set(null)"></button>
+  </div>
+}
+
+@if (error()) {
+  <div class="alert alert-danger alert-dismissible fade show" role="alert">
+    {{ error() }}
+    <button type="button" class="btn-close" (click)="error.set(null)"></button>
+  </div>
+}
+
+<!-- Status Filter -->
+<div class="d-flex align-items-center justify-content-between mb-3">
+  <div class="btn-group btn-group-sm" role="group">
+    @for (status of ['Pending', 'Approved', 'Rejected', 'All']; track status) {
+      <button
+        type="button"
+        class="btn"
+        [class.btn-primary]="statusFilter() === status"
+        [class.btn-outline-secondary]="statusFilter() !== status"
+        (click)="onFilterChange(status)">
+        {{ status }}
+      </button>
+    }
+  </div>
+  <button class="btn btn-sm btn-outline-secondary" (click)="loadRequests()">
+    <i class="bi bi-arrow-clockwise me-1"></i> Refresh
+  </button>
+</div>
+
+<!-- Loading -->
+@if (loading()) {
+  <div class="text-center py-4">
+    <span class="spinner-border spinner-border-sm me-2" role="status"></span>
+    Loading requests...
+  </div>
+}
+
+<!-- Empty State -->
+@if (!loading() && requests().length === 0) {
+  <div class="text-center text-muted py-4">
+    <p class="mb-0">No {{ statusFilter() === 'All' ? '' : statusFilter().toLowerCase() }} access requests.</p>
+  </div>
+}
+
+<!-- Requests Table -->
+@if (!loading() && requests().length > 0) {
+  <div class="table-responsive">
+    <table class="table table-hover align-middle mb-0">
+      <thead class="table-light">
+        <tr>
+          <th>Name</th>
+          <th>Email</th>
+          <th>Message</th>
+          <th>Requested</th>
+          <th>Status</th>
+          <th class="text-end">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (request of requests(); track request.id) {
+          <tr>
+            <td>{{ request.firstName }} {{ request.lastName }}</td>
+            <td>
+              <code class="small">{{ request.email }}</code>
+            </td>
+            <td>
+              @if (request.message) {
+                <span class="text-truncate d-inline-block" style="max-width: 200px;"
+                      [title]="request.message">
+                  {{ request.message }}
+                </span>
+              } @else {
+                <span class="text-muted">—</span>
+              }
+            </td>
+            <td>
+              <span class="small text-muted">
+                {{ request.requestedAt | date:'MMM d, y h:mm a' }}
+              </span>
+            </td>
+            <td>
+              @if (request.status === 'Pending') {
+                <span class="badge bg-warning text-dark">Pending</span>
+              } @else if (request.status === 'Approved') {
+                <span class="badge bg-success">Approved</span>
+              } @else if (request.status === 'Rejected') {
+                <span class="badge bg-danger">Rejected</span>
+                @if (request.rejectionReason) {
+                  <br>
+                  <small class="text-muted" [title]="request.rejectionReason">
+                    {{ request.rejectionReason }}
+                  </small>
+                }
+              }
+            </td>
+            <td class="text-end">
+              @if (request.status === 'Pending') {
+                <button class="btn btn-sm btn-success me-1" (click)="approve(request)"
+                        title="Approve — creates the user account">
+                  <i class="bi bi-check-lg"></i> Approve
+                </button>
+                <button class="btn btn-sm btn-outline-danger" (click)="openRejectModal(request)"
+                        title="Reject — no account created">
+                  <i class="bi bi-x-lg"></i> Reject
+                </button>
+              } @else {
+                <button class="btn btn-sm btn-outline-secondary" (click)="deleteRequest(request)"
+                        title="Delete this request record">
+                  <i class="bi bi-trash"></i>
+                </button>
+              }
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+}
+
+<!-- ── REJECTION MODAL ──────────────────────────────── -->
+@if (showRejectModal()) {
+  <div class="modal-backdrop fade show"></div>
+  <div class="modal d-block" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Reject Access Request</h5>
+          <button type="button" class="btn-close" (click)="cancelReject()"></button>
+        </div>
+        <div class="modal-body">
+          <p>
+            Reject the access request from
+            <strong>{{ rejectingRequest()?.email }}</strong>?
+            No account will be created.
+          </p>
+          <div class="mb-3">
+            <label for="rejectionReason" class="form-label">Reason (optional)</label>
+            <textarea
+              class="form-control"
+              id="rejectionReason"
+              [(ngModel)]="rejectionReason"
+              rows="3"
+              placeholder="Provide a reason for rejection..."
+            ></textarea>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" (click)="cancelReject()">Cancel</button>
+          <button type="button" class="btn btn-danger" (click)="confirmReject()">
+            Reject Request
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+}

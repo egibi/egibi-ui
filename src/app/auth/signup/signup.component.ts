@@ -1,9 +1,10 @@
-import { Component, signal, computed, inject, TemplateRef, ViewChild, ElementRef } from '@angular/core';
+import { Component, signal, computed, inject, TemplateRef, ViewChild, ElementRef, OnInit, DestroyRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { ReactiveFormsModule, FormBuilder, FormGroup, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { NgbModal, NgbModalModule } from '@ng-bootstrap/ng-bootstrap';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { marked } from 'marked';
 import { AuthService } from '../auth.service';
 
@@ -14,9 +15,10 @@ import { AuthService } from '../auth.service';
   templateUrl: './signup.component.html',
   styleUrl: './signup.component.scss'
 })
-export class SignupComponent {
+export class SignupComponent implements OnInit {
   private http = inject(HttpClient);
   private modalService = inject(NgbModal);
+  private destroyRef = inject(DestroyRef);
 
   @ViewChild('legalModal') legalModal!: TemplateRef<any>;
   @ViewChild('modalBody') modalBody!: ElementRef<HTMLDivElement>;
@@ -25,11 +27,30 @@ export class SignupComponent {
   error = signal<string | null>(null);
   loading = signal(false);
   showPassword = signal(false);
+  showConfirmPassword = signal(false);
+
+  /** True after a successful access request submission */
+  requestSubmitted = signal(false);
+
+  /** The email address used for the submitted request (shown in success message) */
+  submittedEmail = signal('');
+
+  /** Resend verification state */
+  resendLoading = signal(false);
+  resendSuccess = signal(false);
 
   legalTitle = signal('');
   legalHtml = signal('');
   legalLoading = signal(false);
   showScrollTop = signal(false);
+
+  // Password strength — driven by a signal that updates on valueChanges
+  pw = signal('');
+  hasMinLength = computed(() => this.pw().length >= 8);
+  hasUpper = computed(() => /[A-Z]/.test(this.pw()));
+  hasLower = computed(() => /[a-z]/.test(this.pw()));
+  hasNumber = computed(() => /\d/.test(this.pw()));
+  hasSpecial = computed(() => /[^A-Za-z0-9]/.test(this.pw()));
 
   constructor(
     private fb: FormBuilder,
@@ -40,17 +61,29 @@ export class SignupComponent {
       lastName: ['', [Validators.required, Validators.maxLength(100)]],
       email: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required, Validators.minLength(8)]],
+      confirmPassword: ['', [Validators.required]],
       consentToTerms: [false, [Validators.requiredTrue]]
+    }, {
+      validators: SignupComponent.passwordsMatchValidator
     });
   }
 
-  // Password strength checks
-  pw = computed(() => this.form?.get('password')?.value || '');
-  hasMinLength = computed(() => this.pw().length >= 8);
-  hasUpper = computed(() => /[A-Z]/.test(this.pw()));
-  hasLower = computed(() => /[a-z]/.test(this.pw()));
-  hasNumber = computed(() => /\d/.test(this.pw()));
-  hasSpecial = computed(() => /[^A-Za-z0-9]/.test(this.pw()));
+  ngOnInit(): void {
+    // Pipe reactive form valueChanges into the pw signal so computed() picks up changes
+    this.form.get('password')!.valueChanges
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(val => this.pw.set(val || ''));
+  }
+
+  /** Cross-field validator: confirmPassword must match password */
+  static passwordsMatchValidator(group: AbstractControl): ValidationErrors | null {
+    const password = group.get('password')?.value;
+    const confirm = group.get('confirmPassword')?.value;
+    if (confirm && password !== confirm) {
+      return { passwordsMismatch: true };
+    }
+    return null;
+  }
 
   openLegalDoc(doc: 'privacy-policy' | 'terms-of-service', event: Event): void {
     event.preventDefault();
@@ -97,14 +130,42 @@ export class SignupComponent {
 
     try {
       const { email, password, firstName, lastName } = this.form.value;
-      await this.auth.signup(email, password, firstName, lastName);
+      const response = await this.auth.signup(email, password, firstName, lastName);
+
+      this.loading.set(false);
+
+      if (response.accessRequestSubmitted) {
+        this.submittedEmail.set(email);
+        this.requestSubmitted.set(true);
+      }
     } catch (err: any) {
       this.loading.set(false);
-      this.error.set(err?.error?.error || 'Signup failed. Please try again.');
+      this.error.set(err?.error?.error || 'Request failed. Please try again.');
+    }
+  }
+
+  async resendVerification(): Promise<void> {
+    const email = this.submittedEmail();
+    if (!email) return;
+
+    this.resendLoading.set(true);
+    this.resendSuccess.set(false);
+
+    try {
+      await this.auth.resendVerification(email);
+      this.resendSuccess.set(true);
+    } catch (err: any) {
+      // Silently handle — the user can try again
+    } finally {
+      this.resendLoading.set(false);
     }
   }
 
   togglePassword(): void {
     this.showPassword.update(v => !v);
+  }
+
+  toggleConfirmPassword(): void {
+    this.showConfirmPassword.update(v => !v);
   }
 }

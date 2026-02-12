@@ -28,6 +28,25 @@ export interface AuthResponse {
   lastName?: string;
   mfaRequired?: boolean;
   mfaToken?: string;
+  accessRequestSubmitted?: boolean;
+  emailVerificationRequired?: boolean;
+}
+
+export interface VerifyEmailResponse {
+  verified: boolean;
+  message: string;
+}
+
+export interface AccessRequestDto {
+  id: number;
+  email: string;
+  firstName: string;
+  lastName: string;
+  status: string;
+  denialReason?: string;
+  createdAt: string;
+  reviewedByUserId?: number;
+  reviewedAt?: string;
 }
 
 export interface AuthError {

@@ -11,6 +11,7 @@ import { ForgotPasswordComponent } from "./auth/forgot-password/forgot-password.
 import { ResetPasswordComponent } from "./auth/reset-password/reset-password.component";
 import { AuthCallbackComponent } from "./auth/callback/auth-callback.component";
 import { LegalPageComponent } from "./auth/legal-page/legal-page.component";
+import { VerifyEmailComponent } from "./auth/verify-email/verify-email.component";
 
 // App pages (protected)
 import { StrategiesComponent } from "./strategies/strategies.component";
@@ -45,6 +46,10 @@ export const routes: Routes = [
     component: SignupComponent,
   },
   {
+    path: "auth/verify-email",
+    component: VerifyEmailComponent,
+  },
+  {
     path: "auth/forgot-password",
     component: ForgotPasswordComponent,
   },
@@ -66,8 +71,8 @@ export const routes: Routes = [
     component: LegalPageComponent,
     data: { document: "terms-of-service" },
   },
-  { path: "auth/mfa-verify", 
-    component: MfaVerifyComponent 
+  { path: "auth/mfa-verify",
+    component: MfaVerifyComponent
   },
 
   // =============================================
@@ -179,8 +184,8 @@ export const routes: Routes = [
     title: "Storage - Egibi",
     canActivate: [authGuard],
   },
-  { path: "security", 
-    component: SecurityComponent, canActivate: [authGuard] 
+  { path: "security",
+    component: SecurityComponent, canActivate: [authGuard]
   },
 
   // Catch-all → login
