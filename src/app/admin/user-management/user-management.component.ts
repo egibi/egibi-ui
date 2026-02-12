@@ -35,6 +35,12 @@ export class UserManagementComponent implements OnInit {
   resettingPassword = false;
   resetError = '';
 
+  // Delete user
+  deletingUser: UserSummary | null = null;
+  deleteConfirmEmail = '';
+  deleting = false;
+  deleteError = '';
+
   // Available roles
   roles = ['admin', 'user'];
 
@@ -225,6 +231,51 @@ export class UserManagementComponent implements OnInit {
       error: (err) => {
         this.resettingPassword = false;
         this.resetError = err.error?.responseMessage || 'Failed to reset password';
+      }
+    });
+  }
+
+  // =============================================
+  // DELETE USER (permanent)
+  // =============================================
+
+  startDelete(user: UserSummary): void {
+    this.deletingUser = user;
+    this.deleteConfirmEmail = '';
+    this.deleteError = '';
+  }
+
+  cancelDelete(): void {
+    this.deletingUser = null;
+    this.deleteConfirmEmail = '';
+    this.deleteError = '';
+  }
+
+  get canConfirmDelete(): boolean {
+    return !!this.deletingUser
+      && this.deleteConfirmEmail === this.deletingUser.email
+      && !this.deleting;
+  }
+
+  confirmDelete(): void {
+    if (!this.canConfirmDelete) return;
+    this.deleting = true;
+    this.deleteError = '';
+
+    this.userService.deleteUser(this.deletingUser!.id).subscribe({
+      next: (res) => {
+        this.deleting = false;
+        if (res.responseCode === 200) {
+          this.deletingUser = null;
+          this.deleteConfirmEmail = '';
+          this.loadUsers();
+        } else {
+          this.deleteError = res.responseMessage || 'Failed to delete user';
+        }
+      },
+      error: (err) => {
+        this.deleting = false;
+        this.deleteError = err.error?.responseMessage || 'Failed to delete user';
       }
     });
   }
