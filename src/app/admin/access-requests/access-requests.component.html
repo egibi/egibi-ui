@@ -11,21 +11,36 @@
         }
       </p>
     </div>
-    <div class="d-flex gap-2 align-items-center">
-      <div class="form-check form-switch">
-        <input
-          class="form-check-input"
-          type="checkbox"
-          id="showAllToggle"
-          [checked]="showAll()"
-          (change)="toggleShowAll()"
-        />
-        <label class="form-check-label small" for="showAllToggle">Show all</label>
-      </div>
-      <button class="btn btn-sm btn-outline-secondary" (click)="loadRequests()" [disabled]="loading()">
-        Refresh
+    <button class="btn btn-sm btn-outline-secondary" (click)="loadRequests()" [disabled]="loading()">
+      <i class="bi bi-arrow-clockwise"></i> Refresh
+    </button>
+  </div>
+
+  <!-- Status Filter Pills -->
+  <div class="status-filter mb-3">
+    @for (option of statusOptions; track option.value) {
+      <button
+        class="btn btn-sm"
+        [class.btn-primary]="statusFilter() === option.value"
+        [class.btn-outline-secondary]="statusFilter() !== option.value"
+        (click)="setStatusFilter(option.value)"
+      >
+        {{ option.label }}
+        @if (option.value === null) {
+          <span class="badge bg-light text-dark ms-1">{{ requests().length }}</span>
+        } @else {
+          @if (requests().filter(r => r.status === option.value).length > 0) {
+            <span class="badge ms-1"
+                  [class.bg-light]="statusFilter() === option.value"
+                  [class.text-dark]="statusFilter() === option.value"
+                  [class.bg-primary]="statusFilter() !== option.value"
+                  [class.bg-opacity-25]="statusFilter() !== option.value">
+              {{ requests().filter(r => r.status === option.value).length }}
+            </span>
+          }
+        }
       </button>
-    </div>
+    }
   </div>
 
   <!-- Loading -->
@@ -35,9 +50,15 @@
         <span class="visually-hidden">Loading...</span>
       </div>
     </div>
-  } @else if (requests().length === 0) {
+  } @else if (filteredRequests.length === 0) {
     <div class="text-center py-5 text-muted">
-      <p class="mb-0">{{ showAll() ? 'No access requests found.' : 'No pending access requests.' }}</p>
+      <p class="mb-0">
+        @if (statusFilter()) {
+          No {{ getStatusLabel(statusFilter()!) | lowercase }} access requests found.
+        } @else {
+          No access requests found.
+        }
+      </p>
     </div>
   } @else {
     <!-- Table -->
@@ -47,16 +68,15 @@
           <tr>
             <th>Name</th>
             <th>Email</th>
+            <th>IP Address</th>
             <th>Status</th>
             <th>Requested</th>
-            @if (showAll()) {
-              <th>Reviewed</th>
-            }
+            <th>Reviewed</th>
             <th class="text-end">Actions</th>
           </tr>
         </thead>
         <tbody>
-          @for (req of requests(); track req.id) {
+          @for (req of filteredRequests; track req.id) {
             <tr>
               <td>
                 <span class="fw-medium">{{ req.firstName }} {{ req.lastName }}</span>
@@ -65,57 +85,80 @@
                 <span class="text-muted small">{{ req.email }}</span>
               </td>
               <td>
-                @switch (req.status) {
-                  @case ('pending') {
-                    <span class="badge bg-warning text-dark">Pending</span>
-                  }
-                  @case ('approved') {
-                    <span class="badge bg-success">Approved</span>
-                  }
-                  @case ('denied') {
-                    <span class="badge bg-danger">Denied</span>
-                    @if (req.denialReason) {
-                      <br><span class="text-muted small">{{ req.denialReason }}</span>
-                    }
-                  }
+                @if (req.ipAddress) {
+                  <span class="ip-address">{{ req.ipAddress }}</span>
+                } @else {
+                  <span class="text-muted small">--</span>
+                }
+              </td>
+              <td>
+                <span class="badge" [ngClass]="getStatusBadgeClass(req.status)">
+                  {{ getStatusLabel(req.status) }}
+                </span>
+                @if (req.status === 'denied' && req.denialReason) {
+                  <br><span class="text-muted small fst-italic">{{ req.denialReason }}</span>
                 }
               </td>
               <td>
                 <span class="small">{{ formatDate(req.createdAt) }}</span>
               </td>
-              @if (showAll()) {
-                <td>
-                  @if (req.reviewedAt) {
-                    <span class="small">{{ formatDate(req.reviewedAt) }}</span>
-                  } @else {
-                    <span class="text-muted small">--</span>
-                  }
-                </td>
-              }
+              <td>
+                @if (req.reviewedAt) {
+                  <span class="small">{{ formatDate(req.reviewedAt) }}</span>
+                } @else {
+                  <span class="text-muted small">--</span>
+                }
+              </td>
               <td class="text-end">
-                @if (req.status === 'pending') {
-                  <div class="d-flex gap-2 justify-content-end">
+                <div class="btn-group btn-group-sm action-buttons" role="group">
+                  <!-- Review -->
+                  <button
+                    class="btn btn-outline-primary"
+                    title="Review details"
+                    (click)="openReviewModal(req, reviewModal)"
+                    [disabled]="processingId() === req.id"
+                  >
+                    <i class="bi bi-eye"></i>
+                  </button>
+
+                  <!-- Approve (pending only) -->
+                  @if (isPending(req.status)) {
                     <button
-                      class="btn btn-sm btn-success"
+                      class="btn btn-outline-success"
+                      title="Approve"
                       (click)="approve(req.id)"
                       [disabled]="processingId() === req.id"
                     >
                       @if (processingId() === req.id) {
-                        <span class="spinner-border spinner-border-sm me-1"></span>
+                        <span class="spinner-border spinner-border-sm"></span>
+                      } @else {
+                        <i class="bi bi-check-circle"></i>
                       }
-                      Approve
                     </button>
+                  }
+
+                  <!-- Reject (pending only) -->
+                  @if (isPending(req.status)) {
                     <button
-                      class="btn btn-sm btn-outline-danger"
+                      class="btn btn-outline-danger"
+                      title="Reject"
                       (click)="openDenyModal(req.id, denyModal)"
                       [disabled]="processingId() === req.id"
                     >
-                      Deny
+                      <i class="bi bi-x-circle"></i>
                     </button>
-                  </div>
-                } @else {
-                  <span class="text-muted small">--</span>
-                }
+                  }
+
+                  <!-- Delete (all statuses) -->
+                  <button
+                    class="btn btn-outline-secondary"
+                    title="Delete"
+                    (click)="openDeleteModal(req.id, deleteModal)"
+                    [disabled]="processingId() === req.id"
+                  >
+                    <i class="bi bi-trash"></i>
+                  </button>
+                </div>
               </td>
             </tr>
           }
@@ -125,24 +168,156 @@
   }
 </div>
 
-<!-- Deny Reason Modal -->
-<ng-template #denyModal let-modal>
+<!-- ================================================ -->
+<!-- REVIEW MODAL                                     -->
+<!-- ================================================ -->
+<ng-template #reviewModal let-modal>
   <div class="modal-header">
-    <h5 class="modal-title">Deny Access Request</h5>
+    <h5 class="modal-title">Access Request Details</h5>
     <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss()"></button>
   </div>
   <div class="modal-body">
-    <label for="denyReason" class="form-label">Reason (optional)</label>
+    @if (reviewRequest(); as req) {
+      <div class="review-details">
+        <div class="row mb-3">
+          <div class="col-sm-6">
+            <div class="detail-label">Full Name</div>
+            <div class="detail-value">{{ req.firstName }} {{ req.lastName }}</div>
+          </div>
+          <div class="col-sm-6">
+            <div class="detail-label">Email Address</div>
+            <div class="detail-value">{{ req.email }}</div>
+          </div>
+        </div>
+
+        <div class="row mb-3">
+          <div class="col-sm-6">
+            <div class="detail-label">IP Address</div>
+            <div class="detail-value">
+              @if (req.ipAddress) {
+                <span class="ip-address">{{ req.ipAddress }}</span>
+              } @else {
+                <span class="text-muted">Not recorded</span>
+              }
+            </div>
+          </div>
+          <div class="col-sm-6">
+            <div class="detail-label">Status</div>
+            <div class="detail-value">
+              <span class="badge" [ngClass]="getStatusBadgeClass(req.status)">
+                {{ getStatusLabel(req.status) }}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <div class="row mb-3">
+          <div class="col-sm-6">
+            <div class="detail-label">Date Requested</div>
+            <div class="detail-value">{{ formatDate(req.createdAt) }}</div>
+          </div>
+          <div class="col-sm-6">
+            <div class="detail-label">Email Verified</div>
+            <div class="detail-value">
+              @if (req.emailVerifiedAt) {
+                <span class="text-success">
+                  <i class="bi bi-check-circle-fill me-1"></i>{{ formatDate(req.emailVerifiedAt) }}
+                </span>
+              } @else {
+                <span class="text-muted">Not yet verified</span>
+              }
+            </div>
+          </div>
+        </div>
+
+        @if (req.reviewedAt) {
+          <div class="row mb-3">
+            <div class="col-sm-6">
+              <div class="detail-label">Reviewed On</div>
+              <div class="detail-value">{{ formatDate(req.reviewedAt) }}</div>
+            </div>
+            <div class="col-sm-6">
+              <div class="detail-label">Reviewed By</div>
+              <div class="detail-value">Admin #{{ req.reviewedByUserId }}</div>
+            </div>
+          </div>
+        }
+
+        @if (req.denialReason) {
+          <div class="mb-3">
+            <div class="detail-label">Denial Reason</div>
+            <div class="detail-value denial-reason">{{ req.denialReason }}</div>
+          </div>
+        }
+      </div>
+    }
+  </div>
+  <div class="modal-footer">
+    @if (reviewRequest() && isPending(reviewRequest()!.status)) {
+      <button
+        type="button"
+        class="btn btn-sm btn-success"
+        (click)="approveFromReview(modal)"
+      >
+        <i class="bi bi-check-circle me-1"></i>Approve
+      </button>
+      <button
+        type="button"
+        class="btn btn-sm btn-danger"
+        (click)="rejectFromReview(modal, denyModal)"
+      >
+        <i class="bi bi-x-circle me-1"></i>Reject
+      </button>
+    }
+    <button type="button" class="btn btn-sm btn-outline-secondary" (click)="modal.dismiss()">Close</button>
+  </div>
+</ng-template>
+
+<!-- ================================================ -->
+<!-- DENY / REJECT MODAL                              -->
+<!-- ================================================ -->
+<ng-template #denyModal let-modal>
+  <div class="modal-header">
+    <h5 class="modal-title">Reject Access Request</h5>
+    <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss()"></button>
+  </div>
+  <div class="modal-body">
+    <p class="text-muted small mb-3">
+      The user will receive an email notification with your rejection reason.
+    </p>
+    <label for="denyReason" class="form-label">Reason for Rejection</label>
     <textarea
       id="denyReason"
       class="form-control"
       rows="3"
-      placeholder="Provide a reason for denying this request..."
+      placeholder="Provide a reason for rejecting this request..."
       [(ngModel)]="denyReason"
     ></textarea>
   </div>
   <div class="modal-footer">
     <button type="button" class="btn btn-sm btn-outline-secondary" (click)="modal.dismiss()">Cancel</button>
-    <button type="button" class="btn btn-sm btn-danger" (click)="confirmDeny(modal)">Deny Request</button>
+    <button type="button" class="btn btn-sm btn-danger" (click)="confirmDeny(modal)">
+      <i class="bi bi-x-circle me-1"></i>Reject Request
+    </button>
+  </div>
+</ng-template>
+
+<!-- ================================================ -->
+<!-- DELETE CONFIRMATION MODAL                        -->
+<!-- ================================================ -->
+<ng-template #deleteModal let-modal>
+  <div class="modal-header">
+    <h5 class="modal-title">Delete Access Request</h5>
+    <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss()"></button>
+  </div>
+  <div class="modal-body">
+    <p>Are you sure you want to permanently delete this access request?</p>
+    <p class="text-muted small mb-0">This action cannot be undone. The record will be permanently removed from the database.</p>
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-sm btn-outline-secondary" (click)="modal.dismiss()">Cancel</button>
+    <button type="button" class="btn btn-sm btn-danger" (click)="confirmDelete(modal)">
+      <i class="bi bi-trash me-1"></i>Delete Permanently
+    </button>
   </div>
 </ng-template>

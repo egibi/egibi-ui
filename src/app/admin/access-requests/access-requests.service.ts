@@ -10,8 +10,10 @@ export interface AccessRequestSummary {
   firstName: string | null;
   lastName: string | null;
   status: string;
+  ipAddress: string | null;
   denialReason: string | null;
   createdAt: string;
+  emailVerifiedAt: string | null;
   reviewedByUserId: number | null;
   reviewedAt: string | null;
 }
@@ -38,5 +40,9 @@ export class AccessRequestsService {
 
   denyRequest(id: number, reason?: string): Observable<RequestResponse> {
     return this.http.post<RequestResponse>(`${this.apiUrl}/${id}/deny`, { reason });
+  }
+
+  deleteRequest(id: number): Observable<RequestResponse> {
+    return this.http.delete<RequestResponse>(`${this.apiUrl}/${id}`);
   }
 }

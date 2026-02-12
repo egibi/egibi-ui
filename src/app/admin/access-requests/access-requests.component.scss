@@ -2,11 +2,37 @@
   display: block;
 }
 
+// =============================================
+// STATUS FILTER PILLS
+// =============================================
+.status-filter {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+
+  .btn {
+    border-radius: 20px;
+    font-size: 0.8125rem;
+    padding: 0.3rem 0.75rem;
+    transition: all 0.15s ease-in-out;
+
+    .badge {
+      font-size: 0.65rem;
+      padding: 0.2em 0.5em;
+      border-radius: 10px;
+    }
+  }
+}
+
+// =============================================
+// TABLE STYLES
+// =============================================
 .table th {
   font-size: 0.8125rem;
   font-weight: 600;
   color: hsl(var(--egibi-muted-foreground));
   border-bottom-width: 2px;
+  white-space: nowrap;
 }
 
 .table td {
@@ -14,8 +40,68 @@
   vertical-align: middle;
 }
 
+// =============================================
+// STATUS BADGES
+// =============================================
 .badge {
   font-size: 0.7rem;
   font-weight: 500;
   padding: 0.3em 0.65em;
+}
+
+// =============================================
+// IP ADDRESS
+// =============================================
+.ip-address {
+  font-family: 'SFMono-Regular', 'Menlo', 'Monaco', 'Consolas', 'Liberation Mono', monospace;
+  font-size: 0.8125rem;
+  color: hsl(var(--egibi-muted-foreground));
+}
+
+// =============================================
+// ACTION BUTTONS
+// =============================================
+.action-buttons {
+  .btn {
+    padding: 0.25rem 0.45rem;
+    font-size: 0.75rem;
+    line-height: 1;
+
+    i {
+      font-size: 0.875rem;
+    }
+
+    .spinner-border {
+      width: 0.875rem;
+      height: 0.875rem;
+    }
+  }
+}
+
+// =============================================
+// REVIEW MODAL DETAILS
+// =============================================
+.review-details {
+  .detail-label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.025em;
+    color: hsl(var(--egibi-muted-foreground));
+    margin-bottom: 0.25rem;
+  }
+
+  .detail-value {
+    font-size: 0.9375rem;
+    margin-bottom: 0;
+  }
+
+  .denial-reason {
+    background: hsl(var(--egibi-muted) / 0.3);
+    border-radius: 6px;
+    padding: 0.75rem;
+    font-size: 0.875rem;
+    color: hsl(var(--egibi-muted-foreground));
+    font-style: italic;
+  }
 }
