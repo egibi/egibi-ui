@@ -188,6 +188,11 @@ export class AccessRequestsComponent implements OnInit {
   // HELPERS
   // =============================================
 
+  getCountForStatus(status: string | null): number {
+    if (!status) return this.requests().length;
+    return this.requests().filter(r => r.status === status).length;
+  }
+
   getStatusBadgeClass(status: string): string {
     switch (status) {
       case 'pending':
